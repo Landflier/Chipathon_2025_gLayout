@@ -48,8 +48,16 @@
 # In[ ]:
 
 
-from glayout.pdk.sky130_mapped import sky130_mapped_pdk as sky130
-from glayout.pdk.gf180_mapped  import gf180_mapped_pdk  as gf180
+from glayout import sky130
+from glayout import gf180
+from glayout.primitives.via_gen import via_stack, via_array
+from glayout.primitives.fet import nmos, pmos, multiplier
+from glayout.primitives.guardring import tapring
+from glayout.util.port_utils import PortTree, rename_ports_by_orientation
+from glayout.util.comp_utils import move, movex, movey, align_comp_to_port, evaluate_bbox, prec_center
+from glayout.routing.straight_route import straight_route
+from glayout.routing.c_route import c_route
+from gdsfactory import Component
 import gdstk
 import svgutils.transform as sg
 import IPython.display
@@ -105,12 +113,10 @@ def display_component(component, scale = 3):
 
 from glayout.primitives.guardring import tapring
 from glayout.primitives.fet import pmos
-from glayout.pdk.util.comp_utils import evaluate_bbox, prec_center
-from glayout.pdk.mappedpdk import MappedPDK
+from glayout.util.comp_utils import evaluate_bbox, prec_center
 from glayout.routing.straight_route import straight_route
 from glayout.routing.c_route import c_route
 from gdsfactory import Component
-from glayout.pdk.gf180_mapped import gf180_mapped_pdk
 
 
 # ### Step 2: Define the Current Mirror Function
@@ -170,7 +176,7 @@ from glayout.pdk.gf180_mapped import gf180_mapped_pdk
 # In[ ]:
 
 
-def currentMirror(pdk: MappedPDK):
+def currentMirror(pdk):
   currMirrComp = Component()
   pfet_ref = pmos(pdk, with_substrate_tap=False, with_dummy=(False, True))
   pfet_mir = pmos(pdk, with_substrate_tap=False, with_dummy=(True, False))
@@ -187,7 +193,7 @@ def currentMirror(pdk: MappedPDK):
   currMirrComp << c_route(pdk, cref_ref.ports["multiplier_0_gate_E"], cref_ref.ports["multiplier_0_drain_E"])
   return currMirrComp
 
-currentMirror(gf180_mapped_pdk).write_gds("cmirror_example.gds")
+currentMirror(gf180).write_gds("cmirror_example.gds")
 display_gds("cmirror_example.gds")
 
 
