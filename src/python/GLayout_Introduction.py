@@ -41,55 +41,12 @@
 # Setup the environment for the OpenFASOC GDSFactory generator
 # You only need to run this block once!
 
-# Clone OpenFASoC
-get_ipython().system('git clone https://github.com/idea-fasoc/OpenFASOC')
-# Install python dependencies
-get_ipython().system('pip install sky130')
-get_ipython().system('pip install gf180 prettyprinttree svgutils')
-get_ipython().system('pip install gdsfactory==7.7.0')
-
-import pathlib
-import os
-# Install KLayout (via conda)
-get_ipython().system('curl -Ls https://micro.mamba.pm/api/micromamba/linux-64/latest | tar -xvj bin/micromamba')
-conda_prefix_path = pathlib.Path('conda-env')
-CONDA_PREFIX = str(conda_prefix_path.resolve())
-get_ipython().run_line_magic('env', 'CONDA_PREFIX={CONDA_PREFIX}')
-
-get_ipython().system('bin/micromamba create --yes --prefix $CONDA_PREFIX')
-# Install from the litex-hub channel
-get_ipython().system('bin/micromamba install --yes --prefix $CONDA_PREFIX                          --channel litex-hub                          --channel main                          klayout')
-
-
-# #### 1.2. Adding the `klayout` binary to the system path, then goto the GLayout directory
-# **You need to run this each time you restart the kernel**
-
-# In[2]:
-
-
-# Setup the environment for the OpenFASOC GDSFactory generator
-
-# Adding micro-mamba binary directory to the PATH
-# This directory contains Klayout
-import pathlib
-import os
-conda_prefix_path = pathlib.Path('conda-env')
-CONDA_PREFIX = str(conda_prefix_path.resolve())
-get_ipython().run_line_magic('env', 'CONDA_PREFIX={CONDA_PREFIX}')
-# Add conda packages to the PATH
-PATH = os.environ['PATH']
-get_ipython().run_line_magic('env', 'PATH={PATH}:{CONDA_PREFIX}/bin')
-
-get_ipython().run_line_magic('cd', '/content/OpenFASOC/openfasoc/generators/glayout')
-
 
 # #### 1.3. Importing Libraries and Utility Functions
 
 # In[3]:
 
-
-from glayout.flow.pdk.sky130_mapped import sky130_mapped_pdk as sky130
-from glayout.flow.pdk.gf180_mapped  import gf180_mapped_pdk  as gf180
+from glayout import gf180, sky130
 import gdstk
 import svgutils.transform as sg
 import IPython.display
@@ -209,11 +166,10 @@ print(f"min spacing between metal: {min_met1_spacing}")
 # In[41]:
 
 
-from glayout.flow.pdk.mappedpdk import MappedPDK
 from gdsfactory import Component
 from gdsfactory.components import rectangle
 
-def makeMet1Rectangle(pdk: MappedPDK, length):
+def makeMet1Rectangle(pdk, length):
   met1 = pdk.get_glayer("met1")
   met1_width = pdk.get_grule("met1")["min_width"]
   top_level = Component(name="metal_track")
@@ -232,9 +188,9 @@ display_gds('metaltrack.gds',scale=20)
 # In[48]:
 
 
-from glayout.flow.pdk.util.comp_utils import evaluate_bbox
+from glayout.util.comp_utils import evaluate_bbox
 
-def makeAdjacentMetal1Tracks(pdk: MappedPDK, length):
+def makeAdjacentMetal1Tracks(pdk, length):
   track1 = makeMet1Rectangle(pdk, length)
   track2 = makeMet1Rectangle(pdk, length)
   top_level = Component(name="adjacent_metal_tracks")
@@ -256,8 +212,8 @@ display_gds('adjmetaltrack.gds',scale=20)
 # In[53]:
 
 
-from glayout.flow.primitives.fet import pmos
-from glayout.flow.primitives.fet import nmos
+from glayout.primitives.fet import pmos
+from glayout.primitives.fet import nmos
 
 def placeTwoTrasistors(pdk):
   pfet = pmos(pdk)
@@ -280,10 +236,10 @@ display_gds('twotransistors.gds',scale=2)
 # In[57]:
 
 
-from glayout.flow.routing.straight_route import straight_route
-from glayout.flow.routing.c_route import c_route
+from glayout.routing.straight_route import straight_route
+from glayout.routing.c_route import c_route
 
-def currentMirror(pdk: MappedPDK):
+def currentMirror(pdk):
   currMirrComp = Component()
   pfet_ref = pmos(pdk, with_substrate_tap=False, with_dummy=(False, True))
   pfet_mir = pmos(pdk, with_substrate_tap=False, with_dummy=(True, False))
