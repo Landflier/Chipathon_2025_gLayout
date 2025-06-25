@@ -2,3 +2,5 @@
 openfasoc/
 gLayout/
 sscs-chipathon-2024/
+*.svg
+*.gds
