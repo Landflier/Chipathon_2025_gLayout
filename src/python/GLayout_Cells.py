@@ -65,55 +65,13 @@
 # Setup the environment for the OpenFASOC GDSFactory generator
 # You only need to run this block once!
 
-# Clone OpenFASoC
-get_ipython().system('git clone https://github.com/idea-fasoc/OpenFASOC')
-# Install python dependencies
-get_ipython().system('pip install sky130')
-get_ipython().system('pip install gf180 prettyprinttree svgutils')
-get_ipython().system('pip install gdsfactory==7.7.0')
-
-import pathlib
-import os
-# Install KLayout (via conda)
-get_ipython().system('curl -Ls https://micro.mamba.pm/api/micromamba/linux-64/latest | tar -xvj bin/micromamba')
-conda_prefix_path = pathlib.Path('conda-env')
-CONDA_PREFIX = str(conda_prefix_path.resolve())
-get_ipython().run_line_magic('env', 'CONDA_PREFIX={CONDA_PREFIX}')
-
-get_ipython().system('bin/micromamba create --yes --prefix $CONDA_PREFIX')
-# Install from the litex-hub channel
-get_ipython().system('bin/micromamba install --yes --prefix $CONDA_PREFIX                          --channel litex-hub                          --channel main                          klayout')
-
-
-# #### 1.2. Adding the `klayout` binary to the system path, then goto the GLayout directory
-# **You need to run this each time you restart the kernel**
-
-# In[ ]:
-
-
-# Setup the environment for the OpenFASOC GDSFactory generator
-
-# Adding micro-mamba binary directory to the PATH
-# This directory contains Klayout
-import pathlib
-import os
-conda_prefix_path = pathlib.Path('conda-env')
-CONDA_PREFIX = str(conda_prefix_path.resolve())
-get_ipython().run_line_magic('env', 'CONDA_PREFIX={CONDA_PREFIX}')
-# Add conda packages to the PATH
-PATH = os.environ['PATH']
-get_ipython().run_line_magic('env', 'PATH={PATH}:{CONDA_PREFIX}/bin')
-
-get_ipython().run_line_magic('cd', '/content/OpenFASOC/openfasoc/generators/glayout')
 
 
 # #### 1.3. Importing Libraries and Utility Functions
 
 # In[ ]:
 
-
-from glayout.flow.pdk.sky130_mapped import sky130_mapped_pdk as sky130
-from glayout.flow.pdk.gf180_mapped  import gf180_mapped_pdk  as gf180
+from glayout import sky130, gf180
 import gdstk
 import svgutils.transform as sg
 import IPython.display
@@ -177,14 +135,14 @@ def display_component(component, scale = 3):
 # In[ ]:
 
 
-from glayout.flow.primitives.fet import nmos
+from glayout.primitives.fet import nmos
 # Used to display the results in a grid (notebook only)
 left = widgets.Output()
 leftSPICE = widgets.Output()
 grid = widgets.GridspecLayout(1, 2)
 grid[0, 0] = left
 grid[0, 1] = leftSPICE
-display(grid)
+# display(grid)
 
 comp = nmos(pdk = sky130, fingers=5)
 # Display the components' GDS and SPICE netlists
@@ -206,14 +164,14 @@ with leftSPICE:
 # In[ ]:
 
 
-from glayout.flow.primitives.mimcap import mimcap
+from glayout.primitives.mimcap import mimcap
 # Used to display the results in a grid (notebook only)
 left = widgets.Output()
 leftSPICE = widgets.Output()
 grid = widgets.GridspecLayout(1, 2)
 grid[0, 0] = left
 grid[0, 1] = leftSPICE
-display(grid)
+# display(grid)
 
 comp = mimcap(pdk=sky130, size=[20.0,5.0])
 # Display the components' GDS and SPICE netlists
@@ -240,14 +198,14 @@ with leftSPICE:
 # In[ ]:
 
 
-from glayout.flow.primitives.guardring import tapring
+from glayout.primitives.guardring import tapring
 # Used to display the results in a grid (notebook only)
 left = widgets.Output()
 leftSPICE = widgets.Output()
 grid = widgets.GridspecLayout(1, 2)
 grid[0, 0] = left
 grid[0, 1] = leftSPICE
-display(grid)
+# display(grid)
 
 comp = tapring(pdk=sky130, enclosed_rectangle=[10.0, 5.0])
 # Display the components' GDS and SPICE netlists
@@ -275,14 +233,14 @@ with left:
 # In[ ]:
 
 
-from glayout.flow.blocks.elementary.diff_pair import diff_pair
+from glayout.elementary.diff_pair import diff_pair
 # Used to display the results in a grid (notebook only)
 left = widgets.Output()
 leftSPICE = widgets.Output()
 grid = widgets.GridspecLayout(1, 2)
 grid[0, 0] = left
 grid[0, 1] = leftSPICE
-display(grid)
+# display(grid)
 
 comp = diff_pair(pdk=sky130)
 # Display the components' GDS and SPICE netlists
@@ -309,14 +267,14 @@ with leftSPICE:
 # In[ ]:
 
 
-from glayout.flow.blocks.composite.differential_to_single_ended_converter import differential_to_single_ended_converter
+from glayout.composite.differential_to_single_ended_converter import differential_to_single_ended_converter
 # Used to display the results in a grid (notebook only)
 left = widgets.Output()
 leftSPICE = widgets.Output()
 grid = widgets.GridspecLayout(1, 2)
 grid[0, 0] = left
 grid[0, 1] = leftSPICE
-display(grid)
+# display(grid)
 
 comp = differential_to_single_ended_converter(pdk=sky130, rmult=1, half_pload=[2,0.5,1], via_xlocation=0)
 # Display the components' GDS and SPICE netlists
@@ -367,7 +325,7 @@ with leftSPICE:
 # In[ ]:
 
 
-from glayout.flow.blocks.composite.opamp import opamp
+from glayout.composite.opamp import opamp
 
 # Select which PDK to use
 pdk = sky130
