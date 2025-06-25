@@ -41,55 +41,14 @@
 # Setup the environment for the OpenFASOC GDSFactory generator
 # You only need to run this block once!
 
-# Clone OpenFASoC
-get_ipython().system('git clone https://github.com/idea-fasoc/OpenFASOC')
-# Install python dependencies
-get_ipython().system('pip install sky130')
-get_ipython().system('pip install gf180 prettyprinttree svgutils')
-get_ipython().system('pip install gdsfactory==7.7.0')
-
-import pathlib
-import os
-# Install KLayout (via conda)
-get_ipython().system('curl -Ls https://micro.mamba.pm/api/micromamba/linux-64/latest | tar -xvj bin/micromamba')
-conda_prefix_path = pathlib.Path('conda-env')
-CONDA_PREFIX = str(conda_prefix_path.resolve())
-get_ipython().run_line_magic('env', 'CONDA_PREFIX={CONDA_PREFIX}')
-
-get_ipython().system('bin/micromamba create --yes --prefix $CONDA_PREFIX')
-# Install from the litex-hub channel
-get_ipython().system('bin/micromamba install --yes --prefix $CONDA_PREFIX                          --channel litex-hub                          --channel main                          klayout')
-
-
-# #### 1.2. Adding the `klayout` binary to the system path, then goto the GLayout directory
-# **You need to run this each time you restart the kernel**
-
-# In[ ]:
-
-
-# Setup the environment for the OpenFASOC GDSFactory generator
-
-# Adding micro-mamba binary directory to the PATH
-# This directory contains Klayout
-import pathlib
-import os
-conda_prefix_path = pathlib.Path('conda-env')
-CONDA_PREFIX = str(conda_prefix_path.resolve())
-get_ipython().run_line_magic('env', 'CONDA_PREFIX={CONDA_PREFIX}')
-# Add conda packages to the PATH
-PATH = os.environ['PATH']
-get_ipython().run_line_magic('env', 'PATH={PATH}:{CONDA_PREFIX}/bin')
-
-get_ipython().run_line_magic('cd', '/content/OpenFASOC/openfasoc/generators/glayout')
-
 
 # #### 1.3. Importing Libraries and Utility Functions
 
 # In[ ]:
 
 
-from glayout.flow.pdk.sky130_mapped import sky130_mapped_pdk as sky130
-from glayout.flow.pdk.gf180_mapped  import gf180_mapped_pdk  as gf180
+from glayout import sky130
+from glayout import gf180
 import gdstk
 import svgutils.transform as sg
 import IPython.display
@@ -141,8 +100,6 @@ def display_component(component, scale = 3):
 # In[ ]:
 
 
-from glayout.flow.pdk.gf180_mapped import gf180_mapped_pdk
-from glayout.flow.pdk.mappedpdk import MappedPDK
 from gdsfactory import Component
 from gdsfactory.components import rectangle
 
@@ -165,16 +122,16 @@ from gdsfactory.components import rectangle
 # In[ ]:
 
 
-def create_via(PDK: MappedPDK):
+def create_via(pdk):
   # Define the via dimensions and rules
-  via_dimension = PDK.get_grule('via1')['width']
-  metal1_dimension = via_dimension + 2 * PDK.get_grule('via1','met1')['min_enclosure']
-  metal2_dimension = via_dimension + 2 * PDK.get_grule('via1','met2')['min_enclosure']
+  via_dimension = pdk.get_grule('via1')['width']
+  metal1_dimension = via_dimension + 2 * pdk.get_grule('via1','met1')['min_enclosure']
+  metal2_dimension = via_dimension + 2 * pdk.get_grule('via1','met2')['min_enclosure']
 
   # Get the layers for via and metals
-  via_layer = PDK.get_glayer('via1')
-  metal1_layer = PDK.get_glayer('met1')
-  metal2_layer = PDK.get_glayer('met2')
+  via_layer = pdk.get_glayer('via1')
+  metal1_layer = pdk.get_glayer('met1')
+  metal2_layer = pdk.get_glayer('met2')
 
   # Create the component and add the layers
   top_level = Component(name='via_example')
@@ -190,8 +147,7 @@ def create_via(PDK: MappedPDK):
 # In[ ]:
 
 
-via_component = create_via(PDK=gf180_mapped_pdk)
-via_component.write_gds('via_example.gds')
+create_via(pdk=gf180).write_gds("via_example_gf180.gds")
 
 
 # **5. View the Generated Layout**
@@ -201,7 +157,7 @@ via_component.write_gds('via_example.gds')
 # In[ ]:
 
 
-display_gds('via_example.gds',scale=20)
+display_gds('via_example_gf180.gds',scale=20)
 
 
 # By concluding these steps, you will have downloaded Glayout, installed the necessary dependencies, and completed the construction of a simple via using Glayout.
