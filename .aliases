@@ -1,0 +1,3 @@
+alias magic-gf="magic -rcfile $PDK_ROOT/$PDK/libs.tech/magic/$PDK.magicrc"
+alias xschem-gf="xschem --rcfile $PDK_ROOT/$PDK/libs.tech/xschem/xschemrc"
+
