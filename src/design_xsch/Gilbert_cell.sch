@@ -56,52 +56,42 @@ f_IF = f_LO - f_RF = 10 MHz} 1150 -1210 0 0 0.4 0.4 {}
 N 240 -340 360 -340 {
 lab=V_RF}
 N 550 -160 550 -130 {
-lab=GND}
+lab=VSS}
 N 160 -1030 160 -1010 {
-lab=GND}
+lab=VSS}
 N 160 -1110 160 -1090 {lab=V_LO}
 N 240 -1030 240 -1010 {
-lab=GND}
+lab=VSS}
 N 240 -1110 240 -1090 {
 lab=V_LO_b}
 N 310 -1030 310 -1010 {
-lab=GND}
+lab=VSS}
 N 310 -1110 310 -1090 {
 lab=V_RF}
 N 380 -1030 380 -1010 {
-lab=GND}
+lab=VSS}
 N 380 -1110 380 -1090 {
 lab=V_RF_b}
-N 160 -860 160 -840 {
-lab=GND}
-N 160 -940 160 -920 {
-lab=VSS}
 N 500 -520 590 -520 {
 lab=V_LO_b}
 N 540 -660 650 -580 {
-lab=I_RF}
+lab=V_RF}
 N 440 -580 560 -660 {
-lab=I_RF_b}
+lab=V_RF_b}
 N 790 -520 860 -520 {
 lab=V_LO}
-N 230 -520 300 -520 {
-lab=V_LO}
-N 360 -740 360 -580 {
-lab=I_RF}
+N 230 -520 300 -520 {lab=V_LO}
 N 360 -740 790 -740 {
-lab=I_RF}
+lab=V_RF}
 N 360 -660 540 -660 {
-lab=I_RF}
-N 730 -660 730 -580 {
-lab=I_RF_b}
+lab=V_RF}
 N 730 -710 730 -660 {
-lab=I_RF_b}
+lab=V_RF_b}
 N 730 -710 790 -710 {
-lab=I_RF_b}
+lab=V_RF_b}
 N 560 -660 730 -660 {
-lab=I_RF_b}
-N 230 -430 550 -430 {
-lab=V_LO_b}
+lab=V_RF_b}
+N 230 -430 550 -430 {lab=V_LO_b}
 N 550 -520 550 -430 {
 lab=V_LO_b}
 N 360 -340 450 -340 {
@@ -126,16 +116,26 @@ N 230 -340 240 -340 {
 lab=V_RF}
 N 230 -250 240 -250 {
 lab=V_RF_b}
+N 360 -660 360 -650 {
+lab=V_RF}
+N 360 -740 360 -650 {
+lab=V_RF}
+N 730 -660 730 -650 {
+lab=V_RF_b}
+N 360 -590 360 -580 {
+lab=#net4}
+N 730 -590 730 -580 {
+lab=#net5}
 C {ipin.sym} 230 -520 0 0 {name=p1 lab=V_LO}
 C {ipin.sym} 230 -430 0 0 {name=p2 lab=V_LO_b
 }
 C {ipin.sym} 230 -340 0 0 {name=p3 lab=V_RF}
 C {ipin.sym} 230 -250 2 1 {name=p4 lab=V_RF_b
 }
-C {opin.sym} 790 -740 0 0 {name=p5 lab=I_RF}
-C {opin.sym} 790 -710 0 0 {name=p7 lab=I_RF_b}
+C {opin.sym} 790 -740 0 0 {name=p5 lab=V_RF}
+C {opin.sym} 790 -710 0 0 {name=p7 lab=V_RF_b}
 C {isource.sym} 550 -190 0 0 {name=I0 value=1m}
-C {gnd.sym} 550 -130 0 0 {name=l1 lab=GND}
+C {gnd.sym} 550 -130 0 0 {name=l1 lab=VSS}
 C {code.sym} 30 -140 0 0 {name=MODELS only_toplevel=true
 format="tcleval( @value )"
 value="
@@ -160,10 +160,10 @@ C {devices/launcher.sym} 1030 -480 0 0 {name=h1
 descr="load waves" 
 tclcommand="xschem raw_read $netlist_dir/Gilbert_sim.raw tran"
 }
-C {gnd.sym} 160 -1010 0 0 {name=l2 lab=GND}
-C {gnd.sym} 240 -1010 0 0 {name=l3 lab=GND}
-C {gnd.sym} 310 -1010 0 0 {name=l4 lab=GND}
-C {gnd.sym} 380 -1010 0 0 {name=l5 lab=GND}
+C {gnd.sym} 160 -1010 0 0 {name=l2 lab=VSS}
+C {gnd.sym} 240 -1010 0 0 {name=l3 lab=VSS}
+C {gnd.sym} 310 -1010 0 0 {name=l4 lab=VSS}
+C {gnd.sym} 380 -1010 0 0 {name=l5 lab=VSS}
 C {lab_wire.sym} 160 -1110 0 0 {name=p8 sig_type=std_logic lab=V_LO}
 C {lab_wire.sym} 240 -1110 0 0 {name=p9 sig_type=std_logic lab=V_LO_b
 }
@@ -187,19 +187,22 @@ savecurrent=true
 VOL="'1.5 - sin(time * 2.40 * 1e9)'"
 hide_texts=true
 }
-C {vsource.sym} 160 -890 0 0 {name=VSS
-value=0 
-savecurrent=false
-hide_texts=true
-}
-C {gnd.sym} 160 -840 0 0 {name=l6 lab=GND}
-C {lab_wire.sym} 160 -940 0 1 {name=p18 sig_type=std_logic lab=VSS}
-C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/diff_pair.sym} 550 -300 0 0 {name=diff_pair_1
+C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/diff_pair.sym} 550 -300 0 0 {name=Xdiff_pair_1
 hide_texts=false
 
 }
-C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/diff_pair.sym} 400 -480 0 0 {name=diff_pair_2
+C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/diff_pair.sym} 400 -480 0 0 {name=Xdiff_pair_2
 hide_texts=false}
-C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/diff_pair.sym} 690 -480 0 0 {name=diff_pair_3
+C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/diff_pair.sym} 690 -480 0 0 {name=Xdiff_pair_3
 hide_texts=false}
 C {lab_wire.sym} 860 -520 0 1 {name=p6 sig_type=std_logic lab=V_LO}
+C {res.sym} 730 -620 0 0 {name=R1
+value=1k
+footprint=1206
+device=resistor
+m=1}
+C {res.sym} 360 -620 0 0 {name=R2
+value=1k
+footprint=1206
+device=resistor
+m=1}

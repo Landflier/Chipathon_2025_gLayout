@@ -2,12 +2,12 @@ v {xschem version=3.4.5 file_version=1.2
 }
 G {}
 K {type=subcircuit
-format="@name @pinlist @symname @VSSPIN wn=@wn ln=@ln wp=@wp lp=@lp m=@m"
-template="name=x1 m=1
-+ wn=1u ln=0.28u wp=1u lp=0.28u 
+format="@name @pinlist @VSSPIN @symname Wn=@Wn Ln=@Ln Wp=@Wp Lp=@Lp m=@mult"
+template="name=x1 mult=1
++ Wn=0.22u Ln=0.28u Wp=0.22u Lp=0.28u 
 + VSSPIN=VSS"
 extra="VSSPIN"
-generic_type="m=integer wn=real ln=real wp=real lp=real VSSPIN=string"
+generic_type="mult=integer Wn=real Ln=real Wp=real Lp=real VSSPIN=string"
 }
 V {}
 S {}
