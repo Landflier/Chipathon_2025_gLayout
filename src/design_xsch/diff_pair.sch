@@ -22,10 +22,10 @@ lab=VSS}
 N 350 -150 370 -150 {
 lab=VSS}
 C {symbols/nfet_03v3.sym} 140 -150 0 0 {name=M1
-L=lp
-W=wp
+L=Lp
+W=Wp
 nf=1
-m=m
+m=mult
 ad="'int((nf+1)/2) * W/nf * 0.18u'"
 pd="'2*int((nf+1)/2) * (W/nf + 0.18u)'"
 as="'int((nf+2)/2) * W/nf * 0.18u'"
@@ -36,10 +36,10 @@ model=nfet_03v3
 spiceprefix=X
 }
 C {symbols/nfet_03v3.sym} 390 -150 0 1 {name=M2
-L=ln
-W=wn
+L=Ln
+W=Wn
 nf=1
-m=m
+m=mult
 ad="'int((nf+1)/2) * W/nf * 0.18u'"
 pd="'2*int((nf+1)/2) * (W/nf + 0.18u)'"
 as="'int((nf+2)/2) * W/nf * 0.18u'"
