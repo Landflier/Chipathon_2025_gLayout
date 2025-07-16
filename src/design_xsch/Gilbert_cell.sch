@@ -242,11 +242,93 @@ value="
 }
 C {code.sym} 2695 -2365 0 0 {name=SPICE only_toplevel=false 
 value="
-.temp 27
 .control
-save all
-tran 10p 100n
-write Gilbert_sim.raw
+
+    save all
+    
+    * Define frequencies
+    let f_lo = 2.5e9
+    let f_rf = 2.4e9  
+    let f_if = 100e6
+
+    * operating point
+    op
+    print all
+
+    write Gilbert_cell.raw
+    set appendwrite
+
+    * Transient analysis to observe mixing operation
+    tran 10p 20n
+    
+    * Calculate differential output for conversion gain measurement
+    let v_out_diff = v(v_out_p) - v(v_out_n)
+    let v_rf_diff = v(v_rf) - v(v_rf_b)
+    
+    * Extract IF component at 100MHz using FFT
+    linearize v_out_diff v_rf_diff
+    fft v_out_diff v_rf_diff
+    
+    * Measure conversion gain (power gain from RF to IF)
+    let P_rf_in = mean(v_rf_diff*v_rf_diff)/1000  ; Assuming 1k input impedance
+    let P_if_out = mean(v_out_diff*v_out_diff)/1000  ; Assuming 1k load
+    let conversion_gain_db = 10*log10(P_if_out/P_rf_in)
+    print conversion_gain_db
+
+    write Gilbert_cell.raw
+
+    * Two-tone test for IIP2 and IIP3 measurement
+    * Reset sources for two-tone test
+    alter @E4[vl] = '0.9 + 0.05*sin(2*pi*2.39e9*time) + 0.05*sin(2*pi*2.41e9*time)'
+    alter @E6[vl] = '0.9 - 0.05*sin(2*pi*2.39e9*time) - 0.05*sin(2*pi*2.41e9*time)'
+    
+    tran 10p 50n
+    
+    * Linearize and perform FFT for intermodulation analysis
+    linearize v_out_diff
+    fft v_out_diff
+    
+    * Calculate fundamental and intermodulation products
+    * IM2 products at f2-f1 = 20MHz and f2+f1 = 4.8GHz  
+    * IM3 products at 2*f1-f2 = 2.37GHz and 2*f2-f1 = 2.43GHz
+    
+    let fund_mag = abs(v_out_diff[100e6])  ; IF fundamental at 100MHz
+    let im2_mag = abs(v_out_diff[20e6])    ; IM2 product at 20MHz
+    let im3_mag = abs(v_out_diff[70e6])    ; IM3 product at 70MHz (2.4G-2.33G down-converted)
+    
+    * Calculate IIP2 and IIP3 (simplified calculation)
+    let input_power_dbm = 10*log10(0.05*0.05/0.001) + 30  ; Input power in dBm
+    let iip2_dbm = input_power_dbm + 10*log10(fund_mag*fund_mag/(im2_mag*im2_mag))/2
+    let iip3_dbm = input_power_dbm + 10*log10(fund_mag*fund_mag/(im3_mag*im3_mag))*3/2
+    
+    print iip2_dbm iip3_dbm
+
+    write Gilbert_cell.raw
+
+    * Noise analysis for Noise Figure calculation
+    * Reset to single tone for noise analysis
+    alter @E4[vl] = '0.9 + 0.001*sin(2*pi*2.4e9*time)'  ; Small signal for noise
+    alter @E6[vl] = '0.9 - 0.001*sin(2*pi*2.4e9*time)'
+    
+    noise v(v_out_p,v_out_n) E4 dec 10 1e6 1e9
+    
+    * Calculate Single Sideband Noise Figure
+    * NF_SSB = NF_DSB + 3dB (for double sideband to single sideband conversion)
+    setplot noise1
+    let nf_dsb_db = 10*log10(onoise_total^2/inoise_total^2)
+    let nf_ssb_db = nf_dsb_db + 3
+    print nf_ssb_db
+
+    * Summary of measurements
+    echo
+    echo *** GILBERT CELL MIXER PERFORMANCE SUMMARY ***
+    echo Conversion Gain: $&conversion_gain_db dB
+    echo IIP2: $&iip2_dbm dBm  
+    echo IIP3: $&iip3_dbm dBm
+    echo Single Sideband Noise Figure: $&nf_ssb_db dB
+    echo
+    
+    write Gilbert_cell.raw
 .endc
 "}
 C {devices/launcher.sym} 1827.5 -717.5 0 0 {name=h2
