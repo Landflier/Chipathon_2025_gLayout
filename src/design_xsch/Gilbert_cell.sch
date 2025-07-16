@@ -6,15 +6,15 @@ V {}
 S {}
 E {}
 B 2 1760 -1180 2560 -780 {flags=graph
-y1=-0.68
-y2=1.5
+y1=-1.3e-13
+y2=0.25
 ypos1=0
 ypos2=2
 divy=5
 subdivy=1
 unity=1
-x1=0
-x2=1e-07
+x1=-2.5e-09
+x2=4.75e-08
 divx=5
 subdivx=4
 xlabmag=1.0
@@ -37,8 +37,8 @@ ypos2=2
 divy=5
 subdivy=1
 unity=1
-x1=0
-x2=10e-6
+x1=-2.5e-09
+x2=4.75e-08
 divx=5
 subdivx=1
 xlabmag=1.0
@@ -58,8 +58,8 @@ ypos2=2
 divy=5
 subdivy=1
 unity=1
-x1=0
-x2=10e-6
+x1=-2.5e-09
+x2=4.75e-08
 divx=5
 subdivx=1
 xlabmag=1.0
@@ -79,8 +79,8 @@ ypos2=2
 divy=5
 subdivy=1
 unity=1
-x1=0
-x2=10e-6
+x1=-2.5e-09
+x2=4.75e-08
 divx=5
 subdivx=1
 xlabmag=1.0
@@ -100,8 +100,8 @@ ypos2=2
 divy=5
 subdivy=1
 unity=1
-x1=0
-x2=10e-6
+x1=-2.5e-09
+x2=4.75e-08
 divx=5
 subdivx=1
 xlabmag=1.0
@@ -121,8 +121,8 @@ ypos2=2
 divy=5
 subdivy=1
 unity=1
-x1=0
-x2=10e-6
+x1=-2.5e-09
+x2=4.75e-08
 divx=5
 subdivx=1
 xlabmag=1.0
@@ -240,117 +240,28 @@ value="
 .lib $::180MCU_MODELS/sm141064.ngspice typical
 "
 }
-C {code.sym} 2695 -2365 0 0 {name=SPICE only_toplevel=false 
+C {code.sym} 2695 -2375 0 0 {name=SPICE only_toplevel=false 
 value="
 .control
+    * define frequencies
+    let f_lo = 2.5e9
+    let f_rf = 2.4e9
+    let f_if = f_lo - f_rf
 
     save all
-    
-    * Define frequencies
-    let f_lo = 2.5e9
-    let f_rf = 2.4e9  
-    let f_if = 100e6
 
+    alter @E_LO[VOL] = \\"'1.5 + 0.05*sin(2*pi*f_lo*TIME) + 0.05*sin(2*pi*f_lo*TIME)'\\"
+    alter @E_LO_b[VOL] = \\"'1.5 - 0.05*sin(2*pi*f_lo*TIME) - 0.05*sin(2*pi*f_lo*TIME)'\\"
+    alter @E_RF[VOL] = \\"'1.5 + 0.05*sin(2*pi*f_fr*TIME) + 0.05*sin(2*pi*f_fr*TIME)'\\"
+    alter @E_RF_b[VOL] = \\"'1.5 + 0.05*sin(2*pi*f_fr*TIME) + 0.05*sin(2*pi*f_fr*TIME)'\\" 
+   
     * operating point
     op
-    print all
 
-    write Gilbert_cell.raw
     set appendwrite
-
     * Transient analysis to observe mixing operation
-    tran 1p 50n
-    
-    * Calculate differential output for conversion gain measurement
-    let v_out_diff = v(v_out_p) - v(v_out_n)
-    let v_rf_diff = v(v_rf) - v(v_rf_b)
-    
-    * Extract IF component at 100MHz using FFT
-    linearize v_out_diff v_rf_diff
-    let time_step = 1e-12
-    let sample_freq = 1/time_step
-    let npts = length(v_out_diff)
-    let freq_res = sample_freq/npts
-    
-    fft v_out_diff v_rf_diff
-    
-    * Find frequency bins
-    let if_bin = floor(100e6/freq_res)
-    let rf_bin = floor(2.4e9/freq_res)
-    
-    * Measure conversion gain (power gain from RF to IF)
-    let rf_mag = abs(v_rf_diff[rf_bin])
-    let if_mag = abs(v_out_diff[if_bin])
-    let conversion_gain_db = 20*log10(if_mag/rf_mag)
-    print conversion_gain_db
-
-    write Gilbert_cell.raw
-
-    * Two-tone test for IIP2 and IIP3 measurement
-    * Reset sources for two-tone test
-    alter @E4[VOL] = '1.5 + 0.05*sin(2*pi*2.39e9*time) + 0.05*sin(2*pi*2.41e9*time)'
-    alter @E6[VOL] = '1.5 - 0.05*sin(2*pi*2.39e9*time) - 0.05*sin(2*pi*2.41e9*time)'
-    
-    tran 1p 100n
-    
-    * Calculate differential output for two-tone analysis
-    let v_out_diff_2tone = v(v_out_p) - v(v_out_n)
-    
-    * Linearize and perform FFT for intermodulation analysis
-    linearize v_out_diff_2tone
-    let time_step = 1e-12
-    let sample_freq = 1/time_step
-    let npts = length(v_out_diff_2tone)
-    let freq_res = sample_freq/npts
-    
-    fft v_out_diff_2tone
-    let freq_axis = vector(npts)
-    let freq_axis = freq_res * vector(npts)
-    
-    * Find frequency bins for measurements
-    let if_bin = floor(100e6/freq_res)
-    let im2_bin = floor(20e6/freq_res) 
-    let im3_low_bin = floor(80e6/freq_res)  ; 2*2.39-2.41 = 2.37 -> 100M - 20M = 80M at IF
-    let im3_high_bin = floor(120e6/freq_res) ; 2*2.41-2.39 = 2.43 -> 100M + 20M = 120M at IF
-    
-    * Extract magnitudes at specific frequencies
-    let fund_mag = abs(v_out_diff_2tone[if_bin])
-    let im2_mag = abs(v_out_diff_2tone[im2_bin])
-    let im3_mag = maximum(abs(v_out_diff_2tone[im3_low_bin]), abs(v_out_diff_2tone[im3_high_bin]))
-    
-    * Calculate IIP2 and IIP3 (simplified calculation)
-    let input_power_dbm = 10*log10(0.05*0.05/50e-3) + 30  ; Input power in dBm (50 ohm)
-    let iip2_dbm = input_power_dbm + (20*log10(fund_mag) - 20*log10(im2_mag))/2
-    let iip3_dbm = input_power_dbm + (20*log10(fund_mag) - 20*log10(im3_mag))*2/3
-    
-    print iip2_dbm iip3_dbm
-
-    write Gilbert_cell.raw
-
-    * Noise analysis for Noise Figure calculation
-    * Reset to single tone for noise analysis
-    alter @E4[VOL] = '1.5 + 0.001*sin(2*pi*2.4e9*time)'  ; Small signal for noise
-    alter @E6[VOL] = '1.5 - 0.001*sin(2*pi*2.4e9*time)'
-    
-    noise v(v_out_p,v_out_n) E4 dec 10 1e6 1e9
-    
-    * Calculate Single Sideband Noise Figure
-    * NF_SSB = NF_DSB + 3dB (for double sideband to single sideband conversion)
-    setplot noise1
-    let nf_dsb_db = 10*log10(onoise_total^2/inoise_total^2)
-    let nf_ssb_db = nf_dsb_db + 3
-    print nf_ssb_db
-
-    * Summary of measurements
-    echo
-    echo *** GILBERT CELL MIXER PERFORMANCE SUMMARY ***
-    echo Conversion Gain: $&conversion_gain_db dB
-    echo IIP2: $&iip2_dbm dBm  
-    echo IIP3: $&iip3_dbm dBm
-    echo Single Sideband Noise Figure: $&nf_ssb_db dB
-    echo
-    
-    write Gilbert_cell.raw
+    tran 5p 50n
+    write Gilbert_sim.raw
 .endc
 "}
 C {devices/launcher.sym} 1827.5 -717.5 0 0 {name=h2
@@ -370,22 +281,22 @@ C {lab_wire.sym} 200 -2350 0 0 {name=p9 sig_type=std_logic lab=V_LO_b
 }
 C {lab_wire.sym} 270 -2350 0 0 {name=p10 sig_type=std_logic lab=V_RF}
 C {lab_wire.sym} 340 -2350 0 0 {name=p11 sig_type=std_logic lab=V_RF_b}
-C {vsource_arith.sym} 120 -2300 0 0 {name=E1
+C {vsource_arith.sym} 120 -2300 0 0 {name=E_LO
 savecurrent=true
-VOL="'1.5 + sin(time * 2.5 * 1e9)'"
+VOL="'1'"
 hide_texts=true}
-C {vsource_arith.sym} 200 -2300 0 0 {name=E2
+C {vsource_arith.sym} 200 -2300 0 0 {name=E_LO_b
 savecurrent=true
-VOL="'1.5 - sin(time * 2.5 * 1e9)'"
+VOL="'1'"
 hide_texts=true}
-C {vsource_arith.sym} 270 -2300 0 0 {name=E4
+C {vsource_arith.sym} 270 -2300 0 0 {name=E_RF
 savecurrent=true
-VOL="'1.5 + sin(time * 2.40 * 1e9)'"
+VOL="'1'"
 hide_texts=true
 }
-C {vsource_arith.sym} 340 -2300 0 0 {name=E6 
+C {vsource_arith.sym} 340 -2300 0 0 {name=E_RF_b 
 savecurrent=true
-VOL="'1.5 - sin(time * 2.40 * 1e9)'"
+VOL="'1'"
 hide_texts=true
 }
 C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/diff_pair.sym} 950 -870 0 0 {name=Xdiff_pair_1
