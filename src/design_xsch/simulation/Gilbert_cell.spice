@@ -1,21 +1,23 @@
 ** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Gilbert_cell.sch
-**.subckt Gilbert_cell V_LO V_LO_b V_RF V_RF_b V_RF V_RF_b
+**.subckt Gilbert_cell V_LO V_LO_b V_RF V_RF_b V_out_p V_out_n
 *.ipin V_LO
 *.ipin V_LO_b
 *.ipin V_RF
 *.ipin V_RF_b
-*.opin V_RF
-*.opin V_RF_b
+*.opin V_out_p
+*.opin V_out_n
 I0 net3 VSS 1m
-E1 V_LO VSS VOL=' '1.5 + sin(time * 2.41 * 1e9)' '
-E2 V_LO_b VSS VOL=' '1.5 - sin(time * 2.41 * 1e9)' '
+E1 V_LO VSS VOL=' '1.5 + sin(time * 2.5 * 1e9)' '
+E2 V_LO_b VSS VOL=' '1.5 - sin(time * 2.5 * 1e9)' '
 E4 V_RF VSS VOL=' '1.5 + sin(time * 2.40 * 1e9)' '
 E6 V_RF_b VSS VOL=' '1.5 - sin(time * 2.40 * 1e9)' '
-Xdiff_pair_1 net2 net1 V_RF V_RF_b net3 VSS diff_pair Wn=0.22u Ln=0.28u Wp=0.22u Lp=0.28u m=1
-Xdiff_pair_2 V_RF_b net4 V_LO V_LO_b net1 VSS diff_pair Wn=0.22u Ln=0.28u Wp=0.22u Lp=0.28u m=1
-Xdiff_pair_3 net5 V_RF V_LO_b V_LO net2 VSS diff_pair Wn=0.22u Ln=0.28u Wp=0.22u Lp=0.28u m=1
-R1 V_RF_b net5 1k m=1
-R2 V_RF net4 1k m=1
+Xdiff_pair_1 net2 net1 V_RF V_RF_b net3 VSS diff_pair W_neg=0.22u L_neg=0.28u W_pos=0.22u L_pos=0.28u m=1
+Xdiff_pair_2 V_out_n V_out_p V_LO V_LO_b net1 VSS diff_pair W_neg=0.22u L_neg=0.28u W_pos=0.22u L_pos=0.28u m=1
+Xdiff_pair_3 V_out_n V_out_p V_LO_b V_LO net2 VSS diff_pair W_neg=0.22u L_neg=0.28u W_pos=0.22u L_pos=0.28u m=1
+R1 VDD V_out_p 1K m=1
+R2 VDD V_out_n 1K m=1
+V_PWR VDD VSS 3.3
+.save i(v_pwr)
 **** begin user architecture code
 
 .include /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/design.ngspice
@@ -26,7 +28,7 @@ R2 V_RF net4 1k m=1
 .temp 27
 .control
 save all
-tran 1p 10n
+tran 10p 100n
 write Gilbert_sim.raw
 .endc
 
@@ -37,17 +39,18 @@ write Gilbert_sim.raw
 * expanding   symbol:  /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/diff_pair.sym # of pins=5
 ** sym_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/diff_pair.sym
 ** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/diff_pair.sch
-.subckt diff_pair I_out_n I_out_p V_in_p V_in_n I_bias VSSPIN  mult=1  Wn=0.22u Ln=0.28u Wp=0.22u Lp=0.28u
+.subckt diff_pair I_out_n I_out_p V_in_p V_in_n I_bias VSSPIN  mult=1  W_neg=0.22u L_neg=0.28u W_pos=0.22u L_pos=0.28u
 *.ipin V_in_p
 *.ipin V_in_n
 *.iopin I_out_p
 *.iopin I_out_n
 *.iopin I_bias
-XM1 I_out_p V_in_p I_bias VSS nfet_03v3 L=Lp W=Wp nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
+XM1 I_out_p V_in_p I_bias VSS nfet_03v3 L=L_pos W=W_pos nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
 + ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=mult
-XM2 I_out_n V_in_n I_bias VSS nfet_03v3 L=Ln W=Wn nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
+XM2 I_out_n V_in_n I_bias VSS nfet_03v3 L=L_neg W=W_neg nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
 + ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=mult
 .ends
 
 .GLOBAL VSS
+.GLOBAL VDD
 .end
