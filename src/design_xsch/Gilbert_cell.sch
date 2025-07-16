@@ -259,7 +259,7 @@ value="
     set appendwrite
 
     * Transient analysis to observe mixing operation
-    tran 10p 20n
+    tran 1p 50n
     
     * Calculate differential output for conversion gain measurement
     let v_out_diff = v(v_out_p) - v(v_out_n)
@@ -267,39 +267,61 @@ value="
     
     * Extract IF component at 100MHz using FFT
     linearize v_out_diff v_rf_diff
+    let time_step = 1e-12
+    let sample_freq = 1/time_step
+    let npts = length(v_out_diff)
+    let freq_res = sample_freq/npts
+    
     fft v_out_diff v_rf_diff
     
+    * Find frequency bins
+    let if_bin = floor(100e6/freq_res)
+    let rf_bin = floor(2.4e9/freq_res)
+    
     * Measure conversion gain (power gain from RF to IF)
-    let P_rf_in = mean(v_rf_diff*v_rf_diff)/1000  ; Assuming 1k input impedance
-    let P_if_out = mean(v_out_diff*v_out_diff)/1000  ; Assuming 1k load
-    let conversion_gain_db = 10*log10(P_if_out/P_rf_in)
+    let rf_mag = abs(v_rf_diff[rf_bin])
+    let if_mag = abs(v_out_diff[if_bin])
+    let conversion_gain_db = 20*log10(if_mag/rf_mag)
     print conversion_gain_db
 
     write Gilbert_cell.raw
 
     * Two-tone test for IIP2 and IIP3 measurement
     * Reset sources for two-tone test
-    alter @E4[vl] = '0.9 + 0.05*sin(2*pi*2.39e9*time) + 0.05*sin(2*pi*2.41e9*time)'
-    alter @E6[vl] = '0.9 - 0.05*sin(2*pi*2.39e9*time) - 0.05*sin(2*pi*2.41e9*time)'
+    alter @E4[VOL] = '1.5 + 0.05*sin(2*pi*2.39e9*time) + 0.05*sin(2*pi*2.41e9*time)'
+    alter @E6[VOL] = '1.5 - 0.05*sin(2*pi*2.39e9*time) - 0.05*sin(2*pi*2.41e9*time)'
     
-    tran 10p 50n
+    tran 1p 100n
+    
+    * Calculate differential output for two-tone analysis
+    let v_out_diff_2tone = v(v_out_p) - v(v_out_n)
     
     * Linearize and perform FFT for intermodulation analysis
-    linearize v_out_diff
-    fft v_out_diff
+    linearize v_out_diff_2tone
+    let time_step = 1e-12
+    let sample_freq = 1/time_step
+    let npts = length(v_out_diff_2tone)
+    let freq_res = sample_freq/npts
     
-    * Calculate fundamental and intermodulation products
-    * IM2 products at f2-f1 = 20MHz and f2+f1 = 4.8GHz  
-    * IM3 products at 2*f1-f2 = 2.37GHz and 2*f2-f1 = 2.43GHz
+    fft v_out_diff_2tone
+    let freq_axis = vector(npts)
+    let freq_axis = freq_res * vector(npts)
     
-    let fund_mag = abs(v_out_diff[100e6])  ; IF fundamental at 100MHz
-    let im2_mag = abs(v_out_diff[20e6])    ; IM2 product at 20MHz
-    let im3_mag = abs(v_out_diff[70e6])    ; IM3 product at 70MHz (2.4G-2.33G down-converted)
+    * Find frequency bins for measurements
+    let if_bin = floor(100e6/freq_res)
+    let im2_bin = floor(20e6/freq_res) 
+    let im3_low_bin = floor(80e6/freq_res)  ; 2*2.39-2.41 = 2.37 -> 100M - 20M = 80M at IF
+    let im3_high_bin = floor(120e6/freq_res) ; 2*2.41-2.39 = 2.43 -> 100M + 20M = 120M at IF
+    
+    * Extract magnitudes at specific frequencies
+    let fund_mag = abs(v_out_diff_2tone[if_bin])
+    let im2_mag = abs(v_out_diff_2tone[im2_bin])
+    let im3_mag = maximum(abs(v_out_diff_2tone[im3_low_bin]), abs(v_out_diff_2tone[im3_high_bin]))
     
     * Calculate IIP2 and IIP3 (simplified calculation)
-    let input_power_dbm = 10*log10(0.05*0.05/0.001) + 30  ; Input power in dBm
-    let iip2_dbm = input_power_dbm + 10*log10(fund_mag*fund_mag/(im2_mag*im2_mag))/2
-    let iip3_dbm = input_power_dbm + 10*log10(fund_mag*fund_mag/(im3_mag*im3_mag))*3/2
+    let input_power_dbm = 10*log10(0.05*0.05/50e-3) + 30  ; Input power in dBm (50 ohm)
+    let iip2_dbm = input_power_dbm + (20*log10(fund_mag) - 20*log10(im2_mag))/2
+    let iip3_dbm = input_power_dbm + (20*log10(fund_mag) - 20*log10(im3_mag))*2/3
     
     print iip2_dbm iip3_dbm
 
@@ -307,8 +329,8 @@ value="
 
     * Noise analysis for Noise Figure calculation
     * Reset to single tone for noise analysis
-    alter @E4[vl] = '0.9 + 0.001*sin(2*pi*2.4e9*time)'  ; Small signal for noise
-    alter @E6[vl] = '0.9 - 0.001*sin(2*pi*2.4e9*time)'
+    alter @E4[VOL] = '1.5 + 0.001*sin(2*pi*2.4e9*time)'  ; Small signal for noise
+    alter @E6[VOL] = '1.5 - 0.001*sin(2*pi*2.4e9*time)'
     
     noise v(v_out_p,v_out_n) E4 dec 10 1e6 1e9
     
