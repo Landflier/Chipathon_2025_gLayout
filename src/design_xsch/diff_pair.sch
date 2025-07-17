@@ -18,9 +18,9 @@ lab=V_in_p}
 N 410 -150 470 -150 {
 lab=V_in_n}
 N 160 -150 180 -150 {
-lab=VSS}
+lab=GND}
 N 350 -150 370 -150 {
-lab=VSS}
+lab=GND}
 C {symbols/nfet_03v3.sym} 140 -150 0 0 {name=M1
 L=L_pos
 W=W_pos
@@ -49,8 +49,8 @@ sa=0 sb=0 sd=0
 model=nfet_03v3
 spiceprefix=X
 }
-C {lab_wire.sym} 180 -150 0 1 {name=p1 sig_type=std_logic lab=VSS}
-C {lab_wire.sym} 350 -150 0 0 {name=p2 sig_type=std_logic lab=VSS}
+C {lab_wire.sym} 180 -150 0 1 {name=p1 sig_type=std_logic lab=GND}
+C {lab_wire.sym} 350 -150 0 0 {name=p2 sig_type=std_logic lab=GND}
 C {ipin.sym} 80 -150 0 0 {name=V_in_p dir=in lab=V_in_p}
 C {ipin.sym} 470 -150 0 1 {name=V_in_n 
 lab=V_in_n
@@ -66,4 +66,4 @@ C {iopin.sym} 260 -70 3 1 {name=I_bias
 lab=I_bias
 dir=inout
 }
-C {gnd.sym} 70 -20 0 0 {name=l1 lab=VSS}
+C {gnd.sym} 70 -20 0 0 {name=l1 lab=GND}

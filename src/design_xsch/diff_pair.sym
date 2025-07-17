@@ -5,7 +5,7 @@ K {type=subcircuit
 format="@name @pinlist @VSSPIN @symname W_neg=@W_neg L_neg=@L_neg W_pos=@W_pos L_pos=@L_pos m=@mult"
 template="name=x1 mult=1
 + W_neg=0.22u L_neg=0.28u W_pos=0.22u L_pos=0.28u 
-+ VSSPIN=VSS"
++ VSSPIN=GND"
 extra="VSSPIN"
 generic_type="mult=integer W_neg=real L_neg=real W_pos=real L_pos=real VSSPIN=string"
 }
