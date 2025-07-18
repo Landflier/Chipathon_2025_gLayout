@@ -6,15 +6,15 @@ V {}
 S {}
 E {}
 B 2 1760 -1180 2560 -780 {flags=graph
-y1=-0.0033
-y2=0.9
+y1=-0.0071
+y2=1.4
 ypos1=0
 ypos2=2
 divy=5
 subdivy=1
 unity=1
-x1=0
-x2=1e-08
+x1=-1.541307e-10
+x2=9.8458693e-09
 divx=5
 subdivx=4
 xlabmag=1.0
@@ -25,7 +25,7 @@ dataset=-1
 unitx=1
 logx=0
 logy=0
-color="4 6 8 18 15"
+color="4 6 8 21 21"
 node="v_rf
 v_rf_b
 v_lo
@@ -40,8 +40,8 @@ ypos2=2
 divy=5
 subdivy=1
 unity=1
-x1=0
-x2=1e-08
+x1=-1.541307e-10
+x2=9.8458693e-09
 divx=5
 subdivx=1
 xlabmag=1.0
@@ -61,8 +61,8 @@ ypos2=2
 divy=5
 subdivy=1
 unity=1
-x1=0
-x2=1e-08
+x1=-1.541307e-10
+x2=9.8458693e-09
 divx=5
 subdivx=1
 xlabmag=1.0
@@ -82,8 +82,8 @@ ypos2=2
 divy=5
 subdivy=1
 unity=1
-x1=0
-x2=1e-08
+x1=-1.541307e-10
+x2=9.8458693e-09
 divx=5
 subdivx=1
 xlabmag=1.0
@@ -103,8 +103,8 @@ ypos2=2
 divy=5
 subdivy=1
 unity=1
-x1=0
-x2=1e-08
+x1=-1.541307e-10
+x2=9.8458693e-09
 divx=5
 subdivx=1
 xlabmag=1.0
@@ -124,8 +124,8 @@ ypos2=2
 divy=5
 subdivy=1
 unity=1
-x1=0
-x2=1e-08
+x1=-1.541307e-10
+x2=9.8458693e-09
 divx=5
 subdivx=1
 xlabmag=1.0
@@ -244,23 +244,25 @@ value="
 }
 C {code.sym} 2695 -2385 0 0 {name=SPICE only_toplevel=true 
 value="
-
-* parameters used in the voltage source, initialization
-.param freq_lo=2.5e9 amp_lo=2 cm_lo=1.5 freq_rf=1e9 amp_rf=2 cm_rf=1
-
+* let sets vectors to a plot, while set sets a variable, globally accessible in .control
 .control
 
-    * Set frequency and amplitude parameters to proper values from within the control sequence
-    alterparam cm_lo  = 0.7
-    alterparam freq_lo = 2.50G
-    alterparam amp_lo  = 0.2
+    * Set frequency and amplitude variables to proper values from within the control sequence
+    set cm_lo = 1.0
+    set freq_lo = 2.50G 
+    set amp_lo = 0.4
 
-    alterparam cm_rf  = 0.7
-    alterparam freq_rf = 2.40G
-    alterparam amp_rf  = 0.2
-    reset
+    set cm_rf  = 1.0
+    set freq_rf = 2.40G
+    set amp_rf  = 0.4
 
-    let freq_if = abs(freq_lo-freq_rf)
+    * set the parameters to the voltage sources
+    alter @V_LO[sin] = [ $cm_lo $amp_lo $freq_lo 0 ]
+    alter @V_LO_b[sin] = [ $cm_lo $amp_lo $freq_lo 0 0 180 ]
+    alter @V_RF[sin] = [ $cm_rf $amp_rf $freq_rf 0 ]
+    alter @V_RF_b[sin] = [ $cm_rf $amp_rf $freq_rf 0 0 180 ]
+
+    set freq_if = $freq_lo - $freq_rf
 
     save all
     
@@ -275,8 +277,8 @@ value="
     write Gilbert_sim.raw
 
     * Calculate differential output for conversion gain measurement
-    let v_out_diff = v(v_out_p)-v(v_out_n)
-    let v_rf_diff = v(v_rf)-v(v_rf_b)
+    let v_out_diff = v(V_out_p)-v(V_out_n)
+    let v_rf_diff = v(V_rf)-v(V_rf_b)
     
     * Extract IF component at 100MHz using FFT
     linearize v_out_diff v_rf_diff
@@ -284,13 +286,13 @@ value="
     let sample_freq = 1/time_step
     let npts = length(v_out_diff)
     let freq_res = sample_freq/npts
-    print freq_res
     
     fft v_out_diff v_rf_diff
     
     * Find frequency bins
-    print freq_if
-    print freq_rf
+    set     ; print all available variables (?)
+    setplot ; print all plots
+    display ; print variables available in current plot
 
     let if_bin = floor(freq_if/freq_res)
     let rf_bin = floor(freq_rf/freq_res)
@@ -345,20 +347,20 @@ C {vdd.sym} 950 -1410 0 0 {name=l6 lab=VDD}
 C {vdd.sym} 120 -2170 0 0 {name=l8 lab=VDD}
 C {vsource.sym} 120 -2130 0 0 {name=V_PWR value=3.3 savecurrent=true}
 C {title-2.sym} 0 0 0 0 {name=l9 author="Time Transcenders" rev=1.0 lock=true page=1}
-C {vsource.sym} 120 -2300 0 0 {name=VLO
-value="sin( cm_lo amp_lo freq_lo 0 )"
+C {vsource.sym} 120 -2300 0 0 {name=V_LO
+value="sin( 1 1 1 0 )"
 savecurrent=true
 hide_texts=true}
-C {vsource.sym} 200 -2300 0 0 {name=VLOb
-value="sin( cm_lo amp_lo freq_lo 0 0 180 )"
+C {vsource.sym} 200 -2300 0 0 {name=V_LO_b
+value="sin( 1 1 1 0 0 180 )"
 savecurrent=true
 hide_texts=true}
 C {vsource.sym} 270 -2300 0 0 {name=V_RF
-value="sin( cm_rf amp_rf freq_rf 0 )"
+value="sin( 1 1 1 0 )"
 savecurrent=true
 hide_texts=true}
-C {vsource.sym} 340 -2300 0 0 {name=V_RFb
-value="sin( cm_rf amp_rf freq_rf 0 0 180 )"
+C {vsource.sym} 340 -2300 0 0 {name=V_RF_b
+value="sin( 1 1 1 0 0 180 )"
 savecurrent=true
 hide_texts=true}
 C {gnd.sym} 120 -2080 0 0 {name=l7 lab=GND}
