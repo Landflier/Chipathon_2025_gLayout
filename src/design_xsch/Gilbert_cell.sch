@@ -6,15 +6,15 @@ V {}
 S {}
 E {}
 B 2 1760 -1180 2560 -780 {flags=graph
-y1=0.00019
-y2=2
+y1=-0.0033
+y2=0.9
 ypos1=0
 ypos2=2
 divy=5
 subdivy=1
 unity=1
-x1=-1.5224958e-10
-x2=9.2408438e-09
+x1=0
+x2=1e-08
 divx=5
 subdivx=4
 xlabmag=1.0
@@ -25,9 +25,11 @@ dataset=-1
 unitx=1
 logx=0
 logy=0
-color="4 6 8"
+color="4 6 8 18 15"
 node="v_rf
 v_rf_b
+v_lo
+v_lo_b
 \\"diff_output; v_out_p v_out_n -\\""
 rainbow=1}
 B 2 1760 -1610 2560 -1210 {flags=graph
@@ -38,8 +40,8 @@ ypos2=2
 divy=5
 subdivy=1
 unity=1
-x1=-1.5224958e-10
-x2=9.2408438e-09
+x1=0
+x2=1e-08
 divx=5
 subdivx=1
 xlabmag=1.0
@@ -59,8 +61,8 @@ ypos2=2
 divy=5
 subdivy=1
 unity=1
-x1=-1.5224958e-10
-x2=9.2408438e-09
+x1=0
+x2=1e-08
 divx=5
 subdivx=1
 xlabmag=1.0
@@ -80,8 +82,8 @@ ypos2=2
 divy=5
 subdivy=1
 unity=1
-x1=-1.5224958e-10
-x2=9.2408438e-09
+x1=0
+x2=1e-08
 divx=5
 subdivx=1
 xlabmag=1.0
@@ -101,8 +103,8 @@ ypos2=2
 divy=5
 subdivy=1
 unity=1
-x1=-1.5224958e-10
-x2=9.2408438e-09
+x1=0
+x2=1e-08
 divx=5
 subdivx=1
 xlabmag=1.0
@@ -122,8 +124,8 @@ ypos2=2
 divy=5
 subdivy=1
 unity=1
-x1=-1.5224958e-10
-x2=9.2408438e-09
+x1=0
+x2=1e-08
 divx=5
 subdivx=1
 xlabmag=1.0
@@ -244,17 +246,21 @@ C {code.sym} 2695 -2385 0 0 {name=SPICE only_toplevel=true
 value="
 
 * parameters used in the voltage source, initialization
-.param freq_lo=2.5e9 amp_lo=2 dc_lo=1.5 freq_rf=1e9 amp_rf=2 dc_rf=1.5 
+.param freq_lo=2.5e9 amp_lo=2 cm_lo=1.5 freq_rf=1e9 amp_rf=2 cm_rf=1
 
 .control
 
     * Set frequency and amplitude parameters to proper values from within the control sequence
+    alterparam cm_lo  = 0.7
     alterparam freq_lo = 2.50G
-    alterparam amp_lo  = 0.25
-    alterparam dc_lo   = 1.5
+    alterparam amp_lo  = 0.2
+
+    alterparam cm_rf  = 0.7
     alterparam freq_rf = 2.40G
-    alterparam amp_rf  = 0.25
+    alterparam amp_rf  = 0.2
     reset
+
+    let freq_if = abs( freq_lo - freq_rf )
 
     save all
     
@@ -267,6 +273,36 @@ value="
     * Transient analysis to observe mixing operation
     tran 1p 10n
     write Gilbert_sim.raw
+
+    * Calculate differential output for conversion gain measurement
+    let v_out_diff = v(v_out_p) - v(v_out_n)
+    let v_rf_diff = v(v_rf) - v(v_rf_b)
+    
+    * Extract IF component at 100MHz using FFT
+    linearize v_out_diff v_rf_diff
+    let time_step = 10e-12
+    let sample_freq = 1/time_step
+    let npts = length(v_out_diff)
+    let freq_res = sample_freq/npts
+    print freq_res
+    
+    fft v_out_diff v_rf_diff
+    
+    * Find frequency bins
+    print freq_if
+    print freq_rf
+
+    let if_bin = floor( freq_if / freq_res )
+    let rf_bin = floor(freq_rf/freq_res)
+    
+    * Measure conversion gain (power gain from RF to IF)
+    let rf_mag = abs(v_rf_diff[rf_bin])
+    let if_mag = abs(v_out_diff[if_bin])
+    let conversion_gain_db = 20*log10(if_mag/rf_mag)
+    print conversion_gain_db
+
+    * write Gilbert_cell.raw
+
 .endc
 "}
 C {devices/launcher.sym} 1827.5 -717.5 0 0 {name=h2
@@ -284,40 +320,45 @@ C {lab_wire.sym} 270 -2350 0 0 {name=p10 sig_type=std_logic lab=V_RF}
 C {lab_wire.sym} 340 -2350 0 0 {name=p11 sig_type=std_logic lab=V_RF_b}
 C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/diff_pair.sym} 950 -870 0 0 {name=Xdiff_pair_1
 hide_texts=false
-W_pos=2u}
+W_pos=2u
+lock=true}
 C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/diff_pair.sym} 800 -1050 0 0 {name=Xdiff_pair_2
-hide_texts=false}
+hide_texts=false
+lock=true}
 C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/diff_pair.sym} 1090 -1050 0 0 {name=Xdiff_pair_3
-hide_texts=false}
+hide_texts=false
+lock=true}
 C {lab_wire.sym} 1260 -1090 0 1 {name=p6 sig_type=std_logic lab=V_LO}
 C {res.sym} 760 -1340 0 0 {name=R1
 value=1K
 footprint=1206
 device=resistor
-m=1}
+m=1
+lock=true}
 C {res.sym} 1130 -1340 0 0 {name=R2
 value=1K
 footprint=1206
 device=resistor
-m=1}
+m=1
+lock=true}
 C {vdd.sym} 950 -1410 0 0 {name=l6 lab=VDD}
 C {vdd.sym} 120 -2170 0 0 {name=l8 lab=VDD}
 C {vsource.sym} 120 -2130 0 0 {name=V_PWR value=3.3 savecurrent=true}
 C {title-2.sym} 0 0 0 0 {name=l9 author="Time Transcenders" rev=1.0 lock=true page=1}
 C {vsource.sym} 120 -2300 0 0 {name=VLO
-value="sin(1.5 amp_lo freq_lo 0)"
+value="sin( cm_lo amp_lo freq_lo 0 )"
 savecurrent=true
 hide_texts=true}
 C {vsource.sym} 200 -2300 0 0 {name=VLOb
-value="sin(1.5 amp_lo freq_lo 0)"
+value="sin( cm_lo amp_lo freq_lo 0 0 180 )"
 savecurrent=true
 hide_texts=true}
 C {vsource.sym} 270 -2300 0 0 {name=V_RF
-value="sin(1.5 amp_rf freq_rf 0)"
+value="sin( cm_rf amp_rf freq_rf 0 )"
 savecurrent=true
 hide_texts=true}
 C {vsource.sym} 340 -2300 0 0 {name=V_RFb
-value="sin(1.5 amp_rf freq_rf 0)"
+value="sin( cm_rf amp_rf freq_rf 0 0 180 )"
 savecurrent=true
 hide_texts=true}
 C {gnd.sym} 120 -2080 0 0 {name=l7 lab=GND}
