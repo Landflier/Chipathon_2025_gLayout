@@ -13,8 +13,8 @@ ypos2=2
 divy=5
 subdivy=1
 unity=1
-x1=-1.541307e-10
-x2=9.8458693e-09
+x1=0
+x2=1e-08
 divx=5
 subdivx=4
 xlabmag=1.0
@@ -40,8 +40,8 @@ ypos2=2
 divy=5
 subdivy=1
 unity=1
-x1=-1.541307e-10
-x2=9.8458693e-09
+x1=0
+x2=1e-08
 divx=5
 subdivx=1
 xlabmag=1.0
@@ -61,8 +61,8 @@ ypos2=2
 divy=5
 subdivy=1
 unity=1
-x1=-1.541307e-10
-x2=9.8458693e-09
+x1=0
+x2=1e-08
 divx=5
 subdivx=1
 xlabmag=1.0
@@ -82,8 +82,8 @@ ypos2=2
 divy=5
 subdivy=1
 unity=1
-x1=-1.541307e-10
-x2=9.8458693e-09
+x1=0
+x2=1e-08
 divx=5
 subdivx=1
 xlabmag=1.0
@@ -103,8 +103,8 @@ ypos2=2
 divy=5
 subdivy=1
 unity=1
-x1=-1.541307e-10
-x2=9.8458693e-09
+x1=0
+x2=1e-08
 divx=5
 subdivx=1
 xlabmag=1.0
@@ -124,8 +124,8 @@ ypos2=2
 divy=5
 subdivy=1
 unity=1
-x1=-1.541307e-10
-x2=9.8458693e-09
+x1=0
+x2=1e-08
 divx=5
 subdivx=1
 xlabmag=1.0
@@ -256,13 +256,15 @@ value="
     set freq_rf = 2.40G
     set amp_rf  = 0.4
 
+    set freq_if = ( $freq_lo - $freq_rf )
+    echo 'printing freq_if after calculation'
+    print freq_if
+
     * set the parameters to the voltage sources
     alter @V_LO[sin] = [ $cm_lo $amp_lo $freq_lo 0 ]
     alter @V_LO_b[sin] = [ $cm_lo $amp_lo $freq_lo 0 0 180 ]
     alter @V_RF[sin] = [ $cm_rf $amp_rf $freq_rf 0 ]
     alter @V_RF_b[sin] = [ $cm_rf $amp_rf $freq_rf 0 0 180 ]
-
-    set freq_if = $freq_lo - $freq_rf
 
     save all
     
@@ -277,8 +279,8 @@ value="
     write Gilbert_sim.raw
 
     * Calculate differential output for conversion gain measurement
-    let v_out_diff = v(V_out_p)-v(V_out_n)
-    let v_rf_diff = v(V_rf)-v(V_rf_b)
+    let v_out_diff = v(v_out_p)-v(v_out_n)
+    let v_rf_diff = v(v_rf)-v(v_rf_b)
     
     * Extract IF component at 100MHz using FFT
     linearize v_out_diff v_rf_diff
@@ -286,14 +288,18 @@ value="
     let sample_freq = 1/time_step
     let npts = length(v_out_diff)
     let freq_res = sample_freq/npts
+    display ; print variables available in current plot
     
+
     fft v_out_diff v_rf_diff
     
     * Find frequency bins
-    set     ; print all available variables (?)
+    set     ; print all available global (?) variables (?)
     setplot ; print all plots
     display ; print variables available in current plot
 
+    
+    print $freq_if
     let if_bin = floor(freq_if/freq_res)
     let rf_bin = floor(freq_rf/freq_res)
     
