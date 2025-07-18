@@ -260,7 +260,7 @@ value="
     alterparam amp_rf  = 0.2
     reset
 
-    let freq_if = abs( freq_lo - freq_rf )
+    let freq_if = abs(freq_lo-freq_rf)
 
     save all
     
@@ -275,8 +275,8 @@ value="
     write Gilbert_sim.raw
 
     * Calculate differential output for conversion gain measurement
-    let v_out_diff = v(v_out_p) - v(v_out_n)
-    let v_rf_diff = v(v_rf) - v(v_rf_b)
+    let v_out_diff = v(v_out_p)-v(v_out_n)
+    let v_rf_diff = v(v_rf)-v(v_rf_b)
     
     * Extract IF component at 100MHz using FFT
     linearize v_out_diff v_rf_diff
@@ -292,7 +292,7 @@ value="
     print freq_if
     print freq_rf
 
-    let if_bin = floor( freq_if / freq_res )
+    let if_bin = floor(freq_if/freq_res)
     let rf_bin = floor(freq_rf/freq_res)
     
     * Measure conversion gain (power gain from RF to IF)
