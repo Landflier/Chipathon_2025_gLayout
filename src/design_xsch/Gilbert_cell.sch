@@ -256,9 +256,11 @@ value="
     set freq_rf = 2.40G
     set amp_rf  = 0.4
 
-    set freq_if = ( $freq_lo - $freq_rf )
-    echo 'printing freq_if after calculation'
-    print freq_if
+    * since set doesnt allow arithmetic expressions, and we want freq_if to be globally accessible,
+    * we use a temp variable to calculate freq_if, and then set a global variable freq_if to be equal 
+    * to the value
+    * let freq_if_temp = $freq_lo - $freq_rf 
+    * set freq_if = @freq_if_temp
 
     * set the parameters to the voltage sources
     alter @V_LO[sin] = [ $cm_lo $amp_lo $freq_lo 0 ]
@@ -294,12 +296,13 @@ value="
     fft v_out_diff v_rf_diff
     
     * Find frequency bins
+
+    * print everything, sanity check
     set     ; print all available global (?) variables (?)
     setplot ; print all plots
     display ; print variables available in current plot
 
-    
-    print $freq_if
+    let freq_if = abs( $freq_lo - $freq_rf )
     let if_bin = floor(freq_if/freq_res)
     let rf_bin = floor(freq_rf/freq_res)
     
