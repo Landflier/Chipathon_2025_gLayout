@@ -1,0 +1,3 @@
+[submodule "src/jupyter_notebooks/gmId/Chipathon2025"]
+	path = src/jupyter_notebooks/gmId/Chipathon2025
+	url = https://github.com/bmurmann/Chipathon2025.git
