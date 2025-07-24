@@ -5,9 +5,9 @@ K {}
 V {}
 S {}
 E {}
-B 2 1760 -1180 2560 -780 {flags=graph
-y1=-0.0071
-y2=1.4
+B 2 1760 -1180 2560 -780 {flags=graph,unlocked
+y1=-0.71
+y2=1.7
 ypos1=0
 ypos2=2
 divy=5
@@ -25,34 +25,48 @@ dataset=-1
 unitx=1
 logx=0
 logy=0
-color="4 6 8 21 21"
+color="4 6 7 9"
 node="v_rf
 v_rf_b
-v_lo
 v_lo_b
+
 \\"diff_output; v_out_p v_out_n -\\""
-rainbow=1}
-B 2 1760 -1610 2560 -1210 {flags=graph
-y1=0.4
-y2=2.4
+rainbow=1
+rawfile=$netlist_dir/Gilbert_sim.raw
+sim_type=tran
+autoload=1}
+B 2 1760 -1610 2560 -1210 {flags=graph,unlocked
+y1=1.4e-15
+y2=0.4
 ypos1=0
 ypos2=2
 divy=5
 subdivy=1
 unity=1
 x1=0
-x2=1e-08
+x2=5e+11
 divx=5
-subdivx=1
+subdivx=4
 xlabmag=1.0
 ylabmag=1.0
-node=""
-color=""
+
+
 dataset=-1
 unitx=1
 logx=0
 logy=0
-}
+
+sim_type=sp
+rawfile=$netlist_dir/Gilbert_sim.raw
+autoload=1
+sweep=frequency
+
+
+rainbow=1
+
+color="4 5"
+node="v_rf_diff
+v_out_diff"}
 B 2 1760 -2030 2560 -1630 {flags=graph
 y1=0
 y2=2
@@ -242,29 +256,36 @@ value="
 .lib $::180MCU_MODELS/sm141064.ngspice typical
 "
 }
-C {code.sym} 2695 -2385 0 0 {name=SPICE only_toplevel=true 
+C {code.sym} 2695 -2395 0 0 {name=SPICE only_toplevel=true 
 value="
 * let sets vectors to a plot, while set sets a variable, globally accessible in .control
 .control
 
     * Set frequency and amplitude variables to proper values from within the control sequence
-    set cm_lo = 1.0
+    * sine-wave LO
+    * set cm_lo = 0.5
+    * set freq_lo = 2.50G 
+    * set amp_lo = 0.5
+    * alter @V_LO[sin] = [ $cm_lo $amp_lo $freq_lo 0 ]
+    * alter @V_LO_b[sin] = [ $cm_lo $amp_lo $freq_lo 0 0 180 ]
+
+    set edge_time_lo = 0.5p
     set freq_lo = 2.50G 
-    set amp_lo = 0.4
+    set cm_lo = 1.5
+    set amp_lo = 0.25
 
     set cm_rf  = 1.0
     set freq_rf = 2.40G
-    set amp_rf  = 0.4
+    set amp_rf  = 0.2
 
-    * since set doesnt allow arithmetic expressions, and we want freq_if to be globally accessible,
-    * we use a temp variable to calculate freq_if, and then set a global variable freq_if to be equal 
-    * to the value
-    * let freq_if_temp = $freq_lo - $freq_rf 
-    * set freq_if = @freq_if_temp
+    let period_lo = 1/$freq_lo
+    let half_period_lo = period_lo/2
 
     * set the parameters to the voltage sources
-    alter @V_LO[sin] = [ $cm_lo $amp_lo $freq_lo 0 ]
-    alter @V_LO_b[sin] = [ $cm_lo $amp_lo $freq_lo 0 0 180 ]
+
+
+    alter @V_LO[pulse] = [ ($cm_lo - $amp_lo) ($cm_lo + $amp_lo) 0 $edge_time_lo $edge_time_lo 1/(2 * $freq_lo) 1/$freq_lo]
+    alter @V_LO_b[pulse] = [ $cm_lo-$amp_lo $cm_lo+$amp_lo $half_period_lo $edge_time_lo $edge_time_lo $half_period_lo $period_lo]
     alter @V_RF[sin] = [ $cm_rf $amp_rf $freq_rf 0 ]
     alter @V_RF_b[sin] = [ $cm_rf $amp_rf $freq_rf 0 0 180 ]
 
@@ -290,11 +311,9 @@ value="
     let sample_freq = 1/time_step
     let npts = length(v_out_diff)
     let freq_res = sample_freq/npts
-    display ; print variables available in current plot
     
 
     fft v_out_diff v_rf_diff
-    
     * Find frequency bins
 
     * print everything, sanity check
@@ -302,9 +321,11 @@ value="
     setplot ; print all plots
     display ; print variables available in current plot
 
+    let freq_res = tran2.freq_res
     let freq_if = abs( $freq_lo - $freq_rf )
-    let if_bin = floor(freq_if/freq_res)
-    let rf_bin = floor(freq_rf/freq_res)
+
+    let if_bin = floor( freq_if/freq_res )
+    let rf_bin = floor( $freq_rf/freq_res )
     
     * Measure conversion gain (power gain from RF to IF)
     let rf_mag = abs(v_rf_diff[rf_bin])
@@ -312,16 +333,16 @@ value="
     let conversion_gain_db = 20*log10(if_mag/rf_mag)
     print conversion_gain_db
 
-    * write Gilbert_cell.raw
+    write Gilbert_sim.raw
 
 .endc
 "}
-C {devices/launcher.sym} 1827.5 -717.5 0 0 {name=h2
-descr="simulate" 
+C {devices/launcher.sym} 1827.5 -722.5 2 1 {name=h2
+descr="Run ngSpice simulation (ctrl+left-click)" 
 tclcommand="xschem save; xschem netlist; xschem simulate"
 }
 C {devices/launcher.sym} 1830 -680 0 0 {name=h1
-descr="load waves" 
+descr="Load ngSpice waveforms (ctrl+left-click)" 
 tclcommand="xschem raw_read $netlist_dir/Gilbert_sim.raw tran"
 }
 C {lab_wire.sym} 120 -2350 0 0 {name=p8 sig_type=std_logic lab=V_LO}
@@ -357,20 +378,24 @@ C {vdd.sym} 120 -2170 0 0 {name=l8 lab=VDD}
 C {vsource.sym} 120 -2130 0 0 {name=V_PWR value=3.3 savecurrent=true}
 C {title-2.sym} 0 0 0 0 {name=l9 author="Time Transcenders" rev=1.0 lock=true page=1}
 C {vsource.sym} 120 -2300 0 0 {name=V_LO
-value="sin( 1 1 1 0 )"
+value="pulse(0 1.5 0 1p 1p 0.25n 0.5n)"
 savecurrent=true
+lock=true
 hide_texts=true}
 C {vsource.sym} 200 -2300 0 0 {name=V_LO_b
-value="sin( 1 1 1 0 0 180 )"
+value="pulse(0 1.5 0 1p 1p 0.25n 0.5n)"
 savecurrent=true
+lock=true
 hide_texts=true}
 C {vsource.sym} 270 -2300 0 0 {name=V_RF
 value="sin( 1 1 1 0 )"
 savecurrent=true
+lock=true
 hide_texts=true}
 C {vsource.sym} 340 -2300 0 0 {name=V_RF_b
 value="sin( 1 1 1 0 0 180 )"
 savecurrent=true
+lock=true
 hide_texts=true}
 C {gnd.sym} 120 -2080 0 0 {name=l7 lab=GND}
 C {gnd.sym} 950 -700 0 0 {name=l11 lab=GND}
