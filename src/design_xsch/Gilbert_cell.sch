@@ -6,15 +6,15 @@ V {}
 S {}
 E {}
 B 2 1760 -1180 2560 -780 {flags=graph,unlocked
-y1=-0.71
-y2=1.7
+y1=-0.0003
+y2=1.8
 ypos1=0
 ypos2=2
 divy=5
 subdivy=1
 unity=1
 x1=0
-x2=1e-08
+x2=1e-07
 divx=5
 subdivx=4
 xlabmag=1.0
@@ -25,9 +25,10 @@ dataset=-1
 unitx=1
 logx=0
 logy=0
-color="4 6 7 9"
+color="4 6 7 9 9"
 node="v_rf
 v_rf_b
+v_lo
 v_lo_b
 
 \\"diff_output; v_out_p v_out_n -\\""
@@ -36,8 +37,8 @@ rawfile=$netlist_dir/Gilbert_sim.raw
 sim_type=tran
 autoload=1}
 B 2 1760 -1610 2560 -1210 {flags=graph,unlocked
-y1=1.4e-15
-y2=0.4
+y1=1.6e-11
+y2=3e-07
 ypos1=0
 ypos2=2
 divy=5
@@ -67,7 +68,7 @@ rainbow=1
 color="4 5"
 node="v_rf_diff
 v_out_diff"}
-B 2 1760 -2030 2560 -1630 {flags=graph
+B 2 1760 -2030 2560 -1630 {flags=graph,unlocked
 y1=0
 y2=2
 ypos1=0
@@ -76,7 +77,7 @@ divy=5
 subdivy=1
 unity=1
 x1=0
-x2=1e-08
+x2=1e-07
 divx=5
 subdivx=1
 xlabmag=1.0
@@ -88,7 +89,7 @@ unitx=1
 logx=0
 logy=0
 }
-B 2 2590 -1180 3390 -780 {flags=graph
+B 2 2590 -1180 3390 -780 {flags=graph,unlocked
 y1=0
 y2=2
 ypos1=0
@@ -96,8 +97,8 @@ ypos2=2
 divy=5
 subdivy=1
 unity=1
-x1=0
-x2=1e-08
+x1=4.6336307e+09
+x2=7.5851097e+09
 divx=5
 subdivx=1
 xlabmag=1.0
@@ -109,16 +110,16 @@ unitx=1
 logx=0
 logy=0
 }
-B 2 2590 -1610 3390 -1210 {flags=graph
-y1=0
-y2=2
+B 2 2590 -1610 3390 -1210 {flags=graph,unlocked
+y1=0.8
+y2=2.8
 ypos1=0
 ypos2=2
 divy=5
 subdivy=1
 unity=1
-x1=0
-x2=1e-08
+x1=4.6336307e+09
+x2=7.5851097e+09
 divx=5
 subdivx=1
 xlabmag=1.0
@@ -139,7 +140,7 @@ divy=5
 subdivy=1
 unity=1
 x1=0
-x2=1e-08
+x2=1e-07
 divx=5
 subdivx=1
 xlabmag=1.0
@@ -159,7 +160,7 @@ f_RF = 2.40 GHz
 f_IF = f_LO - f_RF = 100 MHz} 2870 -2390 0 0 0.4 0.4 {}
 N 640 -910 760 -910 {
 lab=V_RF}
-N 950 -730 950 -700 {
+N 910 -720 910 -690 {
 lab=GND}
 N 120 -2270 120 -2250 {
 lab=GND}
@@ -200,8 +201,6 @@ N 1090 -910 1090 -820 {
 lab=V_RF_b}
 N 1050 -910 1090 -910 {
 lab=V_RF_b}
-N 950 -840 950 -790 {
-lab=#net3}
 N 630 -910 640 -910 {
 lab=V_RF}
 N 630 -820 640 -820 {
@@ -240,6 +239,12 @@ N 1010 -1230 1130 -1230 {
 lab=V_out_n}
 N 840 -1150 1010 -1230 {
 lab=V_out_n}
+N 990 -720 990 -690 {
+lab=GND}
+N 910 -840 910 -780 {
+lab=#net3}
+N 990 -840 990 -780 {
+lab=#net3}
 C {ipin.sym} 630 -1090 0 0 {name=p1 lab=V_LO}
 C {ipin.sym} 630 -1000 0 0 {name=p2 lab=V_LO_b
 }
@@ -248,7 +253,7 @@ C {ipin.sym} 630 -820 2 1 {name=p4 lab=V_RF_b
 }
 C {opin.sym} 1190 -1290 0 0 {name=p5 lab=V_out_p}
 C {opin.sym} 1190 -1260 0 0 {name=p7 lab=V_out_n}
-C {isource.sym} 950 -760 0 0 {name=I0 value=100m}
+C {isource.sym} 910 -750 0 0 {name=I0 value=100m}
 C {code.sym} 70 -190 0 0 {name=MODELS only_toplevel=true
 format="tcleval( @value )"
 value="
@@ -256,7 +261,7 @@ value="
 .lib $::180MCU_MODELS/sm141064.ngspice typical
 "
 }
-C {code.sym} 2695 -2395 0 0 {name=SPICE only_toplevel=true 
+C {code.sym} 2705 -2395 0 0 {name=SPICE only_toplevel=true 
 value="
 * let sets vectors to a plot, while set sets a variable, globally accessible in .control
 .control
@@ -269,7 +274,6 @@ value="
     * alter @V_LO[sin] = [ $cm_lo $amp_lo $freq_lo 0 ]
     * alter @V_LO_b[sin] = [ $cm_lo $amp_lo $freq_lo 0 0 180 ]
 
-    set edge_time_lo = 0.5p
     set freq_lo = 2.50G 
     set cm_lo = 1.5
     set amp_lo = 0.25
@@ -278,14 +282,12 @@ value="
     set freq_rf = 2.40G
     set amp_rf  = 0.2
 
-    let period_lo = 1/$freq_lo
-    let half_period_lo = period_lo/2
 
     * set the parameters to the voltage sources
 
 
-    alter @V_LO[pulse] = [ ($cm_lo - $amp_lo) ($cm_lo + $amp_lo) 0 $edge_time_lo $edge_time_lo 1/(2 * $freq_lo) 1/$freq_lo]
-    alter @V_LO_b[pulse] = [ $cm_lo-$amp_lo $cm_lo+$amp_lo $half_period_lo $edge_time_lo $edge_time_lo $half_period_lo $period_lo]
+    alter @V_LO[pulse] = [ 1.25 1.75 0 0.5p 0.5p 200p 400p ]
+    alter @V_LO_b[pulse] = [ 1.25 1.75 200p 0.5p 0.5p 200p 400p]
     alter @V_RF[sin] = [ $cm_rf $amp_rf $freq_rf 0 ]
     alter @V_RF_b[sin] = [ $cm_rf $amp_rf $freq_rf 0 0 180 ]
 
@@ -293,12 +295,56 @@ value="
     
     * operating point
     op
+    show
+
+    * save transistor op parameters
+    * diff_pair_1 transistors
+    save @m.xdiff_pair_rf.xm1.m0[vgs]
+    save @m.xdiff_pair_rf.xm1.m0[vds]
+    save @m.xdiff_pair_rf.xm1.m0[id]
+    save @m.xdiff_pair_rf.xm1.m0[gm]
+    save @m.xdiff_pair_rf.xm1.m0[vth]
+    save @m.xdiff_pair_rf.xm1.m0[cgg]
+    save @m.xdiff_pair_rf.xm2.m0[vgs]
+    save @m.xdiff_pair_rf.xm2.m0[vds]
+    save @m.xdiff_pair_rf.xm2.m0[id]
+    save @m.xdiff_pair_rf.xm2.m0[gm]
+    save @m.xdiff_pair_rf.xm2.m0[vth]
+    save @m.xdiff_pair_rf.xm2.m0[cgg]
+    
+    * diff_pair_2 transistors  
+    save @m.xdiff_pair_2.xm1.m0[vgs]
+    save @m.xdiff_pair_2.xm1.m0[vds]
+    save @m.xdiff_pair_2.xm1.m0[id]
+    save @m.xdiff_pair_2.xm1.m0[gm]
+    save @m.xdiff_pair_2.xm1.m0[vth]
+    save @m.xdiff_pair_2.xm1.m0[cgg]
+    save @m.xdiff_pair_2.xm2.m0[vgs]
+    save @m.xdiff_pair_2.xm2.m0[vds]
+    save @m.xdiff_pair_2.xm2.m0[id]
+    save @m.xdiff_pair_2.xm2.m0[gm]
+    save @m.xdiff_pair_2.xm2.m0[vth]
+    save @m.xdiff_pair_2.xm2.m0[cgg]
+    
+    * diff_pair_3 transistors
+    save @m.xdiff_pair_3.xm1.m0[vgs]
+    save @m.xdiff_pair_3.xm1.m0[vds]
+    save @m.xdiff_pair_3.xm1.m0[id]
+    save @m.xdiff_pair_3.xm1.m0[gm]
+    save @m.xdiff_pair_3.xm1.m0[vth]
+    save @m.xdiff_pair_3.xm1.m0[cgg]
+    save @m.xdiff_pair_3.xm2.m0[vgs]
+    save @m.xdiff_pair_3.xm2.m0[vds]
+    save @m.xdiff_pair_3.xm2.m0[id]
+    save @m.xdiff_pair_3.xm2.m0[gm]
+    save @m.xdiff_pair_3.xm2.m0[vth]
+    save @m.xdiff_pair_3.xm2.m0[cgg]
     write Gilbert_sim.raw
 
     set appendwrite
 
     * Transient analysis to observe mixing operation
-    tran 1p 10n
+    tran 1p 100n
     write Gilbert_sim.raw
 
     * Calculate differential output for conversion gain measurement
@@ -317,9 +363,9 @@ value="
     * Find frequency bins
 
     * print everything, sanity check
-    set     ; print all available global (?) variables (?)
-    setplot ; print all plots
-    display ; print variables available in current plot
+    * set     ; print all available global (?) variables (?)
+    * setplot ; print all plots
+    * display ; print variables available in current plot
 
     let freq_res = tran2.freq_res
     let freq_if = abs( $freq_lo - $freq_rf )
@@ -350,13 +396,8 @@ C {lab_wire.sym} 200 -2350 0 0 {name=p9 sig_type=std_logic lab=V_LO_b
 }
 C {lab_wire.sym} 270 -2350 0 0 {name=p10 sig_type=std_logic lab=V_RF}
 C {lab_wire.sym} 340 -2350 0 0 {name=p11 sig_type=std_logic lab=V_RF_b}
-C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/diff_pair.sym} 950 -870 0 0 {name=Xdiff_pair_1
-hide_texts=false
-W_pos=2u
-lock=true}
 C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/diff_pair.sym} 800 -1050 0 0 {name=Xdiff_pair_2
-hide_texts=false
-lock=true}
+hide_texts=false}
 C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/diff_pair.sym} 1090 -1050 0 0 {name=Xdiff_pair_3
 hide_texts=false
 lock=true}
@@ -398,8 +439,12 @@ savecurrent=true
 lock=true
 hide_texts=true}
 C {gnd.sym} 120 -2080 0 0 {name=l7 lab=GND}
-C {gnd.sym} 950 -700 0 0 {name=l11 lab=GND}
+C {gnd.sym} 910 -690 0 0 {name=l11 lab=GND}
 C {gnd.sym} 120 -2250 0 0 {name=l1 lab=GND}
 C {gnd.sym} 200 -2250 0 0 {name=l2 lab=GND}
 C {gnd.sym} 270 -2250 0 0 {name=l3 lab=GND}
 C {gnd.sym} 340 -2250 0 0 {name=l4 lab=GND}
+C {isource.sym} 990 -750 0 0 {name=I1 value=100m}
+C {gnd.sym} 990 -690 0 0 {name=l5 lab=GND}
+C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/diff_pair_with_source_degeneration.sym} 950 -770 0 0 {name=Xdiff_pair_rf
+RS=3K}
