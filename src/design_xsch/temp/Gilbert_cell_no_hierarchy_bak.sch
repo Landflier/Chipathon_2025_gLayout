@@ -30,11 +30,11 @@ color="4 8 6"
 node="v_rf
 v_lo
 \\"diff_output; v_out_p v_out_n -\\""
-rawfile=$netlist_dir/Gilbert_cell_tb_sim.raw
+rawfile=$netlist_dir/Gilbert_no_hierarchy_sim.raw
 sim_type=tran}
 B 2 1780 -1640 2580 -1240 {flags=graph,unlocked
-y1=3.2e-14
-y2=0.5
+y1=-0.015232865
+y2=0.46476713
 ypos1=0
 ypos2=2
 divy=5
@@ -47,40 +47,17 @@ subdivx=1
 xlabmag=1.0
 ylabmag=1.0
 node="v_rf_diff
-v_out_diff
-
-v_lo_diff"
-color="4 6 8"
+v_out_diff"
+color="15 4"
 dataset=-1
 unitx=1
 logx=0
 logy=0
 rainbow=1
-rawfile=$netlist_dir/Gilbert_cell_tb_sim.raw
+rawfile=$netlist_dir/Gilbert_no_hierarchy_sim.raw
 sim_type=sp
 sweep=frequency
 autoload=1}
-B 2 1780 -2080 2580 -1680 {flags=graph
-y1=0
-y2=2
-ypos1=0
-ypos2=2
-divy=5
-subdivy=1
-unity=1
-x1=0
-x2=10e-6
-divx=5
-subdivx=1
-xlabmag=1.0
-ylabmag=1.0
-node=""
-color=""
-dataset=-1
-unitx=1
-logx=0
-logy=0
-}
 T {Desription
 
 Gilbert cell mixer for FM radio receiver, 
@@ -89,6 +66,8 @@ to an intermediate frequency of 10.7Mhz
 f_LO = 100 MHz
 f_RF = 89.3 MHz
 f_IF = f_LO - f_RF = 10.7 MHz} 2870 -2390 0 0 0.4 0.4 {}
+N 640 -910 760 -910 {
+lab=V_RF}
 N 120 -2270 120 -2250 {
 lab=GND}
 N 120 -2350 120 -2330 {lab=V_LO}
@@ -104,74 +83,138 @@ N 340 -2270 340 -2250 {
 lab=GND}
 N 340 -2350 340 -2330 {
 lab=V_RF_b}
+N 900 -1090 990 -1090 {
+lab=V_LO_b}
+N 1190 -1090 1260 -1090 {
+lab=V_LO}
+N 630 -1090 700 -1090 {lab=V_LO}
+N 630 -1000 950 -1000 {lab=V_LO_b}
+N 950 -1090 950 -1000 {
+lab=V_LO_b}
+N 760 -910 850 -910 {
+lab=V_RF}
+N 800 -970 910 -970 {
+lab=#net1}
+N 800 -1020 800 -970 {
+lab=#net1}
+N 990 -970 1090 -970 {
+lab=#net2}
+N 1090 -1020 1090 -970 {
+lab=#net2}
+N 640 -820 1090 -820 {
+lab=V_RF_b}
+N 1090 -910 1090 -820 {
+lab=V_RF_b}
+N 1050 -910 1090 -910 {
+lab=V_RF_b}
+N 630 -910 640 -910 {
+lab=V_RF}
+N 630 -820 640 -820 {
+lab=V_RF_b}
+N 760 -1160 760 -1150 {
+lab=V_out_p}
+N 1130 -1160 1130 -1150 {
+lab=V_out_n}
+N 1130 -1230 1130 -1160 {
+lab=V_out_n}
+N 760 -1310 760 -1160 {
+lab=V_out_p}
+N 1130 -1310 1130 -1230 {
+lab=V_out_n}
+N 760 -1410 760 -1370 {
+lab=VDD}
+N 760 -1410 950 -1410 {
+lab=VDD}
+N 1130 -1410 1130 -1370 {
+lab=VDD}
+N 950 -1410 1130 -1410 {
+lab=VDD}
+N 760 -1290 1190 -1290 {
+lab=V_out_p}
+N 1130 -1260 1190 -1260 {
+lab=V_out_n}
 N 120 -2100 120 -2080 {
 lab=GND}
 N 120 -2170 120 -2160 {
 lab=VDD}
-N 640 -1270 650 -1270 {
-lab=V_RF_b}
-N 640 -1300 700 -1300 {
-lab=V_RF}
-N 650 -1270 690 -1270 {
-lab=V_RF_b}
-N 900 -1530 900 -1470 {
-lab=V_LO}
-N 950 -1530 950 -1470 {
-lab=V_LO_b}
-N 1170 -1310 1220 -1310 {
+N 880 -1230 1050 -1150 {
 lab=V_out_p}
-N 1170 -1260 1220 -1260 {
-lab=V_out_n}
-N 900 -1550 900 -1530 {
-lab=V_LO}
-N 950 -1550 950 -1530 {
-lab=V_LO_b}
-N 1110 -1260 1170 -1260 {
-lab=V_out_n}
-N 1110 -1310 1170 -1310 {
+N 760 -1230 880 -1230 {
 lab=V_out_p}
-N 690 -1270 740 -1270 {
-lab=V_RF_b}
-N 700 -1300 740 -1300 {
+N 1010 -1230 1130 -1230 {
+lab=V_out_n}
+N 840 -1150 1010 -1230 {
+lab=V_out_n}
+N 910 -840 910 -780 {
+lab=#net3}
+N 990 -840 990 -780 {
+lab=#net4}
+N 950 -640 950 -610 {
+lab=GND}
+N 910 -780 910 -760 {
+lab=#net3}
+N 990 -780 990 -760 {
+lab=#net4}
+N 910 -700 910 -640 {
+lab=GND}
+N 910 -640 990 -640 {
+lab=GND}
+N 990 -700 990 -640 {
+lab=GND}
+N 990 -970 990 -940 {
+lab=#net2}
+N 1050 -1060 1130 -1060 {
+lab=#net2}
+N 1050 -1150 1050 -1120 {
+lab=V_out_p}
+N 1130 -1150 1130 -1120 {
+lab=V_out_n}
+N 840 -1150 840 -1120 {
+lab=V_out_n}
+N 760 -1150 760 -1120 {
+lab=V_out_p}
+N 700 -1090 720 -1090 {
+lab=V_LO}
+N 880 -1090 900 -1090 {
+lab=V_LO_b}
+N 990 -1090 1010 -1090 {
+lab=V_LO_b}
+N 1170 -1090 1190 -1090 {
+lab=V_LO}
+N 1090 -1060 1090 -1020 {
+lab=#net2}
+N 760 -1060 840 -1060 {
+lab=#net1}
+N 800 -1060 800 -1020 {
+lab=#net1}
+N 910 -970 910 -940 {
+lab=#net1}
+N 850 -910 870 -910 {
 lab=V_RF}
-N 880 -1080 880 -960 {
-lab=VDD}
-N 970 -1080 970 -960 {
+N 1030 -910 1050 -910 {
+lab=V_RF_b}
+N 910 -880 910 -840 {
+lab=#net3}
+N 990 -880 990 -840 {
+lab=#net4}
+N 910 -850 920 -850 {
+lab=#net3}
+N 980 -850 990 -850 {
+lab=#net4}
+N 910 -910 990 -910 {
 lab=GND}
-N 880 -960 880 -890 {
-lab=VDD}
-N 850 -890 880 -890 {
-lab=VDD}
-N 850 -910 850 -890 {
-lab=VDD}
-N 970 -960 970 -910 {
+N 760 -1090 840 -1090 {
 lab=GND}
-N 910 -1100 910 -1060 {
-lab=I_bias_pos}
-N 930 -1100 930 -1060 {
-lab=I_bias_neg}
-N 880 -1110 880 -1080 {
-lab=VDD}
-N 970 -1110 970 -1080 {
+N 1050 -1090 1130 -1090 {
 lab=GND}
-N 930 -1060 930 -960 {
-lab=I_bias_neg}
-N 910 -1060 910 -1040 {
-lab=I_bias_pos}
-N 120 -1810 120 -1760 {
-lab=GND}
-N 120 -1760 140 -1760 {
-lab=GND}
-N 170 -1760 170 -1740 {
-lab=GND}
-N 120 -1910 120 -1870 {
-lab=I_bias_pos}
-N 140 -1760 220 -1760 {
-lab=GND}
-N 220 -1810 220 -1760 {
-lab=GND}
-N 220 -1910 220 -1870 {
-lab=I_bias_neg}
+C {ipin.sym} 630 -1090 0 0 {name=p1 lab=V_LO}
+C {ipin.sym} 630 -1000 0 0 {name=p2 lab=V_LO_b
+}
+C {ipin.sym} 630 -910 0 0 {name=p3 lab=V_RF}
+C {ipin.sym} 630 -820 2 1 {name=p4 lab=V_RF_b
+}
+C {opin.sym} 1190 -1290 0 0 {name=p5 lab=V_out_p}
+C {opin.sym} 1190 -1260 0 0 {name=p7 lab=V_out_n}
 C {code.sym} 50 -190 0 0 {name=MODELS only_toplevel=true
 format="tcleval( @value )"
 value="
@@ -201,8 +244,7 @@ value="
     set amp_lo = 0.25
 
     set cm_rf  = 1,6
-    * set freq_rf = 89.3Meg
-    set freq_rf = 10Meg
+    set freq_rf = 89.3Meg
     set amp_rf  = 0.2
 
     * set the parameters to the voltage sources
@@ -221,18 +263,18 @@ value="
 
     * save transistor op parameters
     * diff_pair_1 transistors
-    save @m.xgilbert_mixer.xm_rf_pos.m0[vgs]
-    save @m.xgilbert_mixer.xm_rf_pos.m0[vds]
-    save @m.xgilbert_mixer.xm_rf_pos.m0[id]
-    save @m.xgilbert_mixer.xm_rf_pos.m0[gm]
-    save @m.xgilbert_mixer.xm_rf_pos.m0[vth]
-    save @m.xgilbert_mixer.xm_rf_pos.m0[cgg]
-    save @m.xgilbert_mixer.xm_rf_neg.m0[vgs]
-    save @m.xgilbert_mixer.xm_rf_neg.m0[vds]
-    save @m.xgilbert_mixer.xm_rf_neg.m0[id]
-    save @m.xgilbert_mixer.xm_rf_neg.m0[gm]
-    save @m.xgilbert_mixer.xm_rf_neg.m0[vth]
-    save @m.xgilbert_mixer.xm_rf_neg.m0[cgg]
+    save @m.xm_rf_pos.m0[vgs]
+    save @m.xm_rf_pos.m0[vds]
+    save @m.xm_rf_pos.m0[id]
+    save @m.xm_rf_pos.m0[gm]
+    save @m.xm_rf_pos.m0[vth]
+    save @m.xm_rf_pos.m0[cgg]
+    save @m.xm_rf_neg.m0[vgs]
+    save @m.xm_rf_neg.m0[vds]
+    save @m.xm_rf_neg.m0[id]
+    save @m.xm_rf_neg.m0[gm]
+    save @m.xm_rf_neg.m0[vth]
+    save @m.xm_rf_neg.m0[cgg]
     
     * diff_pair_2 transistors  
     * save @m.xdiff_pair_2.xm1.m0[vgs]
@@ -262,29 +304,27 @@ value="
     * save @m.xdiff_pair_3.xm2.m0[vth]
     * save @m.xdiff_pair_3.xm2.m0[cgg]
 
-    write Gilbert_cell_tb_sim.raw
+    write Gilbert_no_hierarchy_sim.raw
 
     set appendwrite
 
     * Transient analysis to observe mixing operation
     tran 1p 300n
-    write Gilbert_cell_tb_sim.raw
+    write Gilbert_no_hierarchy_sim.raw
 
     * Calculate differential output for conversion gain measurement
     let v_out_diff = v(v_out_p)-v(v_out_n)
     let v_rf_diff = v(v_rf)-v(v_rf_b)
-    let v_lo_diff = v(v_lo)-v(v_lo_b)
-
     
     * Extract IF component at 100MHz using FFT
-    linearize v_out_diff v_rf_diff v_lo_diff
+    linearize v_out_diff v_rf_diff
     let time_step = 10e-12
     let sample_freq = 1/time_step
     let npts = length(v_out_diff)
     let freq_res = sample_freq/npts
     
 
-    fft v_out_diff v_rf_diff v_lo_diff
+    fft v_out_diff v_rf_diff
     * Find frequency bins
 
     * print everything, sanity check
@@ -304,7 +344,7 @@ value="
     let conversion_gain_db = 20*log10(if_mag/rf_mag)
     print conversion_gain_db
 
-    write Gilbert_cell_tb_sim.raw
+    write Gilbert_no_hierarchy_sim.raw
 
 .endc
 "}
@@ -314,54 +354,154 @@ tclcommand="xschem save; xschem netlist; xschem simulate"
 }
 C {devices/launcher.sym} 1830 -680 0 0 {name=h1
 descr="Load ngSpice waveforms (ctrl+left-click)" 
-tclcommand="xschem raw_read $netlist_dir/Gilbert_cell_tb_sim.raw tran"
+tclcommand="xschem raw_read $netlist_dir/Gilbert_no_hierarchy_sim.raw tran"
 }
 C {lab_wire.sym} 120 -2350 0 0 {name=p8 sig_type=std_logic lab=V_LO}
 C {lab_wire.sym} 200 -2350 0 0 {name=p9 sig_type=std_logic lab=V_LO_b
 }
 C {lab_wire.sym} 270 -2350 0 0 {name=p10 sig_type=std_logic lab=V_RF}
 C {lab_wire.sym} 340 -2350 0 0 {name=p11 sig_type=std_logic lab=V_RF_b}
+C {lab_wire.sym} 1260 -1090 0 1 {name=p6 sig_type=std_logic lab=V_LO}
+C {res.sym} 760 -1340 0 0 {name=R1
+value=6K
+footprint=1206
+device=resistor
+m=1
+lock=true}
+C {res.sym} 1130 -1340 0 0 {name=R2
+value=6K
+footprint=1206
+device=resistor
+m=1
+lock=true}
+C {vdd.sym} 950 -1410 0 0 {name=l6 lab=VDD}
 C {vdd.sym} 120 -2170 0 0 {name=l8 lab=VDD}
 C {vsource.sym} 120 -2130 0 0 {name=V_PWR value=3.3 savecurrent=true}
-C {title-2.sym} 0 0 0 0 {name=l9 author="Time Transcenders" lock=true rev=1.0 page=1}
+C {title-2.sym} 0 0 0 0 {name=l9 author="Time Transcenders" rev=1.0 lock=true page=1}
 C {vsource.sym} 120 -2300 0 0 {name=V_LO
 * value="pulse(0 1.5 0 1p 1p 0.25n 0.5n)"
 value="sin( 1 1 1 0 )"
 savecurrent=true
+lock=true
 hide_texts=true}
 C {vsource.sym} 200 -2300 0 0 {name=V_LO_b
 * value="pulse(0 1.5 0 1p 1p 0.25n 0.5n)"
 value="sin( 1 1 1 0 )"
 savecurrent=true
+lock=true
 hide_texts=true}
 C {vsource.sym} 270 -2300 0 0 {name=V_RF
 value="sin( 1 1 1 0 )"
 savecurrent=true
+lock=true
 hide_texts=true}
 C {vsource.sym} 340 -2300 0 0 {name=V_RF_b
 value="sin( 1 1 1 0 0 180 )"
 savecurrent=true
+lock=true
 hide_texts=true}
 C {gnd.sym} 120 -2080 0 0 {name=l7 lab=GND}
 C {gnd.sym} 120 -2250 0 0 {name=l1 lab=GND}
 C {gnd.sym} 200 -2250 0 0 {name=l2 lab=GND}
 C {gnd.sym} 270 -2250 0 0 {name=l3 lab=GND}
 C {gnd.sym} 340 -2250 0 0 {name=l4 lab=GND}
-C {ipin.sym} 900 -1550 3 1 {name=p1 lab=V_LO}
-C {ipin.sym} 950 -1550 3 1 {name=p2 lab=V_LO_b
+C {ngspice_probe.sym} 1090 -980 0 0 {name=r3}
+C {ngspice_probe.sym} 800 -980 0 0 {name=r4}
+C {ngspice_probe.sym} 990 -790 0 0 {name=r5}
+C {ngspice_probe.sym} 910 -790 0 0 {name=r6}
+C {gnd.sym} 950 -610 0 0 {name=l5 lab=GND}
+C {isource.sym} 910 -730 0 0 {name=I0 value=50u}
+C {isource.sym} 990 -730 0 0 {name=I1 value=50u}
+C {symbols/nfet_03v3.sym} 740 -1090 0 0 {name=M_dp_lo_pos
+L=0.28u
+W=24u
+nf=1
+m=1
+ad="'int((nf+1)/2) * W/nf * 0.18u'"
+pd="'2*int((nf+1)/2) * (W/nf + 0.18u)'"
+as="'int((nf+2)/2) * W/nf * 0.18u'"
+ps="'2*int((nf+2)/2) * (W/nf + 0.18u)'"
+nrd="'0.18u / W'" nrs="'0.18u / W'"
+sa=0 sb=0 sd=0
+model=nfet_03v3
+spiceprefix=X
 }
-C {ipin.sym} 640 -1300 0 0 {name=p3 lab=V_RF}
-C {ipin.sym} 640 -1270 2 1 {name=p4 lab=V_RF_b
+C {symbols/nfet_03v3.sym} 860 -1090 0 1 {name=M_dp_lo_neg
+L=0.28u
+W=24u
+nf=1
+m=1
+ad="'int((nf+1)/2) * W/nf * 0.18u'"
+pd="'2*int((nf+1)/2) * (W/nf + 0.18u)'"
+as="'int((nf+2)/2) * W/nf * 0.18u'"
+ps="'2*int((nf+2)/2) * (W/nf + 0.18u)'"
+nrd="'0.18u / W'" nrs="'0.18u / W'"
+sa=0 sb=0 sd=0
+model=nfet_03v3
+spiceprefix=X
 }
-C {opin.sym} 1220 -1310 0 0 {name=p5 lab=V_out_p}
-C {opin.sym} 1220 -1260 0 0 {name=p7 lab=V_out_n}
-C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Gilbert_cell_no_hierarchy.sym} 920 -1290 2 1 {name=xGilbert_mixer}
-C {isource.sym} 120 -1840 0 0 {name=I0 value=50u}
-C {isource.sym} 220 -1840 0 0 {name=I1 value=50u}
-C {vdd.sym} 850 -910 0 0 {name=l10 lab=VDD}
-C {gnd.sym} 970 -910 0 0 {name=l11 lab=GND}
-C {gnd.sym} 170 -1740 0 0 {name=l6 lab=GND}
-C {lab_pin.sym} 910 -1040 3 0 {name=p6 sig_type=std_logic lab=I_bias_pos}
-C {lab_pin.sym} 930 -980 3 0 {name=p12 sig_type=std_logic lab=I_bias_neg}
-C {lab_pin.sym} 120 -1910 3 1 {name=p13 sig_type=std_logic lab=I_bias_pos}
-C {lab_pin.sym} 220 -1910 3 1 {name=p14 sig_type=std_logic lab=I_bias_neg}
+C {symbols/nfet_03v3.sym} 1030 -1090 0 0 {name=M_dp_lo_b_pos
+L=0.28u
+W=24u
+nf=1
+m=1
+ad="'int((nf+1)/2) * W/nf * 0.18u'"
+pd="'2*int((nf+1)/2) * (W/nf + 0.18u)'"
+as="'int((nf+2)/2) * W/nf * 0.18u'"
+ps="'2*int((nf+2)/2) * (W/nf + 0.18u)'"
+nrd="'0.18u / W'" nrs="'0.18u / W'"
+sa=0 sb=0 sd=0
+model=nfet_03v3
+spiceprefix=X
+}
+C {symbols/nfet_03v3.sym} 1150 -1090 0 1 {name=M_dp_lo_b_neg
+L=0.28u
+W=24u
+nf=1
+m=1
+ad="'int((nf+1)/2) * W/nf * 0.18u'"
+pd="'2*int((nf+1)/2) * (W/nf + 0.18u)'"
+as="'int((nf+2)/2) * W/nf * 0.18u'"
+ps="'2*int((nf+2)/2) * (W/nf + 0.18u)'"
+nrd="'0.18u / W'" nrs="'0.18u / W'"
+sa=0 sb=0 sd=0
+model=nfet_03v3
+spiceprefix=X
+}
+C {symbols/nfet_03v3.sym} 890 -910 0 0 {name=M_rf_pos
+L=0.28u
+W=12u
+nf=1
+m=1
+ad="'int((nf+1)/2) * W/nf * 0.18u'"
+pd="'2*int((nf+1)/2) * (W/nf + 0.18u)'"
+as="'int((nf+2)/2) * W/nf * 0.18u'"
+ps="'2*int((nf+2)/2) * (W/nf + 0.18u)'"
+nrd="'0.18u / W'" nrs="'0.18u / W'"
+sa=0 sb=0 sd=0
+model=nfet_03v3
+spiceprefix=X
+}
+C {symbols/nfet_03v3.sym} 1010 -910 0 1 {name=M_rf_neg
+L=0.28u
+W=12u
+nf=1
+m=1
+ad="'int((nf+1)/2) * W/nf * 0.18u'"
+pd="'2*int((nf+1)/2) * (W/nf + 0.18u)'"
+as="'int((nf+2)/2) * W/nf * 0.18u'"
+ps="'2*int((nf+2)/2) * (W/nf + 0.18u)'"
+nrd="'0.18u / W'" nrs="'0.18u / W'"
+sa=0 sb=0 sd=0
+model=nfet_03v3
+spiceprefix=X
+}
+C {res.sym} 950 -850 3 0 {name=R7
+value=2K
+footprint=1206
+device=resistor
+m=1
+lock=true}
+C {lab_wire.sym} 950 -910 0 0 {name=p12 sig_type=std_logic lab=GND}
+C {lab_wire.sym} 810 -1090 0 0 {name=p13 sig_type=std_logic lab=GND}
+C {lab_wire.sym} 1090 -1090 0 0 {name=p14 sig_type=std_logic lab=GND}

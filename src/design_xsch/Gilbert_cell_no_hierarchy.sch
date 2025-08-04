@@ -25,7 +25,7 @@ N 990 -970 1090 -970 {
 lab=rf_diff_pair_neg_input}
 N 1090 -1020 1090 -970 {
 lab=rf_diff_pair_neg_input}
-N 640 -805 1090 -805 {
+N 640 -820 1090 -820 {
 lab=V_RF_b}
 N 1090 -910 1090 -820 {
 lab=V_RF_b}
@@ -109,6 +109,10 @@ N 910 -880 910 -840 {
 lab=I_bias_pos}
 N 990 -880 990 -840 {
 lab=I_bias_neg}
+N 910 -850 920 -850 {
+lab=I_bias_pos}
+N 980 -850 990 -850 {
+lab=I_bias_neg}
 N 910 -910 990 -910 {
 lab=VSS}
 N 760 -1090 840 -1090 {
@@ -121,18 +125,6 @@ N 910 -760 910 -730 {
 lab=I_bias_pos}
 N 990 -760 990 -730 {
 lab=I_bias_neg}
-N 780 -1340 800 -1340 {
-lab=VDD}
-N 1090 -1340 1110 -1340 {
-lab=VDD}
-N 910 -830 920 -830 {
-lab=I_bias_pos}
-N 980 -830 990 -830 {
-lab=I_bias_neg}
-N 950 -870 950 -850 {
-lab=VDD}
-N 1090 -820 1090 -805 {
-lab=V_RF_b}
 C {ipin.sym} 630 -1090 0 0 {name=p1 lab=V_LO}
 C {ipin.sym} 630 -1000 0 0 {name=p2 lab=V_LO_b
 }
@@ -142,6 +134,18 @@ C {ipin.sym} 630 -805 2 1 {name=p4 lab=V_RF_b
 C {opin.sym} 1190 -1290 0 0 {name=p5 lab=V_out_p}
 C {opin.sym} 1190 -1260 0 0 {name=p7 lab=V_out_n}
 C {lab_wire.sym} 1260 -1090 0 1 {name=p6 sig_type=std_logic lab=V_LO}
+C {res.sym} 760 -1340 0 0 {name=R1
+value=6K
+footprint=1206
+device=resistor
+m=1
+lock=true}
+C {res.sym} 1130 -1340 0 0 {name=R2
+value=6K
+footprint=1206
+device=resistor
+m=1
+lock=true}
 C {ngspice_probe.sym} 990 -790 0 0 {name=r5}
 C {ngspice_probe.sym} 910 -790 0 0 {name=r6}
 C {symbols/nfet_03v3.sym} 740 -1090 0 0 {name=M_dp_lo_pos
@@ -229,6 +233,12 @@ sa=0 sb=0 sd=0
 model=nfet_03v3
 spiceprefix=X
 }
+C {res.sym} 950 -850 3 0 {name=R7
+value=2K
+footprint=1206
+device=resistor
+m=1
+lock=true}
 C {lab_wire.sym} 950 -910 0 0 {name=p12 sig_type=std_logic lab=VSS}
 C {lab_wire.sym} 810 -1090 0 0 {name=p13 sig_type=std_logic lab=VSS}
 C {lab_wire.sym} 1090 -1090 0 0 {name=p14 sig_type=std_logic lab=VSS}
@@ -240,24 +250,3 @@ C {lab_wire.sym} 1090 -990 0 0 {name=p15 sig_type=std_logic lab=rf_diff_pair_neg
 }
 C {lab_wire.sym} 800 -990 0 0 {name=p16 sig_type=std_logic lab=rf_diff_pair_pos_input hide_texts=true
 }
-C {lab_wire.sym} 800 -1340 0 1 {name=p17 sig_type=std_logic lab=VDD}
-C {lab_wire.sym} 1090 -1340 0 0 {name=p18 sig_type=std_logic lab=VDD}
-C {lab_wire.sym} 950 -870 1 0 {name=p19 sig_type=std_logic lab=VDD}
-C {symbols/ppolyf_u_1k.sym} 760 -1340 0 1 {name=R_load_2
-W=1e-6
-L=20e-6
-model=ppolyf_u_1k
-spiceprefix=X
-m=1}
-C {symbols/ppolyf_u_1k.sym} 1130 -1340 0 0 {name=R_load_1
-W=1e-6
-L=20e-6
-model=ppolyf_u_1k
-spiceprefix=X
-m=1}
-C {symbols/ppolyf_u_1k.sym} 950 -830 3 1 {name=R_load_3
-W=1e-6
-L=3e-6
-model=ppolyf_u_1k
-spiceprefix=X
-m=1}

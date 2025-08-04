@@ -1,11 +1,13 @@
-** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_tb/Gilbert_cell_tb.sch
-**.subckt Gilbert_cell_tb V_LO V_LO_b V_RF V_RF_b V_out_p V_out_n
+** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/temp/Gilbert_cell_no_hierarchy.sch
+**.subckt Gilbert_cell_no_hierarchy V_LO V_LO_b V_RF V_RF_b V_out_p V_out_n
 *.ipin V_LO
 *.ipin V_LO_b
 *.ipin V_RF
 *.ipin V_RF_b
 *.opin V_out_p
 *.opin V_out_n
+R1 VDD V_out_p 6K m=1
+R2 VDD V_out_n 6K m=1
 V_PWR VDD GND 3.3
 .save i(v_pwr)
 V_LO V_LO GND pulse(0 1.5 0 1p 1p 0.25n 0.5n)
@@ -16,9 +18,21 @@ V_RF V_RF GND sin( 1 1 1 0 )
 .save i(v_rf)
 V_RF_b V_RF_b GND sin( 1 1 1 0 0 180 )
 .save i(v_rf_b)
-xGilbert_mixer VDD V_out_n V_out_p V_LO V_LO_b V_RF_b V_RF I_bias_pos I_bias_neg GND Gilbert_cell_no_hierarchy
-I0 I_bias_pos GND 50u
-I1 I_bias_neg GND 50u
+I0 net3 GND 50u
+I1 net4 GND 50u
+XM_dp_lo_pos V_out_p V_LO net1 GND nfet_03v3 L=0.28u W=24u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u'
++ pd='2*int((nf+1)/2) * (W/nf + 0.18u)' ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
+XM_dp_lo_neg V_out_n V_LO_b net1 GND nfet_03v3 L=0.28u W=24u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u'
++ pd='2*int((nf+1)/2) * (W/nf + 0.18u)' ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
+XM_dp_lo_b_pos V_out_p V_LO_b net2 GND nfet_03v3 L=0.28u W=24u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u'
++ pd='2*int((nf+1)/2) * (W/nf + 0.18u)' ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
+XM_dp_lo_b_neg V_out_n V_LO net2 GND nfet_03v3 L=0.28u W=24u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u'
++ pd='2*int((nf+1)/2) * (W/nf + 0.18u)' ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
+XM_rf_pos net1 V_RF net3 GND nfet_03v3 L=0.28u W=12u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
++ ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
+XM_rf_neg net2 V_RF_b net4 GND nfet_03v3 L=0.28u W=12u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
++ ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
+R7 net3 net4 2K m=1
 **** begin user architecture code
 
 .include /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/design.ngspice
@@ -65,18 +79,18 @@ I1 I_bias_neg GND 50u
 
     * save transistor op parameters
     * diff_pair_1 transistors
-    save @m.xgilbert_mixer.xm_rf_pos.m0[vgs]
-    save @m.xgilbert_mixer.xm_rf_pos.m0[vds]
-    save @m.xgilbert_mixer.xm_rf_pos.m0[id]
-    save @m.xgilbert_mixer.xm_rf_pos.m0[gm]
-    save @m.xgilbert_mixer.xm_rf_pos.m0[vth]
-    save @m.xgilbert_mixer.xm_rf_pos.m0[cgg]
-    save @m.xgilbert_mixer.xm_rf_neg.m0[vgs]
-    save @m.xgilbert_mixer.xm_rf_neg.m0[vds]
-    save @m.xgilbert_mixer.xm_rf_neg.m0[id]
-    save @m.xgilbert_mixer.xm_rf_neg.m0[gm]
-    save @m.xgilbert_mixer.xm_rf_neg.m0[vth]
-    save @m.xgilbert_mixer.xm_rf_neg.m0[cgg]
+    save @m.xm_rf_pos.m0[vgs]
+    save @m.xm_rf_pos.m0[vds]
+    save @m.xm_rf_pos.m0[id]
+    save @m.xm_rf_pos.m0[gm]
+    save @m.xm_rf_pos.m0[vth]
+    save @m.xm_rf_pos.m0[cgg]
+    save @m.xm_rf_neg.m0[vgs]
+    save @m.xm_rf_neg.m0[vds]
+    save @m.xm_rf_neg.m0[id]
+    save @m.xm_rf_neg.m0[gm]
+    save @m.xm_rf_neg.m0[vth]
+    save @m.xm_rf_neg.m0[cgg]
 
     * diff_pair_2 transistors
     * save @m.xdiff_pair_2.xm1.m0[vgs]
@@ -106,13 +120,13 @@ I1 I_bias_neg GND 50u
     * save @m.xdiff_pair_3.xm2.m0[vth]
     * save @m.xdiff_pair_3.xm2.m0[cgg]
 
-    write Gilbert_cell_tb_sim.raw
+    write Gilbert_no_hierarchy_sim.raw
 
     set appendwrite
 
     * Transient analysis to observe mixing operation
     tran 1p 300n
-    write Gilbert_cell_tb_sim.raw
+    write Gilbert_no_hierarchy_sim.raw
 
     * Calculate differential output for conversion gain measurement
     let v_out_diff = v(v_out_p)-v(v_out_n)
@@ -146,45 +160,13 @@ I1 I_bias_neg GND 50u
     let conversion_gain_db = 20*log10(if_mag/rf_mag)
     print conversion_gain_db
 
-    write Gilbert_cell_tb_sim.raw
+    write Gilbert_no_hierarchy_sim.raw
 
 .endc
 
 
 **** end user architecture code
 **.ends
-
-* expanding   symbol:  /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Gilbert_cell_no_hierarchy.sym # of pins=10
-** sym_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Gilbert_cell_no_hierarchy.sym
-** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Gilbert_cell_no_hierarchy.sch
-.subckt Gilbert_cell_no_hierarchy VDD V_out_p V_out_n V_LO V_LO_b V_RF V_RF_b I_bias_pos I_bias_neg VSS
-*.ipin V_LO
-*.ipin V_LO_b
-*.ipin V_RF
-*.ipin V_RF_b
-*.opin V_out_p
-*.opin V_out_n
-*.iopin I_bias_neg
-*.iopin I_bias_pos
-*.iopin VDD
-*.iopin VSS
-R1 VDD V_out_p 6K m=1
-R2 VDD V_out_n 6K m=1
-XM_dp_lo_pos V_out_p V_LO net1 VSS nfet_03v3 L=0.28u W=24u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u'
-+ pd='2*int((nf+1)/2) * (W/nf + 0.18u)' ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
-XM_dp_lo_neg V_out_n V_LO_b net1 VSS nfet_03v3 L=0.28u W=24u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u'
-+ pd='2*int((nf+1)/2) * (W/nf + 0.18u)' ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
-XM_dp_lo_b_pos V_out_p V_LO_b net2 VSS nfet_03v3 L=0.28u W=24u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u'
-+ pd='2*int((nf+1)/2) * (W/nf + 0.18u)' ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
-XM_dp_lo_b_neg V_out_n V_LO net2 VSS nfet_03v3 L=0.28u W=24u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u'
-+ pd='2*int((nf+1)/2) * (W/nf + 0.18u)' ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
-XM_rf_pos net1 V_RF I_bias_pos VSS nfet_03v3 L=0.28u W=12u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u'
-+ pd='2*int((nf+1)/2) * (W/nf + 0.18u)' ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
-XM_rf_neg net2 V_RF_b I_bias_neg VSS nfet_03v3 L=0.28u W=12u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u'
-+ pd='2*int((nf+1)/2) * (W/nf + 0.18u)' ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
-R7 I_bias_pos I_bias_neg 2K m=1
-.ends
-
 .GLOBAL VDD
 .GLOBAL GND
 .end
