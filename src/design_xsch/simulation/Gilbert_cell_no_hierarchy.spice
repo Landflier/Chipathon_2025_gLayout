@@ -1,0 +1,172 @@
+** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/experimental/Gilbert_cell_no_hierarchy.sch
+**.subckt Gilbert_cell_no_hierarchy V_LO V_LO_b V_RF V_RF_b V_out_p V_out_n
+*.ipin V_LO
+*.ipin V_LO_b
+*.ipin V_RF
+*.ipin V_RF_b
+*.opin V_out_p
+*.opin V_out_n
+R1 VDD V_out_p 6K m=1
+R2 VDD V_out_n 6K m=1
+V_PWR VDD GND 3.3
+.save i(v_pwr)
+V_LO V_LO GND pulse(0 1.5 0 1p 1p 0.25n 0.5n)
+.save i(v_lo)
+V_LO_b V_LO_b GND pulse(0 1.5 0 1p 1p 0.25n 0.5n)
+.save i(v_lo_b)
+V_RF V_RF GND sin( 1 1 1 0 )
+.save i(v_rf)
+V_RF_b V_RF_b GND sin( 1 1 1 0 0 180 )
+.save i(v_rf_b)
+I0 net3 GND 50u
+I1 net4 GND 50u
+XM_dp_lo_pos V_out_p V_LO net1 GND nfet_03v3 L=0.28u W=24u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u'
++ pd='2*int((nf+1)/2) * (W/nf + 0.18u)' ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
+XM_dp_lo_neg V_out_n V_LO_b net1 GND nfet_03v3 L=0.28u W=24u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u'
++ pd='2*int((nf+1)/2) * (W/nf + 0.18u)' ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
+XM_dp_lo_b_pos V_out_p V_LO_b net2 GND nfet_03v3 L=0.28u W=24u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u'
++ pd='2*int((nf+1)/2) * (W/nf + 0.18u)' ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
+XM_dp_lo_b_neg V_out_n V_LO net2 GND nfet_03v3 L=0.28u W=24u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u'
++ pd='2*int((nf+1)/2) * (W/nf + 0.18u)' ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
+XM_rf_pos net1 V_RF net3 GND nfet_03v3 L=0.28u W=12u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
++ ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
+XM_rf_neg net2 V_RF_b net4 GND nfet_03v3 L=0.28u W=12u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
++ ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
+R7 net3 net4 2K m=1
+**** begin user architecture code
+
+.include /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/design.ngspice
+.lib /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/sm141064.ngspice typical
+.lib /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/sm141064.ngspice mimcap_typical
+.lib /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/sm141064.ngspice cap_mim
+.lib /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/sm141064.ngspice res_typical
+
+
+
+
+* let sets vectors to a plot, while set sets a variable, globally accessible in .control
+.control
+
+    * Set frequency and amplitude variables to proper values from within the control sequence
+    * sine-wave LO
+    * set cm_lo = 0.5
+    * set freq_lo = 2.50G
+    * set amp_lo = 0.5
+    * alter @V_LO[sin] = [ $cm_lo $amp_lo $freq_lo 0 ]
+    * alter @V_LO_b[sin] = [ $cm_lo $amp_lo $freq_lo 0 0 180 ]
+
+    set freq_lo = 100Meg
+    set cm_lo = 1.8
+    set amp_lo = 0.25
+
+    set cm_rf  = 2.25
+    set freq_rf = 89.3Meg
+    set amp_rf  = 0.2
+
+    * set the parameters to the voltage sources
+    * alter @V_LO[pulse] = [ 2 2.5 0 0.5p 0.5p 5n 10n ]
+    * alter @V_LO_b[pulse] = [ 2 2.5 5n 0.5p 0.5p 5n 10n]
+    alter @V_LO[sin] = [ $cm_lo $amp_lo $freq_lo 0 ]
+    alter @V_LO_b[sin] = [ $cm_lo $amp_lo $freq_lo 0 0 180 ]
+    alter @V_RF[sin] = [ $cm_rf $amp_rf $freq_rf 0 ]
+    alter @V_RF_b[sin] = [ $cm_rf $amp_rf $freq_rf 0 0 180 ]
+
+    save all
+
+    * operating point
+    op
+    show
+
+    * save transistor op parameters
+    * diff_pair_1 transistors
+    save @m.xm_rf_pos.m0[vgs]
+    save @m.xm_rf_pos.m0[vds]
+    save @m.xm_rf_pos.m0[id]
+    save @m.xm_rf_pos.m0[gm]
+    save @m.xm_rf_pos.m0[vth]
+    save @m.xm_rf_pos.m0[cgg]
+    save @m.xm_rf_neg.m0[vgs]
+    save @m.xm_rf_neg.m0[vds]
+    save @m.xm_rf_neg.m0[id]
+    save @m.xm_rf_neg.m0[gm]
+    save @m.xm_rf_neg.m0[vth]
+    save @m.xm_rf_neg.m0[cgg]
+
+    * diff_pair_2 transistors
+    * save @m.xdiff_pair_2.xm1.m0[vgs]
+    * save @m.xdiff_pair_2.xm1.m0[vds]
+    * save @m.xdiff_pair_2.xm1.m0[id]
+    * save @m.xdiff_pair_2.xm1.m0[gm]
+    * save @m.xdiff_pair_2.xm1.m0[vth]
+    * save @m.xdiff_pair_2.xm1.m0[cgg]
+    * save @m.xdiff_pair_2.xm2.m0[vgs]
+    * save @m.xdiff_pair_2.xm2.m0[vds]
+    * save @m.xdiff_pair_2.xm2.m0[id]
+    * save @m.xdiff_pair_2.xm2.m0[gm]
+    * save @m.xdiff_pair_2.xm2.m0[vth]
+    * save @m.xdiff_pair_2.xm2.m0[cgg]
+
+    * diff_pair_3 transistors
+    * save @m.xdiff_pair_3.xm1.m0[vgs]
+    * save @m.xdiff_pair_3.xm1.m0[vds]
+    * save @m.xdiff_pair_3.xm1.m0[id]
+    * save @m.xdiff_pair_3.xm1.m0[gm]
+    * save @m.xdiff_pair_3.xm1.m0[vth]
+    * save @m.xdiff_pair_3.xm1.m0[cgg]
+    * save @m.xdiff_pair_3.xm2.m0[vgs]
+    * save @m.xdiff_pair_3.xm2.m0[vds]
+    * save @m.xdiff_pair_3.xm2.m0[id]
+    * save @m.xdiff_pair_3.xm2.m0[gm]
+    * save @m.xdiff_pair_3.xm2.m0[vth]
+    * save @m.xdiff_pair_3.xm2.m0[cgg]
+
+    write Gilbert_no_hierarchy_sim.raw
+
+    set appendwrite
+
+    * Transient analysis to observe mixing operation
+    tran 1p 300n
+    write Gilbert_no_hierarchy_sim.raw
+
+    * Calculate differential output for conversion gain measurement
+    let v_out_diff = v(v_out_p)-v(v_out_n)
+    let v_rf_diff = v(v_rf)-v(v_rf_b)
+
+    * Extract IF component at 100MHz using FFT
+    linearize v_out_diff v_rf_diff
+    let time_step = 10e-12
+    let sample_freq = 1/time_step
+    let npts = length(v_out_diff)
+    let freq_res = sample_freq/npts
+
+
+    fft v_out_diff v_rf_diff
+    * Find frequency bins
+
+    * print everything, sanity check
+    * set     ; print all available global (?) variables (?)
+    * setplot ; print all plots
+    * display ; print variables available in current plot
+
+    let freq_res = tran2.freq_res
+    let freq_if = abs( $freq_lo - $freq_rf )
+
+    let if_bin = floor( freq_if/freq_res )
+    let rf_bin = floor( $freq_rf/freq_res )
+
+    * Measure conversion gain (power gain from RF to IF)
+    let rf_mag = abs(v_rf_diff[rf_bin])
+    let if_mag = abs(v_out_diff[if_bin])
+    let conversion_gain_db = 20*log10(if_mag/rf_mag)
+    print conversion_gain_db
+
+    write Gilbert_no_hierarchy_sim.raw
+
+.endc
+
+
+**** end user architecture code
+**.ends
+.GLOBAL VDD
+.GLOBAL GND
+.end
