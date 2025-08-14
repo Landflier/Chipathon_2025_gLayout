@@ -47,6 +47,7 @@ set dircolor(xschem_examples$) blue
 set dircolor(xschem_180MCU_PDK$) blue
 set dircolor(xschem_library$) red
 set dircolor(devices$) red
+set dark_colorscheme 0 
 
 ###########################################################################
 #### WINDOW TO OPEN ON STARTUP: XSCHEM_START_WINDOW
