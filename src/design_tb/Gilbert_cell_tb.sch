@@ -6,15 +6,15 @@ V {}
 S {}
 E {}
 B 2 1780 -1200 2580 -800 {flags=graph,unlocked
-y1=-0.64
-y2=2.2
+y1=-1.2
+y2=3
 ypos1=0
 ypos2=2
 divy=5
 subdivy=1
 unity=1
-x1=0
-x2=3e-07
+x1=-1.5e-08
+x2=2.85e-07
 divx=5
 subdivx=1
 xlabmag=1.0
@@ -26,10 +26,11 @@ unitx=1
 logx=0
 logy=0
 rainbow=1
-color="4 8 6"
+color="4 8 6 7"
 node="v_rf
 v_lo
-\\"diff_output; v_out_p v_out_n -\\""
+\\"diff_output; v_out_p v_out_n -\\"
+v_out_p"
 rawfile=$netlist_dir/Gilbert_cell_tb_sim.raw
 sim_type=tran
 autoload=1}
@@ -188,7 +189,7 @@ value="
     set cm_rf  = 1.2
     set freq_rf = 89.3Meg
     * set freq_rf = 10.7Meg
-    set amp_rf  = 0.2
+    set amp_rf  = 0.1
 
     * set the parameters to the voltage sources
     * alter @V_LO[pulse] = [ 2 2.5 0 0.5p 0.5p 5n 10n ]

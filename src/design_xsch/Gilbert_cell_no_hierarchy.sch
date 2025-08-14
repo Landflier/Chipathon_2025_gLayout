@@ -25,7 +25,7 @@ N 990 -970 1090 -970 {
 lab=rf_diff_pair_neg_input}
 N 1090 -1020 1090 -970 {
 lab=rf_diff_pair_neg_input}
-N 640 -820 1090 -820 {
+N 640 -805 1090 -805 {
 lab=V_RF_b}
 N 1090 -910 1090 -820 {
 lab=V_RF_b}
@@ -122,15 +122,17 @@ lab=I_bias_pos}
 N 990 -760 990 -730 {
 lab=I_bias_neg}
 N 780 -1340 800 -1340 {
-lab=VSS}
+lab=VDD}
 N 1090 -1340 1110 -1340 {
-lab=VSS}
+lab=VDD}
 N 910 -830 920 -830 {
 lab=I_bias_pos}
 N 980 -830 990 -830 {
 lab=I_bias_neg}
 N 950 -870 950 -850 {
-lab=VSS}
+lab=VDD}
+N 1090 -820 1090 -805 {
+lab=V_RF_b}
 C {ipin.sym} 630 -1090 0 0 {name=p1 lab=V_LO}
 C {ipin.sym} 630 -1000 0 0 {name=p2 lab=V_LO_b
 }
@@ -238,24 +240,24 @@ C {lab_wire.sym} 1090 -990 0 0 {name=p15 sig_type=std_logic lab=rf_diff_pair_neg
 }
 C {lab_wire.sym} 800 -990 0 0 {name=p16 sig_type=std_logic lab=rf_diff_pair_pos_input hide_texts=true
 }
-C {symbols/ppolyf_u_2k.sym} 760 -1340 0 1 {name=R_load_1
-W=1e-6
-L=3e-6
-model=ppolyf_u_2k
+C {lab_wire.sym} 800 -1340 0 1 {name=p17 sig_type=std_logic lab=VDD}
+C {lab_wire.sym} 1090 -1340 0 0 {name=p18 sig_type=std_logic lab=VDD}
+C {lab_wire.sym} 950 -870 1 0 {name=p19 sig_type=std_logic lab=VDD}
+C {symbols/pplus_u.sym} 950 -830 3 1 {name=R_load_3
+W=0.5e-6
+L=5e-6
+model=pplus_u
 spiceprefix=X
 m=1}
-C {symbols/ppolyf_u_2k.sym} 1130 -1340 0 0 {name=R_load_2
+C {symbols/ppolyf_u_1k.sym} 760 -1340 0 1 {name=R_load_2
 W=1e-6
-L=3e-6
-model=ppolyf_u_2k
+L=20e-6
+model=ppolyf_u_1k
 spiceprefix=X
 m=1}
-C {symbols/ppolyf_u_2k.sym} 950 -830 1 0 {name=R_degeneration
+C {symbols/ppolyf_u_1k.sym} 1130 -1340 0 0 {name=R_load_1
 W=1e-6
-L=1e-6
-model=ppolyf_u_2k
+L=20e-6
+model=ppolyf_u_1k
 spiceprefix=X
 m=1}
-C {lab_wire.sym} 800 -1340 0 1 {name=p17 sig_type=std_logic lab=VSS}
-C {lab_wire.sym} 1090 -1340 0 0 {name=p18 sig_type=std_logic lab=VSS}
-C {lab_wire.sym} 950 -870 1 0 {name=p19 sig_type=std_logic lab=VSS}
