@@ -48,7 +48,7 @@ I1 I_bias_neg GND 50u
     set cm_rf  = 1.2
     set freq_rf = 89.3Meg
     * set freq_rf = 10.7Meg
-    set amp_rf  = 0.2
+    set amp_rf  = 0.1
 
     * set the parameters to the voltage sources
     * alter @V_LO[pulse] = [ 2 2.5 0 0.5p 0.5p 5n 10n ]
@@ -146,12 +146,7 @@ I1 I_bias_neg GND 50u
 
     * Find center bins for RF and IF frequencies
     let rf_center_bin = floor( $freq_rf/freq_res + 0.5 )
-    print rf_center_bin * freq_res
     let if_center_bin = floor( freq_if/freq_res + 0.5 )
-    print if_center_bin * freq_res
-
-    print if_center_bin
-    print rf_center_bin
 
     * Calculate power by summing magnitude squared over the bandwidth
     * RF power integration (±10MHz around freq_rf)
@@ -160,8 +155,8 @@ I1 I_bias_neg GND 50u
     while i <= rf_center_bin + bin_width
         if i>0 & i < length(v_rf_diff)
             let bin_freq = i * freq_res
-            print bin_freq
-            print abs(v_rf_diff[i])
+            * print bin_freq
+            * print abs(v_rf_diff[i])
             let rf_power_total = rf_power_total + abs(v_rf_diff[i])^2
         end
         let i = i + 1
@@ -173,8 +168,8 @@ I1 I_bias_neg GND 50u
     while j <= if_center_bin + bin_width
         if j >= 0 & j < length(v_out_diff)
             let bin_freq = j * freq_res
-            print bin_freq
-            print abs(v_out_diff[j])
+            * print bin_freq
+            * print abs(v_out_diff[j])
             let if_power_total = if_power_total + abs(v_out_diff[j])^2
         end
         let j = j + 1
@@ -182,6 +177,7 @@ I1 I_bias_neg GND 50u
 
     print if_power_total
     print rf_power_total
+
     let conversion_gain_db = 10*log10(if_power_total/rf_power_total)
     print conversion_gain_db
 
@@ -219,9 +215,9 @@ XM_rf_pos rf_diff_pair_pos_input V_RF I_bias_pos VSS nfet_03v3 L=0.28u W=10u nf=
 + pd='2*int((nf+1)/2) * (W/nf + 0.18u)' ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
 XM_rf_neg rf_diff_pair_neg_input V_RF_b I_bias_neg VSS nfet_03v3 L=0.28u W=10u nf=5 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u'
 + pd='2*int((nf+1)/2) * (W/nf + 0.18u)' ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
-XR_load_1 V_out_p VDD VSS ppolyf_u_2k r_width=1e-6 r_length=3e-6 m=1
-XR_load_2 V_out_n VDD VSS ppolyf_u_2k r_width=1e-6 r_length=3e-6 m=1
-XR_degeneration I_bias_pos I_bias_neg VSS ppolyf_u_2k r_width=1e-6 r_length=1e-6 m=1
+XR_load_2 V_out_p VDD VDD pplus_u r_width=0.5e-6 r_length=30e-6 m=1
+XR_load_1 V_out_n VDD VDD pplus_u r_width=0.5e-6 r_length=30e-6 m=1
+XR_load_3 I_bias_neg I_bias_pos VDD pplus_u r_width=0.5e-6 r_length=5e-6 m=1
 .ends
 
 .GLOBAL VDD
