@@ -51,7 +51,7 @@ lab=#net1}
 N 1100 -1240 1100 -1180 {
 lab=#net1}
 N 1240 -1240 1270 -1240 {
-lab=#net2}
+lab=VDD}
 N 1210 -1120 1240 -1120 {
 lab=VSS}
 N 1020 -1120 1050 -1120 {
@@ -70,9 +70,9 @@ value="
 
 "
 }
-C {symbols/nfet_03v3.sym} 1000 -1120 0 0 {name=M3
+C {symbols/nfet_03v3.sym} 1000 -1120 0 0 {name=M_nmos_pos
 L=0.28u
-W=0.22u
+W=6u
 nf=1
 m=1
 ad="'int((nf+1)/2) * W/nf * 0.18u'"
@@ -84,9 +84,9 @@ sa=0 sb=0 sd=0
 model=nfet_03v3
 spiceprefix=X
 }
-C {symbols/nfet_03v3.sym} 1260 -1120 0 1 {name=M4
+C {symbols/nfet_03v3.sym} 1260 -1120 0 1 {name=M_nmos_neg
 L=0.28u
-W=0.22u
+W=6u
 nf=1
 m=1
 ad="'int((nf+1)/2) * W/nf * 0.18u'"
@@ -105,9 +105,9 @@ C {ipin.sym} 900 -1060 0 0 {name=p3 lab=Vin_minus
 }
 C {opin.sym} 1360 -1180 0 0 {name=p4 lab=Vout}
 C {iopin.sym} 1130 -940 1 0 {name=p5 lab=I_bias}
-C {symbols/pfet_03v3.sym} 1040 -1240 0 1 {name=M1
+C {symbols/pfet_03v3.sym} 1040 -1240 0 1 {name=M_pmos_diode
 L=0.28u
-W=0.22u
+W=10u
 nf=1
 m=1
 ad="'int((nf+1)/2) * W/nf * 0.18u'"
@@ -119,9 +119,9 @@ sa=0 sb=0 sd=0
 model=pfet_03v3
 spiceprefix=X
 }
-C {symbols/pfet_03v3.sym} 1220 -1240 0 0 {name=M2
+C {symbols/pfet_03v3.sym} 1220 -1240 0 0 {name=M_pmos_mirror
 L=0.28u
-W=0.22u
+W=10u
 nf=1
 m=1
 ad="'int((nf+1)/2) * W/nf * 0.18u'"

@@ -243,12 +243,6 @@ C {lab_wire.sym} 800 -990 0 0 {name=p16 sig_type=std_logic lab=rf_diff_pair_pos_
 C {lab_wire.sym} 800 -1340 0 1 {name=p17 sig_type=std_logic lab=VDD}
 C {lab_wire.sym} 1090 -1340 0 0 {name=p18 sig_type=std_logic lab=VDD}
 C {lab_wire.sym} 950 -870 1 0 {name=p19 sig_type=std_logic lab=VDD}
-C {symbols/pplus_u.sym} 950 -830 3 1 {name=R_load_3
-W=0.5e-6
-L=5e-6
-model=pplus_u
-spiceprefix=X
-m=1}
 C {symbols/ppolyf_u_1k.sym} 760 -1340 0 1 {name=R_load_2
 W=1e-6
 L=20e-6
@@ -258,6 +252,12 @@ m=1}
 C {symbols/ppolyf_u_1k.sym} 1130 -1340 0 0 {name=R_load_1
 W=1e-6
 L=20e-6
+model=ppolyf_u_1k
+spiceprefix=X
+m=1}
+C {symbols/ppolyf_u_1k.sym} 950 -830 3 1 {name=R_load_3
+W=1e-6
+L=3e-6
 model=ppolyf_u_1k
 spiceprefix=X
 m=1}
