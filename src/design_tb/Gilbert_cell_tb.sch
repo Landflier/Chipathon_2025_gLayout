@@ -6,15 +6,15 @@ V {}
 S {}
 E {}
 B 2 1780 -1200 2580 -800 {flags=graph,unlocked
-y1=-0.58
-y2=2.1
+y1=-1.2
+y2=3
 ypos1=0
 ypos2=2
 divy=5
 subdivy=1
 unity=1
-x1=0
-x2=3e-07
+x1=-1.5e-08
+x2=2.85e-07
 divx=5
 subdivx=1
 xlabmag=1.0
@@ -26,22 +26,24 @@ unitx=1
 logx=0
 logy=0
 rainbow=1
-color="4 8 6"
+color="4 8 6 7"
 node="v_rf
 v_lo
-\\"diff_output; v_out_p v_out_n -\\""
+\\"diff_output; v_out_p v_out_n -\\"
+v_out_p"
 rawfile=$netlist_dir/Gilbert_cell_tb_sim.raw
-sim_type=tran}
-B 2 1780 -1640 2580 -1240 {flags=graph,unlocked
-y1=3.2e-14
-y2=0.5
+sim_type=tran
+autoload=1}
+B 2 1780 -1630 2580 -1230 {flags=graph,unlocked
+y1=6e-14
+y2=0.8
 ypos1=0
 ypos2=2
 divy=5
 subdivy=1
 unity=1
-x1=-23992288
-x2=3.3808633e+08
+x1=-25782827
+x2=2.9112984e+08
 divx=5
 subdivx=1
 xlabmag=1.0
@@ -60,27 +62,6 @@ rawfile=$netlist_dir/Gilbert_cell_tb_sim.raw
 sim_type=sp
 sweep=frequency
 autoload=1}
-B 2 1780 -2080 2580 -1680 {flags=graph
-y1=0
-y2=2
-ypos1=0
-ypos2=2
-divy=5
-subdivy=1
-unity=1
-x1=0
-x2=10e-6
-divx=5
-subdivx=1
-xlabmag=1.0
-ylabmag=1.0
-node=""
-color=""
-dataset=-1
-unitx=1
-logx=0
-logy=0
-}
 T {Desription
 
 Gilbert cell mixer for FM radio receiver, 
@@ -88,7 +69,12 @@ performing downconversion of a 89.0MHz signal
 to an intermediate frequency of 10.7Mhz
 f_LO = 100 MHz
 f_RF = 89.3 MHz
-f_IF = f_LO - f_RF = 10.7 MHz} 2870 -2390 0 0 0.4 0.4 {}
+f_IF = f_LO - f_RF = 10.7 MHz} 2880 -2390 0 0 0.4 0.4 {}
+T {f_LO = 100 MHz
+f_RF = 89.7 MHz
+
+f_IF = f_LO - f_RF 
+       = 10.7 MHz} 2580 -1200 0 0 0.4 0.4 {}
 N 120 -2270 120 -2250 {
 lab=GND}
 N 120 -2350 120 -2330 {lab=V_LO}
@@ -198,12 +184,12 @@ value="
 
     set freq_lo = 100Meg
     set cm_lo = 1.8
-    set amp_lo = 0.25
+    set amp_lo = 0.4
 
-    set cm_rf  = 1,6
-    * set freq_rf = 89.3Meg
-    set freq_rf = 10Meg
-    set amp_rf  = 0.2
+    set cm_rf  = 1.2
+    set freq_rf = 89.3Meg
+    * set freq_rf = 10.7Meg
+    set amp_rf  = 0.1
 
     * set the parameters to the voltage sources
     * alter @V_LO[pulse] = [ 2 2.5 0 0.5p 0.5p 5n 10n ]
@@ -267,7 +253,7 @@ value="
     set appendwrite
 
     * Transient analysis to observe mixing operation
-    tran 1p 300n
+    tran 1p 0.3u
     write Gilbert_cell_tb_sim.raw
 
     * Calculate differential output for conversion gain measurement
@@ -278,30 +264,62 @@ value="
     
     * Extract IF component at 100MHz using FFT
     linearize v_out_diff v_rf_diff v_lo_diff
-    let time_step = 10e-12
+    let time_step = 1e-12
     let sample_freq = 1/time_step
     let npts = length(v_out_diff)
     let freq_res = sample_freq/npts
     
 
     fft v_out_diff v_rf_diff v_lo_diff
-    * Find frequency bins
 
     * print everything, sanity check
     * set     ; print all available global (?) variables (?)
     * setplot ; print all plots
     * display ; print variables available in current plot
-
-    let freq_res = tran2.freq_res
-    let freq_if = abs( $freq_lo - $freq_rf )
-
-    let if_bin = floor( freq_if/freq_res )
-    let rf_bin = floor( $freq_rf/freq_res )
     
-    * Measure conversion gain (power gain from RF to IF)
-    let rf_mag = abs(v_rf_diff[rf_bin])
-    let if_mag = abs(v_out_diff[if_bin])
-    let conversion_gain_db = 20*log10(if_mag/rf_mag)
+    let freq_res = tran2.freq_res
+    let freq_if = abs ( $freq_lo - $freq_rf )
+
+    * Define bandwidth for power integration (10MHz around nominal frequencies).
+    *  To improve resolution increase time of tran simulation, reduce time step, in order to reduce FFT resolution
+    let bandwidth = 10e6
+    let bin_width = floor(bandwidth/freq_res + 0.5)
+   
+    * Find center bins for RF and IF frequencies
+    let rf_center_bin = floor( $freq_rf/freq_res + 0.5 )
+    let if_center_bin = floor( freq_if/freq_res + 0.5 )
+
+    * Calculate power by summing magnitude squared over the bandwidth
+    * RF power integration (±10MHz around freq_rf)
+    let rf_power_total = 0
+    let i = rf_center_bin - bin_width
+    while i <= rf_center_bin + bin_width
+        if i>0 & i < length(v_rf_diff)
+            let bin_freq = i * freq_res
+            * print bin_freq
+            * print abs(v_rf_diff[i])
+            let rf_power_total = rf_power_total + abs(v_rf_diff[i])^2
+        end
+        let i = i + 1
+    end
+    
+    * IF power integration (±10MHz around freq_if)  
+    let if_power_total = 0
+    let j = if_center_bin - bin_width
+    while j <= if_center_bin + bin_width
+        if j >= 0 & j < length(v_out_diff)
+            let bin_freq = j * freq_res
+            * print bin_freq
+            * print abs(v_out_diff[j])
+            let if_power_total = if_power_total + abs(v_out_diff[j])^2
+        end
+        let j = j + 1
+    end
+
+    print if_power_total
+    print rf_power_total
+
+    let conversion_gain_db = 10*log10(if_power_total/rf_power_total)
     print conversion_gain_db
 
     write Gilbert_cell_tb_sim.raw

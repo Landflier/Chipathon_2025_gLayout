@@ -43,11 +43,12 @@ I1 I_bias_neg GND 50u
 
     set freq_lo = 100Meg
     set cm_lo = 1.8
-    set amp_lo = 0.25
+    set amp_lo = 0.4
 
-    set cm_rf  = 1,6
+    set cm_rf  = 1.2
     set freq_rf = 89.3Meg
-    set amp_rf  = 0.2
+    * set freq_rf = 10.7Meg
+    set amp_rf  = 0.1
 
     * set the parameters to the voltage sources
     * alter @V_LO[pulse] = [ 2 2.5 0 0.5p 0.5p 5n 10n ]
@@ -111,23 +112,24 @@ I1 I_bias_neg GND 50u
     set appendwrite
 
     * Transient analysis to observe mixing operation
-    tran 1p 300n
+    tran 1p 0.3u
     write Gilbert_cell_tb_sim.raw
 
     * Calculate differential output for conversion gain measurement
     let v_out_diff = v(v_out_p)-v(v_out_n)
     let v_rf_diff = v(v_rf)-v(v_rf_b)
+    let v_lo_diff = v(v_lo)-v(v_lo_b)
+
 
     * Extract IF component at 100MHz using FFT
-    linearize v_out_diff v_rf_diff
-    let time_step = 10e-12
+    linearize v_out_diff v_rf_diff v_lo_diff
+    let time_step = 1e-12
     let sample_freq = 1/time_step
     let npts = length(v_out_diff)
     let freq_res = sample_freq/npts
 
 
-    fft v_out_diff v_rf_diff
-    * Find frequency bins
+    fft v_out_diff v_rf_diff v_lo_diff
 
     * print everything, sanity check
     * set     ; print all available global (?) variables (?)
@@ -135,15 +137,48 @@ I1 I_bias_neg GND 50u
     * display ; print variables available in current plot
 
     let freq_res = tran2.freq_res
-    let freq_if = abs( $freq_lo - $freq_rf )
+    let freq_if = abs ( $freq_lo - $freq_rf )
 
-    let if_bin = floor( freq_if/freq_res )
-    let rf_bin = floor( $freq_rf/freq_res )
+    * Define bandwidth for power integration (10MHz around nominal frequencies).
+    *  To improve resolution increase time of tran simulation, reduce time step, in order to reduce FFT resolution
+    let bandwidth = 10e6
+    let bin_width = floor(bandwidth/freq_res + 0.5)
 
-    * Measure conversion gain (power gain from RF to IF)
-    let rf_mag = abs(v_rf_diff[rf_bin])
-    let if_mag = abs(v_out_diff[if_bin])
-    let conversion_gain_db = 20*log10(if_mag/rf_mag)
+    * Find center bins for RF and IF frequencies
+    let rf_center_bin = floor( $freq_rf/freq_res + 0.5 )
+    let if_center_bin = floor( freq_if/freq_res + 0.5 )
+
+    * Calculate power by summing magnitude squared over the bandwidth
+    * RF power integration (±10MHz around freq_rf)
+    let rf_power_total = 0
+    let i = rf_center_bin - bin_width
+    while i <= rf_center_bin + bin_width
+        if i>0 & i < length(v_rf_diff)
+            let bin_freq = i * freq_res
+            * print bin_freq
+            * print abs(v_rf_diff[i])
+            let rf_power_total = rf_power_total + abs(v_rf_diff[i])^2
+        end
+        let i = i + 1
+    end
+
+    * IF power integration (±10MHz around freq_if)
+    let if_power_total = 0
+    let j = if_center_bin - bin_width
+    while j <= if_center_bin + bin_width
+        if j >= 0 & j < length(v_out_diff)
+            let bin_freq = j * freq_res
+            * print bin_freq
+            * print abs(v_out_diff[j])
+            let if_power_total = if_power_total + abs(v_out_diff[j])^2
+        end
+        let j = j + 1
+    end
+
+    print if_power_total
+    print rf_power_total
+
+    let conversion_gain_db = 10*log10(if_power_total/rf_power_total)
     print conversion_gain_db
 
     write Gilbert_cell_tb_sim.raw
@@ -168,21 +203,21 @@ I1 I_bias_neg GND 50u
 *.iopin I_bias_pos
 *.iopin VDD
 *.iopin VSS
-R1 VDD V_out_p 6K m=1
-R2 VDD V_out_n 6K m=1
-XM_dp_lo_pos V_out_p V_LO net1 VSS nfet_03v3 L=0.28u W=24u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u'
+XM_dp_lo_pos V_out_p V_LO rf_diff_pair_pos_input VSS nfet_03v3 L=0.28u W=20u nf=5 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u'
 + pd='2*int((nf+1)/2) * (W/nf + 0.18u)' ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
-XM_dp_lo_neg V_out_n V_LO_b net1 VSS nfet_03v3 L=0.28u W=24u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u'
+XM_dp_lo_neg V_out_n V_LO_b rf_diff_pair_pos_input VSS nfet_03v3 L=0.28u W=20u nf=5 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u'
 + pd='2*int((nf+1)/2) * (W/nf + 0.18u)' ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
-XM_dp_lo_b_pos V_out_p V_LO_b net2 VSS nfet_03v3 L=0.28u W=24u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u'
+XM_dp_lo_b_pos V_out_p V_LO_b rf_diff_pair_neg_input VSS nfet_03v3 L=0.28u W=20u nf=5 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u'
 + pd='2*int((nf+1)/2) * (W/nf + 0.18u)' ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
-XM_dp_lo_b_neg V_out_n V_LO net2 VSS nfet_03v3 L=0.28u W=24u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u'
+XM_dp_lo_b_neg V_out_n V_LO rf_diff_pair_neg_input VSS nfet_03v3 L=0.28u W=20u nf=5 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u'
 + pd='2*int((nf+1)/2) * (W/nf + 0.18u)' ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
-XM_rf_pos net1 V_RF I_bias_pos VSS nfet_03v3 L=0.28u W=12u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u'
+XM_rf_pos rf_diff_pair_pos_input V_RF I_bias_pos VSS nfet_03v3 L=0.28u W=10u nf=5 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u'
 + pd='2*int((nf+1)/2) * (W/nf + 0.18u)' ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
-XM_rf_neg net2 V_RF_b I_bias_neg VSS nfet_03v3 L=0.28u W=12u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u'
+XM_rf_neg rf_diff_pair_neg_input V_RF_b I_bias_neg VSS nfet_03v3 L=0.28u W=10u nf=5 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u'
 + pd='2*int((nf+1)/2) * (W/nf + 0.18u)' ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
-R7 I_bias_pos I_bias_neg 2K m=1
+XR_load_2 V_out_p VDD VDD pplus_u r_width=0.5e-6 r_length=30e-6 m=1
+XR_load_1 V_out_n VDD VDD pplus_u r_width=0.5e-6 r_length=30e-6 m=1
+XR_load_3 I_bias_neg I_bias_pos VDD pplus_u r_width=0.5e-6 r_length=5e-6 m=1
 .ends
 
 .GLOBAL VDD

@@ -1,0 +1,88 @@
+magic
+tech gf180mcuD
+magscale 1 5
+timestamp 1755250493
+<< checkpaint >>
+rect -1030 1350 1568 1380
+rect -1030 1320 2136 1350
+rect 2378 1320 4714 1348
+rect -1030 1318 4714 1320
+rect -1030 -412 5020 1318
+rect -1030 -2830 5326 -412
+rect -462 -2860 5326 -2830
+rect 106 -2890 5326 -2860
+rect 674 -2920 5326 -2890
+rect 1242 -2950 5326 -2920
+rect 1810 -2980 5326 -2950
+rect 2378 -3010 5326 -2980
+rect 2684 -3040 5326 -3010
+rect 2990 -3070 5326 -3040
+<< metal1 >>
+rect 0 0 100 100
+rect 0 -200 100 -100
+rect 0 -400 100 -300
+rect 0 -600 100 -500
+rect 0 -800 100 -700
+rect 0 -1000 100 -900
+rect 0 -1200 100 -1100
+rect 0 -1400 100 -1300
+rect 0 -1600 100 -1500
+rect 0 -1800 100 -1700
+use nfet_03v3_WQVELR  M_dp_lo_b_neg
+timestamp 0
+transform 1 0 1973 0 1 -815
+box -299 -1105 299 1105
+use nfet_03v3_WQVELR  M_dp_lo_b_pos
+timestamp 0
+transform 1 0 1405 0 1 -785
+box -299 -1105 299 1105
+use nfet_03v3_WQVELR  M_dp_lo_neg
+timestamp 0
+transform 1 0 837 0 1 -755
+box -299 -1105 299 1105
+use nfet_03v3_WQVELR  M_dp_lo_pos
+timestamp 0
+transform 1 0 269 0 1 -725
+box -299 -1105 299 1105
+use nfet_03v3_WQ9W9R  M_rf_neg
+timestamp 0
+transform 1 0 3109 0 1 -1375
+box -299 -605 299 605
+use nfet_03v3_WQ9W9R  M_rf_pos
+timestamp 0
+transform 1 0 2541 0 1 -1345
+box -299 -605 299 605
+use ppolyf_u_1k_LRJJWQ  XR_load_1
+timestamp 0
+transform 1 0 3852 0 1 -861
+box -168 -1179 168 1179
+use ppolyf_u_1k_LRJJWQ  XR_load_2
+timestamp 0
+transform 1 0 3546 0 1 -831
+box -168 -1179 168 1179
+use ppolyf_u_1k_DZFHMB  XR_load_3
+timestamp 0
+transform 1 0 4158 0 1 -1741
+box -168 -329 168 329
+<< labels >>
+flabel metal1 0 0 100 100 0 FreeSans 640 0 0 0 VDD
+port 0 nsew
+flabel metal1 0 -200 100 -100 0 FreeSans 640 0 0 0 V_out_p
+port 1 nsew
+flabel metal1 0 -400 100 -300 0 FreeSans 640 0 0 0 V_out_n
+port 2 nsew
+flabel metal1 0 -600 100 -500 0 FreeSans 640 0 0 0 V_LO
+port 3 nsew
+flabel metal1 0 -800 100 -700 0 FreeSans 640 0 0 0 V_LO_b
+port 4 nsew
+flabel metal1 0 -1000 100 -900 0 FreeSans 640 0 0 0 V_RF
+port 5 nsew
+flabel metal1 0 -1200 100 -1100 0 FreeSans 640 0 0 0 V_RF_b
+port 6 nsew
+flabel metal1 0 -1400 100 -1300 0 FreeSans 640 0 0 0 I_bias_pos
+port 7 nsew
+flabel metal1 0 -1600 100 -1500 0 FreeSans 640 0 0 0 I_bias_neg
+port 8 nsew
+flabel metal1 0 -1800 100 -1700 0 FreeSans 640 0 0 0 VSS
+port 9 nsew
+<< end >>
