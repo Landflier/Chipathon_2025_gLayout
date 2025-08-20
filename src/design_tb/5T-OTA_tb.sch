@@ -1,4 +1,5 @@
-v {xschem version=3.4.7 file_version=1.2}
+v {xschem version=3.4.5 file_version=1.2
+}
 G {}
 K {}
 V {}
@@ -108,7 +109,6 @@ N 120 -1820 120 -1780 {
 lab=GND}
 N 910 -1210 910 -1170 {
 lab=GND}
-N 1000 -1290 1030 -1290 {lab=Vout}
 C {code.sym} 50 -190 0 0 {name=MODELS only_toplevel=true
 format="tcleval( @value )"
 value="
@@ -181,7 +181,7 @@ C {vdd.sym} 880 -1430 0 0 {name=l10 lab=VDD}
 C {gnd.sym} 120 -1760 0 0 {name=l6 lab=GND}
 C {lab_pin.sym} 880 -1130 3 0 {name=p6 sig_type=std_logic lab=I_bias_pos}
 C {lab_pin.sym} 120 -1920 3 1 {name=p13 sig_type=std_logic lab=I_bias_pos}
-C {Chipathon_2025_gLayout/src/design_xsch/5T-OTA-buffer_no_hierarchy.sym} 970 -1290 0 0 {name=X5T-OTA}
+C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/5T-OTA-buffer_no_hierarchy.sym} 970 -1290 0 0 {name=X5T-OTA}
 C {lab_pin.sym} 710 -1330 0 0 {name=p1 sig_type=std_logic lab=V_IF}
 C {lab_pin.sym} 710 -1250 0 0 {name=p2 sig_type=std_logic lab=V_IF_b
 }
