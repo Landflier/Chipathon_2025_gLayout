@@ -1,4 +1,4 @@
-** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_tb/Gilbert_cell_tb_IIP3.sch
+** sch_path: /foss/designs/Chipathon_2025_gLayout/src/design_tb/Gilbert_cell_tb_IIP3.sch
 **.subckt Gilbert_cell_tb_IIP3 V_LO V_LO_b V_RF V_RF_b V_out_p V_out_n
 *.ipin V_LO
 *.ipin V_LO_b
@@ -113,9 +113,9 @@ V_RF_b_tone_2 V_RF_b net1 sin( 1 1 1 0 0 180 )
 **** end user architecture code
 **.ends
 
-* expanding   symbol:  /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Gilbert_cell_no_hierarchy.sym # of pins=10
-** sym_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Gilbert_cell_no_hierarchy.sym
-** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Gilbert_cell_no_hierarchy.sch
+* expanding   symbol:  /foss/designs/Chipathon_2025_gLayout/src/design_xsch/Gilbert_cell_no_hierarchy.sym # of pins=10
+** sym_path: /foss/designs/Chipathon_2025_gLayout/src/design_xsch/Gilbert_cell_no_hierarchy.sym
+** sch_path: /foss/designs/Chipathon_2025_gLayout/src/design_xsch/Gilbert_cell_no_hierarchy.sch
 .subckt Gilbert_cell_no_hierarchy VDD V_out_p V_out_n V_LO V_LO_b V_RF V_RF_b I_bias_pos I_bias_neg VSS
 *.ipin V_LO
 *.ipin V_LO_b

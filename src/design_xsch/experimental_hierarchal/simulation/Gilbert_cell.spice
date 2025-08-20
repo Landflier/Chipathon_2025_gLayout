@@ -1,4 +1,4 @@
-** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/experimental/Gilbert_cell.sch
+** sch_path: /foss/designs/Chipathon_2025_gLayout/src/design_xsch/experimental/Gilbert_cell.sch
 **.subckt Gilbert_cell V_LO V_LO_b V_RF V_RF_b V_out_p V_out_n
 *.ipin V_LO
 *.ipin V_LO_b
@@ -160,9 +160,9 @@ xdiff_pair_rf net2 net1 V_RF V_RF_b net3 net6 diff_pair_with_source_degeneration
 **** end user architecture code
 **.ends
 
-* expanding   symbol:  /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/experimental/diff_pair.sym # of pins=6
-** sym_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/experimental/diff_pair.sym
-** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/experimental/diff_pair.sch
+* expanding   symbol:  /foss/designs/Chipathon_2025_gLayout/src/design_xsch/experimental/diff_pair.sym # of pins=6
+** sym_path: /foss/designs/Chipathon_2025_gLayout/src/design_xsch/experimental/diff_pair.sym
+** sch_path: /foss/designs/Chipathon_2025_gLayout/src/design_xsch/experimental/diff_pair.sch
 .subckt diff_pair I_out_n I_out_p V_in_p V_in_n I_bias GND  mult=1  W_neg=0.22u L_neg=0.28u W_pos=0.22u L_pos=0.28u
 *.ipin V_in_p
 *.ipin V_in_n
@@ -177,10 +177,10 @@ XM2 I_out_n V_in_n I_bias GND nfet_03v3 L=L_neg W=W_neg nf=1 ad='int((nf+1)/2) *
 .ends
 
 
-* expanding   symbol:  /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/experimental/diff_pair_with_source_degeneration.sym #
+* expanding   symbol:  /foss/designs/Chipathon_2025_gLayout/src/design_xsch/experimental/diff_pair_with_source_degeneration.sym #
 *+ of pins=7
-** sym_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/experimental/diff_pair_with_source_degeneration.sym
-** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/experimental/diff_pair_with_source_degeneration.sch
+** sym_path: /foss/designs/Chipathon_2025_gLayout/src/design_xsch/experimental/diff_pair_with_source_degeneration.sym
+** sch_path: /foss/designs/Chipathon_2025_gLayout/src/design_xsch/experimental/diff_pair_with_source_degeneration.sch
 .subckt diff_pair_with_source_degeneration I_out_n I_out_p V_in_p V_in_n I_bias GND  mult=1  W_neg=0.22u L_neg=0.28u W_pos=0.22u
 + L_pos=0.28u RS=1K
 *.ipin V_in_p

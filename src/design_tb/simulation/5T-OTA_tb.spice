@@ -1,4 +1,4 @@
-** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_tb/5T-OTA_tb.sch
+** sch_path: /foss/designs/Chipathon_2025_gLayout/src/design_tb/5T-OTA_tb.sch
 **.subckt 5T-OTA_tb Vout
 *.opin Vout
 V_PWR VDD GND 3.3
@@ -53,9 +53,9 @@ X5T-OTA VDD Vout V_IF V_IF_b I_bias_pos GND 5T-OTA-buffer_no_hierarchy
 **** end user architecture code
 **.ends
 
-* expanding   symbol:  /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/5T-OTA-buffer_no_hierarchy.sym # of pins=6
-** sym_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/5T-OTA-buffer_no_hierarchy.sym
-** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/5T-OTA-buffer_no_hierarchy.sch
+* expanding   symbol:  /foss/designs/Chipathon_2025_gLayout/src/design_xsch/5T-OTA-buffer_no_hierarchy.sym # of pins=6
+** sym_path: /foss/designs/Chipathon_2025_gLayout/src/design_xsch/5T-OTA-buffer_no_hierarchy.sym
+** sch_path: /foss/designs/Chipathon_2025_gLayout/src/design_xsch/5T-OTA-buffer_no_hierarchy.sch
 .subckt 5T-OTA-buffer_no_hierarchy VDD Vout Vin_plus Vin_minus I_bias VSS
 *.ipin VDD
 *.ipin Vin_plus

@@ -1,4 +1,4 @@
-** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Biasing_network_no_hierarchy.sch
+** sch_path: /foss/designs/Chipathon_2025_gLayout/src/design_xsch/Biasing_network_no_hierarchy.sch
 **.subckt Biasing_network_no_hierarchy xxx
 *.ipin xxx
 **** begin user architecture code

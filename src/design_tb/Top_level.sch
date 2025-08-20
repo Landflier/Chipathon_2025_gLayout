@@ -397,21 +397,21 @@ C {ipin.sym} 200 -1240 2 1 {name=p4 lab=V_RF_b
 }
 C {opin.sym} 780 -1280 0 0 {name=p5 lab=V_out_p}
 C {opin.sym} 780 -1230 0 0 {name=p7 lab=V_out_n}
-C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Gilbert_cell_no_hierarchy.sym} 480 -1260 2 1 {name=xGilbert_mixer}
+C {/foss/designs/Chipathon_2025_gLayout/src/design_xsch/Gilbert_cell_no_hierarchy.sym} 480 -1260 2 1 {name=xGilbert_mixer}
 C {isource.sym} 120 -1840 0 0 {name=I0 value=50u}
 C {isource.sym} 220 -1840 0 0 {name=I1 value=50u}
 C {vdd.sym} 410 -880 0 0 {name=l10 lab=VDD}
 C {gnd.sym} 530 -880 0 0 {name=l11 lab=GND}
 C {gnd.sym} 170 -1740 0 0 {name=l6 lab=GND}
 C {lab_pin.sym} 470 -1010 3 0 {name=p6 sig_type=std_logic lab=I_bias_pos}
-C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/5T-OTA-buffer_no_hierarchy.sym} 1110 -1250 0 0 {name=x1}
-C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Dummy_devices_all.sym} 540 -550 0 0 {name=x3}
+C {/foss/designs/Chipathon_2025_gLayout/src/design_xsch/5T-OTA-buffer_no_hierarchy.sym} 1110 -1250 0 0 {name=x1}
+C {/foss/designs/Chipathon_2025_gLayout/src/design_xsch/Dummy_devices_all.sym} 540 -550 0 0 {name=x3}
 C {gnd.sym} 350 -540 0 0 {name=l5 lab=GND}
-C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Biasing_network_no_hierarchy.sym} 490 -720 0 0 {name=x4}
+C {/foss/designs/Chipathon_2025_gLayout/src/design_xsch/Biasing_network_no_hierarchy.sym} 490 -720 0 0 {name=x4}
 C {lab_pin.sym} 170 -1980 3 1 {name=p13 sig_type=std_logic lab=I_BIAS}
 C {lab_pin.sym} 330 -720 0 0 {name=p14 sig_type=std_logic lab=I_BIAS}
 C {vdd.sym} 1020 -1390 0 0 {name=l12 lab=VDD}
 C {gnd.sym} 1050 -1110 0 0 {name=l13 lab=GND}
-C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Oscilloscope-probe.sym} 1410 -1250 0 0 {name=x_Probe_x10}
+C {/foss/designs/Chipathon_2025_gLayout/src/design_xsch/Oscilloscope-probe.sym} 1410 -1250 0 0 {name=x_Probe_x10}
 C {opin.sym} 1860 -1540 0 0 {name=p16 lab=Oscilloscope_signal}
 C {gnd.sym} 460 -640 0 0 {name=l14 lab=GND}

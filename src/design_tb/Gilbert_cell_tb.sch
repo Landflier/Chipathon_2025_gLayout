@@ -373,7 +373,7 @@ C {ipin.sym} 640 -1270 2 1 {name=p4 lab=V_RF_b
 }
 C {opin.sym} 1220 -1310 0 0 {name=p5 lab=V_out_p}
 C {opin.sym} 1220 -1260 0 0 {name=p7 lab=V_out_n}
-C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Gilbert_cell_no_hierarchy.sym} 920 -1290 2 1 {name=xGilbert_mixer}
+C {/foss/designs/Chipathon_2025_gLayout/src/design_xsch/Gilbert_cell_no_hierarchy.sym} 920 -1290 2 1 {name=xGilbert_mixer}
 C {isource.sym} 120 -1840 0 0 {name=I0 value=50u}
 C {isource.sym} 220 -1840 0 0 {name=I1 value=50u}
 C {vdd.sym} 850 -910 0 0 {name=l10 lab=VDD}

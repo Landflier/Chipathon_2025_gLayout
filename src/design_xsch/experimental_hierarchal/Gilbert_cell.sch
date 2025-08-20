@@ -467,11 +467,11 @@ C {gnd.sym} 950 -610 0 0 {name=l5
 lab=GND}
 C {isource.sym} 910 -730 0 0 {name=I0 value=100u}
 C {isource.sym} 990 -730 0 0 {name=I1 value=100u}
-C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/experimental/diff_pair.sym} 800 -1050 0 0 {name=xdiff_pair_2 mult=1
+C {/foss/designs/Chipathon_2025_gLayout/src/design_xsch/experimental/diff_pair.sym} 800 -1050 0 0 {name=xdiff_pair_2 mult=1
 + W_neg=24u W_pos=24u}
-C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/experimental/diff_pair.sym} 1090 -1050 0 0 {name=xdiff_pair_3 mult=1
+C {/foss/designs/Chipathon_2025_gLayout/src/design_xsch/experimental/diff_pair.sym} 1090 -1050 0 0 {name=xdiff_pair_3 mult=1
 + W_neg=24u W_pos=24u}
-C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/experimental/diff_pair_with_source_degeneration.sym} 950 -770 0 0 {name=xdiff_pair_rf mult=1
+C {/foss/designs/Chipathon_2025_gLayout/src/design_xsch/experimental/diff_pair_with_source_degeneration.sym} 950 -770 0 0 {name=xdiff_pair_rf mult=1
 + W_neg=12u W_pos=12u RS=2K}
 C {gnd.sym} 950 -970 2 1 {name=l10 
 lab=GND}

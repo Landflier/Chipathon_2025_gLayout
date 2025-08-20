@@ -1,4 +1,4 @@
-** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_tb/Top_level.sch
+** sch_path: /foss/designs/Chipathon_2025_gLayout/src/design_tb/Top_level.sch
 **.subckt Top_level V_LO V_LO_b V_RF V_RF_b V_out_p V_out_n Oscilloscope_signal
 *.ipin V_LO
 *.ipin V_LO_b
@@ -194,9 +194,9 @@ x_Probe_x10 Oscilloscope_signal net2 Oscilloscope-probe
 **** end user architecture code
 **.ends
 
-* expanding   symbol:  /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Gilbert_cell_no_hierarchy.sym # of pins=10
-** sym_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Gilbert_cell_no_hierarchy.sym
-** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Gilbert_cell_no_hierarchy.sch
+* expanding   symbol:  /foss/designs/Chipathon_2025_gLayout/src/design_xsch/Gilbert_cell_no_hierarchy.sym # of pins=10
+** sym_path: /foss/designs/Chipathon_2025_gLayout/src/design_xsch/Gilbert_cell_no_hierarchy.sym
+** sch_path: /foss/designs/Chipathon_2025_gLayout/src/design_xsch/Gilbert_cell_no_hierarchy.sch
 .subckt Gilbert_cell_no_hierarchy VDD V_out_p V_out_n V_LO V_LO_b V_RF V_RF_b I_bias_pos I_bias_neg VSS
 *.ipin V_LO
 *.ipin V_LO_b
@@ -226,9 +226,9 @@ XR_load_3 I_bias_neg I_bias_pos VDD ppolyf_u_1k r_width=1e-6 r_length=3e-6 m=1
 .ends
 
 
-* expanding   symbol:  /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/5T-OTA-buffer_no_hierarchy.sym # of pins=6
-** sym_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/5T-OTA-buffer_no_hierarchy.sym
-** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/5T-OTA-buffer_no_hierarchy.sch
+* expanding   symbol:  /foss/designs/Chipathon_2025_gLayout/src/design_xsch/5T-OTA-buffer_no_hierarchy.sym # of pins=6
+** sym_path: /foss/designs/Chipathon_2025_gLayout/src/design_xsch/5T-OTA-buffer_no_hierarchy.sym
+** sch_path: /foss/designs/Chipathon_2025_gLayout/src/design_xsch/5T-OTA-buffer_no_hierarchy.sch
 .subckt 5T-OTA-buffer_no_hierarchy VDD Vout Vin_plus Vin_minus I_bias VSS
 *.ipin VDD
 *.ipin Vin_plus
@@ -247,9 +247,9 @@ XM_pmos_mirror Vout net1 VDD VDD pfet_03v3 L=0.28u W=10u nf=1 ad='int((nf+1)/2) 
 .ends
 
 
-* expanding   symbol:  /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Dummy_devices_all.sym # of pins=1
-** sym_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Dummy_devices_all.sym
-** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Dummy_devices_all.sch
+* expanding   symbol:  /foss/designs/Chipathon_2025_gLayout/src/design_xsch/Dummy_devices_all.sym # of pins=1
+** sym_path: /foss/designs/Chipathon_2025_gLayout/src/design_xsch/Dummy_devices_all.sym
+** sch_path: /foss/designs/Chipathon_2025_gLayout/src/design_xsch/Dummy_devices_all.sch
 .subckt Dummy_devices_all VSS
 *.ipin VSS
 XM_dummy_1 VSS VSS VSS VSS nfet_03v3 L=0.28u W=10u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
@@ -269,9 +269,9 @@ XM_dummy_7 VSS VSS VSS VSS nfet_03v3 L=0.28u W=10u nf=1 ad='int((nf+1)/2) * W/nf
 .ends
 
 
-* expanding   symbol:  /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Biasing_network_no_hierarchy.sym # of pins=5
-** sym_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Biasing_network_no_hierarchy.sym
-** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Biasing_network_no_hierarchy.sch
+* expanding   symbol:  /foss/designs/Chipathon_2025_gLayout/src/design_xsch/Biasing_network_no_hierarchy.sym # of pins=5
+** sym_path: /foss/designs/Chipathon_2025_gLayout/src/design_xsch/Biasing_network_no_hierarchy.sym
+** sch_path: /foss/designs/Chipathon_2025_gLayout/src/design_xsch/Biasing_network_no_hierarchy.sch
 .subckt Biasing_network_no_hierarchy I_BIAS I_out_2 I_out_3 I_out_1 VSS
 *.iopin I_BIAS
 *.opin I_out_1
@@ -289,9 +289,9 @@ XM4 I_out_3 I_BIAS VSS VSS nfet_03v3 L=0.28u W=14u nf=1 ad='int((nf+1)/2) * W/nf
 .ends
 
 
-* expanding   symbol:  /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Oscilloscope-probe.sym # of pins=2
-** sym_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Oscilloscope-probe.sym
-** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Oscilloscope-probe.sch
+* expanding   symbol:  /foss/designs/Chipathon_2025_gLayout/src/design_xsch/Oscilloscope-probe.sym # of pins=2
+** sym_path: /foss/designs/Chipathon_2025_gLayout/src/design_xsch/Oscilloscope-probe.sym
+** sch_path: /foss/designs/Chipathon_2025_gLayout/src/design_xsch/Oscilloscope-probe.sch
 .subckt Oscilloscope-probe Signal_OUT Signal_IN
 *.ipin Signal_IN
 *.opin Signal_OUT
