@@ -21,7 +21,7 @@ from glayout.routing.straight_route import straight_route
 from glayout.routing.c_route import c_route
 from glayout.routing.L_route import L_route
 
-
+import numpy as np
 import os
 import subprocess
 
@@ -104,25 +104,26 @@ def swap_drain_source_ports(mosfet_component):
     return mosfet_component
 
 # Get dynamic layers from the actual port layers
-def get_pin_layers(port_layer):
+def get_pin_layers(port_layer, pdk=None):
     # Convert port layer to corresponding pin and label layers
     # Get all available metal layers from PDK to find which one matches
-    metal_layers = {
-        pdk.get_glayer("met1"): ("met1_pin", "met1_label"),
-        pdk.get_glayer("met2"): ("met2_pin", "met2_label"), 
-        pdk.get_glayer("met3"): ("met3_pin", "met3_label"),
-        pdk.get_glayer("met4"): ("met4_pin", "met4_label"),
-        pdk.get_glayer("met5"): ("met5_pin", "met5_label"),
-    }
-    
-    # Find matching metal layer
-    for metal_layer, (pin_name, label_name) in metal_layers.items():
-        if port_layer == metal_layer:
-            try:
-                return pdk.get_glayer(pin_name), pdk.get_glayer(label_name)
-            except:
-                # If pin/label layers don't exist, use the metal layer itself
-                return port_layer, port_layer
+    if pdk is not None:
+        metal_layers = {
+            pdk.get_glayer("met1"): ("met1_pin", "met1_label"),
+            pdk.get_glayer("met2"): ("met2_pin", "met2_label"), 
+            pdk.get_glayer("met3"): ("met3_pin", "met3_label"),
+            pdk.get_glayer("met4"): ("met4_pin", "met4_label"),
+            pdk.get_glayer("met5"): ("met5_pin", "met5_label"),
+        }
+        
+        # Find matching metal layer
+        for metal_layer, (pin_name, label_name) in metal_layers.items():
+            if port_layer == metal_layer:
+                try:
+                    return pdk.get_glayer(pin_name), pdk.get_glayer(label_name)
+                except:
+                    # If pin/label layers don't exist, use the metal layer itself
+                    return port_layer, port_layer
     
     # Default fallback - use the port layer itself
     return port_layer, port_layer
@@ -145,14 +146,14 @@ def diff_pair_pins(
         
     # M1 Gate pin - dynamic layer from port
     m1_gate_port = M1_ref.ports["multiplier_0_gate_E"]
-    m1_gate_pin_layer, m1_gate_label_layer = get_pin_layers(m1_gate_port.layer)
+    m1_gate_pin_layer, m1_gate_label_layer = get_pin_layers(m1_gate_port.layer, pdk)
     m1_gate_label = rectangle(layer=m1_gate_pin_layer, size=psize, centered=True).copy()
     m1_gate_label.add_label(text="M1_GATE", layer=m1_gate_label_layer)
     move_info.append((m1_gate_label, m1_gate_port, None))
     
     # M1 Source pin - dynamic layer from port
     m1_source_port = M1_ref.ports["multiplier_0_source_E"]
-    m1_source_pin_layer, m1_source_label_layer = get_pin_layers(m1_source_port.layer)
+    m1_source_pin_layer, m1_source_label_layer = get_pin_layers(m1_source_port.layer, pdk)
     m1_source_label = rectangle(layer=m1_source_pin_layer, size=psize, centered=True).copy()
     m1_source_label.add_label(text="M1_SOURCE", layer=m1_source_label_layer)
     move_info.append((m1_source_label, m1_source_port, None))
@@ -169,7 +170,7 @@ def diff_pair_pins(
     
     # M1 Drain pin - dynamic layer from port
     m1_drain_port = M1_ref.ports["multiplier_0_drain_W"]
-    m1_drain_pin_layer, m1_drain_label_layer = get_pin_layers(m1_drain_port.layer)
+    m1_drain_pin_layer, m1_drain_label_layer = get_pin_layers(m1_drain_port.layer, pdk)
     m1_drain_name = drain_name if drain_name else "M1_DRAIN"
     m1_drain_label = rectangle(layer=m1_drain_pin_layer, size=psize, centered=True).copy()
     m1_drain_label.add_label(text=m1_drain_name, layer=m1_drain_label_layer)
@@ -177,21 +178,21 @@ def diff_pair_pins(
     
     # M2 Gate pin - dynamic layer from port
     m2_gate_port = M2_ref.ports["multiplier_0_gate_E"]
-    m2_gate_pin_layer, m2_gate_label_layer = get_pin_layers(m2_gate_port.layer)
+    m2_gate_pin_layer, m2_gate_label_layer = get_pin_layers(m2_gate_port.layer, pdk)
     m2_gate_label = rectangle(layer=m2_gate_pin_layer, size=psize, centered=True).copy()
     m2_gate_label.add_label(text="M2_GATE", layer=m2_gate_label_layer)
     move_info.append((m2_gate_label, m2_gate_port, None))
     
     # M2 Source pin - dynamic layer from port
     m2_source_port = M2_ref.ports["multiplier_0_source_E"]
-    m2_source_pin_layer, m2_source_label_layer = get_pin_layers(m2_source_port.layer)
+    m2_source_pin_layer, m2_source_label_layer = get_pin_layers(m2_source_port.layer, pdk)
     m2_source_label = rectangle(layer=m2_source_pin_layer, size=psize, centered=True).copy()
     m2_source_label.add_label(text="M2_SOURCE", layer=m2_source_label_layer)
     move_info.append((m2_source_label, m2_source_port, None))
     
     # M2 Drain pin - dynamic layer from port
     m2_drain_port = M2_ref.ports["multiplier_0_drain_W"]
-    m2_drain_pin_layer, m2_drain_label_layer = get_pin_layers(m2_drain_port.layer)
+    m2_drain_pin_layer, m2_drain_label_layer = get_pin_layers(m2_drain_port.layer, pdk)
     m2_drain_name = drain_name if drain_name else "M2_DRAIN"
     m2_drain_label = rectangle(layer=m2_drain_pin_layer, size=psize, centered=True).copy()
     m2_drain_label.add_label(text=m2_drain_name, layer=m2_drain_label_layer)
@@ -206,7 +207,7 @@ def diff_pair_pins(
     # Also add electrical ports for connectivity with appropriate naming
     top_level.add_port(port=M1_ref.ports["multiplier_0_gate_E"], name="M1_GATE")
     top_level.add_port(port=M2_ref.ports["multiplier_0_gate_E"], name="M2_GATE")
-    top_level.add_portdiff_pair_pins(port=M1_ref.ports["multiplier_0_source_E"], name="M1_DRAIN")
+    top_level.add_port(port=M1_ref.ports["multiplier_0_source_E"], name="M1_DRAIN")
     top_level.add_port(port=M2_ref.ports["multiplier_0_source_E"], name="M2_DRAIN")
     
     # Add drain ports with conditional naming
@@ -235,6 +236,8 @@ def diff_pair(
         tie_layers2: tuple[str,str] = ("met2","met1"),
         sd_rmult: int=1,
         connected_sources: bool = True,
+        M1_kwargs: dict = None,
+        M2_kwargs: dict = None,
         **kwargs        
         ) -> Component:
 
@@ -245,6 +248,10 @@ def diff_pair(
 
     ## two fets
     ## temp mosfets, so we can switch the drain/source ports
+    if M1_kwargs is None:
+        M1_kwargs = {}
+    if M2_kwargs is None:
+        M2_kwargs = {}
     M1_temp = nmos(pdk, width=width[0], fingers=fingers[0], multipliers=multipliers[0], with_dummy=dummy_1, with_substrate_tap=False, length=length[0], tie_layers=tie_layers1, sd_rmult=sd_rmult, **M1_kwargs)
     M2_temp = nmos(pdk, width=width[1], fingers=fingers[1], multipliers=multipliers[1], with_dummy=dummy_2, with_substrate_tap=False, length=length[1], tie_layers=tie_layers2, sd_rmult=sd_rmult, **M2_kwargs)
     
@@ -263,7 +270,8 @@ def diff_pair(
         M2_ref.movex(pdk.util_max_metal_seperation()+0.5)
     elif placement == "vertical":
         M1_ref.mirror_y()
-        M2_ref.movey(M1_ref.ymin - ref_dimensions[1]/2 - pdk.util_max_metal_seperation()-1)
+        M2_bbox = evaluate_bbox(M2)
+        M2_ref.movey(M1_ref.ymin - M2_bbox[1]/2 - pdk.util_max_metal_seperation()-1)
     else:
             raise ValueError("Placement must be either 'horizontal' or 'vertical'.")
 
@@ -277,11 +285,7 @@ def diff_pair(
     
     ## Center the tapring around the differential pair
     diff_pair_center = top_level.center
-    diff_pair_bbox = evaluate_bbox(top_level)
     
-    ## Get the bounding box of the differential pair for tapring sizing
-    print(f"Diff pair bounding box: {diff_pair_bbox} 
- Diff pair center: {diff_pair_center}")
     
     
     ## Create the tapring with appropriate parameters
@@ -330,21 +334,12 @@ def diff_pair(
 
 
 if __name__ == "__main__":
-	comp = diff_pair(gf180)
+    comp = diff_pair(gf180)
 
-	# comp.pprint_ports()
-
-	comp = add_inv_labels(comp, gf180)
-
-	comp.name = "DIFF_PAIR"
-
-	comp.write_gds('out_diff_pair.gds')
-
-	comp.show()
-
-	print("...Running DRC...")
-
-	drc_result = gf180.drc_magic(comp, "DIFF_PAIR")
-
-	drc_result = gf180.drc(comp)
-
+    # comp.pprint_ports()
+    comp.name = "DIFF_PAIR"
+    comp.write_gds('out_diff_pair.gds')
+    comp.show()
+    print("...Running DRC...")
+    drc_result = gf180.drc_magic(comp, "DIFF_PAIR")
+    drc_result = gf180.drc(comp)
