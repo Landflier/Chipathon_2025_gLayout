@@ -1,0 +1,144 @@
+#!/usr/bin/env python3
+"""
+Simple test script for differential pair layout generation.
+Based on the original __main__ block from diff_pair.py
+"""
+
+import os
+import sys
+from gdsfactory import Component
+
+# Add the diff_pair module to the path
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'diff_pair'))
+
+if __name__ == "__main__":
+    try:
+        from diff_pair import diff_pair
+        from glayout import gf180
+        
+        RF_FET_kwargs = {
+            "with_tie": False,
+            "with_dnwell": False,
+            "sd_route_topmet": "met2",
+            "gate_route_topmet": "met3",
+            "sd_route_left": True,
+            "sd_rmult" : 2,
+            "rmult": None,
+            "gate_rmult": 2,
+            "interfinger_rmult": 2,
+            "substrate_tap_layers": ("met2","met1"),
+            "dummy_routes": False
+        }
+
+        # Generate differential pair with explicit parameters
+        RF_diff_pair = diff_pair(
+            pdk=gf180,
+            placement="vertical",
+            width=(10.0, 10.0),          # Width in micrometers
+            # length parameter omitted to use PDK minimum length
+            fingers=(5, 5),            # Number of fingers
+            multipliers=(1, 1),        # Multipliers
+            dummy_1=(True, True),      # Dummy devices for M1
+            dummy_2=(True, True),      # Dummy devices for M2
+            tie_layers1=("met2", "met1"),  # Tie layers for M1
+            tie_layers2=("met2", "met1"),  # Tie layers for M2
+            connected_sources=False,    # Connect sources together
+            M1_kwargs=RF_FET_kwargs,              # Additional M1 parameters
+            M2_kwargs=RF_FET_kwargs              # Additional M2 parameters
+        )
+
+        LO_FET_kwargs = {
+            "with_tie": False,
+            "with_dnwell": False,
+            "sd_route_topmet": "met2",
+            "gate_route_topmet": "met3",
+            "sd_route_left": True,
+            "sd_rmult" : 2,
+            "rmult": None,
+            "gate_rmult": 2,
+            "interfinger_rmult": 2,
+            "substrate_tap_layers": ("met2","met1"),
+            "dummy_routes": False
+        }
+
+        # Generate differential pair with explicit parameters
+        LO_diff_pair_left = diff_pair(
+            pdk=gf180,
+            placement="vertical",
+            width=(20.0, 20.0),          # Width in micrometers
+            fingers=(5, 5),            # Number of fingers
+            multipliers=(1, 1),        # Multipliers
+            dummy_1=(True, True),      # Dummy devices for M1
+            dummy_2=(True, True),      # Dummy devices for M2
+            tie_layers1=("met2", "met1"),  # Tie layers for M1
+            tie_layers2=("met2", "met1"),  # Tie layers for M2
+            connected_sources=True,    # Connect sources together
+            M1_kwargs=LO_FET_kwargs,             # Additional M1 parameters
+            M2_kwargs=LO_FET_kwargs              # Additional M2 parameters
+        )
+
+        LO_diff_pair_right = diff_pair(
+            pdk=gf180,
+            placement="vertical",
+            width=(20.0, 20.0),          # Width in micrometers
+            fingers=(5, 5),            # Number of fingers
+            multipliers=(1, 1),        # Multipliers
+            dummy_1=(True, True),      # Dummy devices for M1
+            dummy_2=(True, True),      # Dummy devices for M2
+            tie_layers1=("met2", "met1"),  # Tie layers for M1
+            tie_layers2=("met2", "met1"),  # Tie layers for M2
+            connected_sources=True,    # Connect sources together
+            M1_kwargs=LO_FET_kwargs,             # Additional M1 parameters
+            M2_kwargs=LO_FET_kwargs              # Additional M2 parameters
+        )
+
+        comp = Component( name = "Gilbert_cell" )
+
+        LO_diff_pair_left_ref = comp << LO_diff_pair_left
+        LO_diff_pair_right_ref = comp << LO_diff_pair_right
+        RF_diff_pair_ref = comp << RF_diff_pair
+        
+        # Print basic info
+        print(f"✓ Created differential pair: {comp.name}")
+        
+        # Write GDS file
+        print("✓ Writing GDS file...")
+        comp.write_gds('Gilbert_cell.gds')
+        print("  - GDS file: Gilbert_cell.gds")
+        
+        # Show layout (if display available)
+        try:
+            comp.show()
+            print("✓ Layout displayed successfully")
+        except Exception as e:
+            print(f"⚠ Could not display layout: {e}")
+        
+        # Simple DRC checks (skip if they fail due to Nix paths)
+
+        """ 
+        print("\n...Running DRC...")
+        
+        try:
+            drc_result = gf180.drc_magic(comp, comp.name)
+            print(f"✓ Magic DRC result: {drc_result}")
+        except Exception as e:
+            print(f"⚠ Magic DRC skipped: {e}")
+        try:
+            drc_result = gf180.drc(comp)
+            print(f"✓ KLayout DRC result: {drc_result}")
+        except Exception as e:
+            print(f"⚠ KLayout DRC skipped: {e}")
+        """ 
+        print("\n" + "="*60)
+        print("TEST COMPLETED - GDS file generated successfully!")
+        print("="*60)
+        
+    except ImportError as e:
+        print(f"✗ Import error: {e}")
+        print("Make sure glayout and dependencies are installed")
+        sys.exit(1)
+    except Exception as e:
+        print(f"✗ Test failed: {e}")
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
