@@ -231,16 +231,13 @@ def diff_pair_pins(
 
     top_level.unlock()
     
-    # Pin rectangle size
-    psize = (0.5, 0.5)
-    
     # List that will contain all port/component info
     move_info = list()
         
     # M1 Gate pin - dynamic layer from port
     m1_gate_port = M1_ref.ports["multiplier_0_gate_E"]
     m1_gate_pin_layer, m1_gate_label_layer = get_pin_layers(m1_gate_port.layer, pdk)
-    m1_gate_label = rectangle(layer=m1_gate_pin_layer, size=psize, centered=True).copy()
+    m1_gate_label = rectangle(layer=m1_gate_pin_layer, size=(M1_ref.ports["gate_W"].width, M1_ref.ports["gate_W"].width), centered=True).copy()
     m1_gate_label.add_label(text="M1_GATE", layer=m1_gate_label_layer)
     move_info.append((m1_gate_label, m1_gate_port, None))
   
@@ -263,7 +260,7 @@ def diff_pair_pins(
         # And place the source pin for M1
         m1_source_port = M1_ref.ports["multiplier_0_source_W"]
         m1_source_pin_layer, m1_source_label_layer = get_pin_layers(m1_source_port.layer, pdk)
-        m1_source_label = rectangle(layer=m1_source_pin_layer, size=psize, centered=True).copy()
+        m1_source_label = rectangle(layer=m1_source_pin_layer, size=(M1_ref.ports["source_W"].width, M1_ref.ports["source_W"].width), centered=True).copy()
         m1_source_label.add_label(text="M1_SOURCE", layer=m1_source_label_layer)
         move_info.append((m1_source_label, m1_source_port, None))
     
@@ -277,7 +274,7 @@ def diff_pair_pins(
     # M2 Gate pin - dynamic layer from port
     m2_gate_port = M2_ref.ports["multiplier_0_gate_E"]
     m2_gate_pin_layer, m2_gate_label_layer = get_pin_layers(m2_gate_port.layer, pdk)
-    m2_gate_label = rectangle(layer=m2_gate_pin_layer, size=psize, centered=True).copy()
+    m2_gate_label = rectangle(layer=m2_gate_pin_layer, size=(M2_ref.ports["gate_W"].width, M2_ref.ports["gate_W"].width), centered=True).copy()
     m2_gate_label.add_label(text="M2_GATE", layer=m2_gate_label_layer)
     move_info.append((m2_gate_label, m2_gate_port, None))
     
@@ -294,10 +291,10 @@ def diff_pair_pins(
         M1_ref.ports["multiplier_0_gate_W"], M1_ref.ports["multiplier_0_gate_E"]
     )
     m1_drain_center = calculate_terminal_center(
-        M1_ref.ports["multiplier_0_source_W"], M1_ref.ports["multiplier_0_source_E"]
+        M1_ref.ports["multiplier_0_drain_W"], M1_ref.ports["multiplier_0_drain_E"]
     )
     m1_source_center = calculate_terminal_center(
-        M1_ref.ports["multiplier_0_drain_W"], M1_ref.ports["multiplier_0_drain_E"]
+        M1_ref.ports["multiplier_0_source_W"], M1_ref.ports["multiplier_0_source_E"]
     )
     
     # M2 terminal centers
@@ -305,10 +302,10 @@ def diff_pair_pins(
         M2_ref.ports["multiplier_0_gate_W"], M2_ref.ports["multiplier_0_gate_E"]
     )
     m2_drain_center = calculate_terminal_center(
-        M2_ref.ports["multiplier_0_source_W"], M2_ref.ports["multiplier_0_source_E"]
+        M2_ref.ports["multiplier_0_drain_W"], M2_ref.ports["multiplier_0_drain_E"]
     )
     m2_source_center = calculate_terminal_center(
-        M2_ref.ports["multiplier_0_drain_W"], M2_ref.ports["multiplier_0_drain_E"]
+        M2_ref.ports["multiplier_0_source_W"], M2_ref.ports["multiplier_0_source_E"]
     )
     
     # Position visual pins at the same calculated centers as electrical ports
@@ -431,7 +428,7 @@ def diff_pair(
     #Routing
     top_level_with_pins = diff_pair_pins(top_level, M1_ref, M2_ref, gf180, connected_sources, component_name)
     
-    return component_snap_to_grid(rename_ports_by_orientation(top_level_with_pins))
+    return component_snap_to_grid(top_level_with_pins)
 
 
 if __name__ == "__main__":

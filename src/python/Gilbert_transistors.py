@@ -102,6 +102,10 @@ if __name__ == "__main__":
     LO_diff_pair_left_ref = comp << LO_diff_pair_left
     LO_diff_pair_right_ref = comp << LO_diff_pair_right
 
+    # Print available ports for debugging
+    print(f"DEBUG: RF ports: {list(RF_diff_pair_ref.ports.keys())}")
+    print(f"DEBUG: LO_left ports: {list(LO_diff_pair_left_ref.ports.keys())}")
+    print(f"DEBUG: LO_right ports: {list(LO_diff_pair_right_ref.ports.keys())}")
     # LO_diff_pair_left_ref.name = "LO_diff_pair_1"
     # LO_diff_pair_right_ref.name = "LO_diff_pair_2"
     # RF_diff_pair_ref.name = "RF_diff_pair"
