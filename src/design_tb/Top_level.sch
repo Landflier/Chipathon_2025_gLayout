@@ -170,18 +170,18 @@ N 780 -1280 960 -1280 {
 lab=V_out_p}
 N 1020 -1390 1020 -1330 {
 lab=VDD}
-N 520 -780 1020 -1170 {
-lab=#net1}
 N 1050 -1190 1050 -1110 {
 lab=GND}
 N 1140 -1250 1260 -1250 {
-lab=#net2}
+lab=#net1}
 N 1860 -1540 1860 -1470 {
 lab=Oscilloscope_signal}
 N 490 -1070 490 -780 {
-lab=#net3}
+lab=#net2}
 N 460 -660 460 -640 {
 lab=GND}
+N 520 -780 1020 -1150 {
+lab=#net3}
 C {code.sym} 50 -190 0 0 {name=MODELS only_toplevel=true
 format="tcleval( @value )"
 value="

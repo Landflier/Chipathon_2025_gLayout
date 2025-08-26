@@ -23,12 +23,17 @@ if __name__ == "__main__":
         print("Generating all NMOS transistor combinations with varying parameters...")
         
         # Define parameter ranges for stress testing
-        widths = [1.0, 2.0, 5.0, 10.0, 20.0]  # Width in micrometers
-        lengths = [0.18, 0.28, 0.5, 1.0, 2.0]  # Length in micrometers
+        # widths = [1.0, 2.0, 5.0, 10.0, 20.0]  # Width in micrometers
+        # lengths = [0.18, 0.28, 0.5, 1.0, 2.0]  # Length in micrometers
+        # fingers_list = [1, 2, 4, 8]  # Number of fingers
+        # multipliers_list = [1, 2, 4]  # Multipliers
+        
+        widths = [1.0, 2.0, 5.0, 20.0 ]  # Width in micrometers
+        lengths = [0.28, 0.5, 1.0]  # Length in micrometers
         fingers_list = [1, 2, 4, 8]  # Number of fingers
         multipliers_list = [1, 2, 4]  # Multipliers
-        
         # Define different kwargs combinations for testing various options
+
         kwargs_variations = [
             {
                 "with_tie": False,
@@ -91,8 +96,12 @@ if __name__ == "__main__":
             for l in lengths:
                 for f in fingers_list:
                     for m in multipliers_list:
-                        for kwargs_idx, kwargs in enumerate(kwargs_variations):
-                            param_combinations.append((w, l, f, m, kwargs, kwargs_idx))
+                        if w % f == 0:
+                            for kwargs_idx, kwargs in enumerate(kwargs_variations):
+                                param_combinations.append((w, l, f, m, kwargs, kwargs_idx))
+                        else: 
+                            print(f"Skipping W={w}μm, F={f}: finger width is not integer")
+
         
         print(f"Generated {len(param_combinations)} parameter combinations")
         

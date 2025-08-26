@@ -289,13 +289,14 @@ def diff_pair(
         connected_sources: bool = True,
         M1_kwargs: dict = None,
         M2_kwargs: dict = None,
+        component_name: str = "diff_pair",
         **kwargs        
         ) -> Component:
 
     pdk.activate()
     
     ##top level component
-    top_level = Component(name="diff_pair")
+    top_level = Component(name=component_name)
 
     ## two fets
     ## temp mosfets, so we can switch the drain/source ports
@@ -311,14 +312,17 @@ def diff_pair(
     M1_temp = nmos(pdk, width=width[0], fingers=fingers[0], multipliers=multipliers[0], with_dummy=dummy_1, with_substrate_tap=False, length=length1, tie_layers=tie_layers1,  **M1_kwargs)
     M2_temp = nmos(pdk, width=width[1], fingers=fingers[1], multipliers=multipliers[1], with_dummy=dummy_2, with_substrate_tap=False, length=length2, tie_layers=tie_layers2,  **M2_kwargs)
     
+    M1_temp.name=f"{component_name}_M1"
+    M2_temp.name=f"{component_name}_M2"
+
     M1 = swap_drain_source_ports(M1_temp)
     M2 = swap_drain_source_ports(M2_temp)
     
     M1_ref = top_level << M1
     M2_ref = top_level << M2
     
-    M1_ref.name="M1"
-    M2_ref.name="M2"
+    M1_ref.name=f"{component_name}_M1"
+    M2_ref.name=f"{component_name}_M2"
     
     if placement == "horizontal":
         M1_ref.mirror_x()
@@ -392,7 +396,6 @@ def diff_pair(
         device_ref = M1_ref if 'M1' in device_name else M2_ref
 
         closest_tapring_port = find_closest_port(gdscon_pos, tapring_ports)
-        print(closest_tapring_port) 
         try:
             top_level << straight_route(pdk, device_ref.ports[device_port_name], tapring_ref.ports[closest_tapring_port.name])
         except:

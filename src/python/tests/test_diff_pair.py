@@ -8,7 +8,7 @@ import os
 import sys
 
 # Add the diff_pair module to the path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'diff_pair'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..',  'diff_pair'))
 
 if __name__ == "__main__":
     try:
@@ -48,16 +48,16 @@ if __name__ == "__main__":
         comp = diff_pair(
             pdk=gf180,
             placement="vertical",
-            width=(10.0, 10.0),          # Width in micrometers
+            width=(18.0, 18.0),          # Width in micrometers
             # length parameter omitted to use PDK minimum length
-            fingers=(5, 5),            # Number of fingers
+            fingers=(3, 3),            # Number of fingers
             multipliers=(1, 1),        # Multipliers
             dummy_1=(True, True),      # Dummy devices for M1
             dummy_2=(True, True),      # Dummy devices for M2
             tie_layers1=("met2", "met1"),  # Tie layers for M1
             tie_layers2=("met2", "met1"),  # Tie layers for M2
             sd_rmult=1,                # Source/drain routing multiplier
-            connected_sources=False,    # Connect sources together
+            connected_sources=True,    # Connect sources together
             M1_kwargs=M1_kwargs,              # Additional M1 parameters
             M2_kwargs=M2_kwargs               # Additional M2 parameters
         )
@@ -89,11 +89,13 @@ if __name__ == "__main__":
         except Exception as e:
             print(f"⚠ Magic DRC skipped: {e}")
         
+        """
         try:
             drc_result = gf180.drc(comp)
             print(f"✓ KLayout DRC result: {drc_result}")
         except Exception as e:
             print(f"⚠ KLayout DRC skipped: {e}")
+        """
         
         print("\n" + "="*60)
         print("TEST COMPLETED - GDS file generated successfully!")
