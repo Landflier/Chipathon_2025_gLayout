@@ -329,21 +329,43 @@ def diff_pair_pins(
     m2_drain_ref.move(m2_drain_center)
     
     # Add electrical ports for connectivity using the calculated centers
-    top_level.add_port(center=m1_gate_center, width=M1_ref.ports["gate_W"].width, orientation=0, layer=M1_ref.ports["multiplier_0_gate_E"].layer, name=f"{component_name}_M1_GATE")
-    top_level.add_port(center=m2_gate_center, width=M2_ref.ports["gate_W"].width, orientation=0, layer=M2_ref.ports["multiplier_0_gate_E"].layer, name=f"{component_name}_M2_GATE")
+    # Create ports with all four orientations (E=0°, N=90°, W=180°, S=270°)
     
-    # Add drain ports (always separate)
-    top_level.add_port(center=m1_drain_center, width=M1_ref.ports["drain_W"].width, orientation=0, layer=M1_ref.ports["multiplier_0_source_E"].layer, name=f"{component_name}_M1_DRAIN")
-    top_level.add_port(center=m2_drain_center, width=M2_ref.ports["drain_W"].width, orientation=0, layer=M2_ref.ports["multiplier_0_source_E"].layer, name=f"{component_name}_M2_DRAIN")
+    # M1 Gate ports (all orientations)
+    top_level.add_port(center=m1_gate_center, width=M1_ref.ports["gate_W"].width, orientation=0, layer=M1_ref.ports["multiplier_0_gate_E"].layer, name=f"{component_name}_M1_GATE_E")
+    top_level.add_port(center=m1_gate_center, width=M1_ref.ports["gate_W"].width, orientation=90, layer=M1_ref.ports["multiplier_0_gate_E"].layer, name=f"{component_name}_M1_GATE_N")
+    top_level.add_port(center=m1_gate_center, width=M1_ref.ports["gate_W"].width, orientation=180, layer=M1_ref.ports["multiplier_0_gate_E"].layer, name=f"{component_name}_M1_GATE_W")
+    top_level.add_port(center=m1_gate_center, width=M1_ref.ports["gate_W"].width, orientation=270, layer=M1_ref.ports["multiplier_0_gate_E"].layer, name=f"{component_name}_M1_GATE_S")
     
-    # Add source ports with conditional naming based on connected_sources
-    if connected_sources:
-        # If sources are connected, only add one common source port (use M1's center as reference)
-        top_level.add_port(center=m1_source_center, width=M2_ref.ports["drain_W"].width, orientation=0, layer=M1_ref.ports["multiplier_0_drain_E"].layer, name=f"{component_name}_SOURCE_COMMON")
-    else:
-        # If sources are separate, add both individual source ports
-        top_level.add_port(center=m1_source_center, width=M1_ref.ports["source_W"].width, orientation=0, layer=M1_ref.ports["multiplier_0_drain_E"].layer, name=f"{component_name}_M1_SOURCE")
-        top_level.add_port(center=m2_source_center, width=M2_ref.ports["source_W"].width, orientation=0, layer=M2_ref.ports["multiplier_0_drain_E"].layer, name=f"{component_name}_M2_SOURCE")
+    # M2 Gate ports (all orientations)
+    top_level.add_port(center=m2_gate_center, width=M2_ref.ports["gate_W"].width, orientation=0, layer=M2_ref.ports["multiplier_0_gate_E"].layer, name=f"{component_name}_M2_GATE_E")
+    top_level.add_port(center=m2_gate_center, width=M2_ref.ports["gate_W"].width, orientation=90, layer=M2_ref.ports["multiplier_0_gate_E"].layer, name=f"{component_name}_M2_GATE_N")
+    top_level.add_port(center=m2_gate_center, width=M2_ref.ports["gate_W"].width, orientation=180, layer=M2_ref.ports["multiplier_0_gate_E"].layer, name=f"{component_name}_M2_GATE_W")
+    top_level.add_port(center=m2_gate_center, width=M2_ref.ports["gate_W"].width, orientation=270, layer=M2_ref.ports["multiplier_0_gate_E"].layer, name=f"{component_name}_M2_GATE_S")
+    
+    # Add drain ports (always separate) - all orientations
+    top_level.add_port(center=m1_drain_center, width=M1_ref.ports["drain_W"].width, orientation=0, layer=M1_ref.ports["multiplier_0_source_E"].layer, name=f"{component_name}_M1_DRAIN_E")
+    top_level.add_port(center=m1_drain_center, width=M1_ref.ports["drain_W"].width, orientation=90, layer=M1_ref.ports["multiplier_0_source_E"].layer, name=f"{component_name}_M1_DRAIN_N")
+    top_level.add_port(center=m1_drain_center, width=M1_ref.ports["drain_W"].width, orientation=180, layer=M1_ref.ports["multiplier_0_source_E"].layer, name=f"{component_name}_M1_DRAIN_W")
+    top_level.add_port(center=m1_drain_center, width=M1_ref.ports["drain_W"].width, orientation=270, layer=M1_ref.ports["multiplier_0_source_E"].layer, name=f"{component_name}_M1_DRAIN_S")
+    
+    top_level.add_port(center=m2_drain_center, width=M2_ref.ports["drain_W"].width, orientation=0, layer=M2_ref.ports["multiplier_0_source_E"].layer, name=f"{component_name}_M2_DRAIN_E")
+    top_level.add_port(center=m2_drain_center, width=M2_ref.ports["drain_W"].width, orientation=90, layer=M2_ref.ports["multiplier_0_source_E"].layer, name=f"{component_name}_M2_DRAIN_N")
+    top_level.add_port(center=m2_drain_center, width=M2_ref.ports["drain_W"].width, orientation=180, layer=M2_ref.ports["multiplier_0_source_E"].layer, name=f"{component_name}_M2_DRAIN_W")
+    top_level.add_port(center=m2_drain_center, width=M2_ref.ports["drain_W"].width, orientation=270, layer=M2_ref.ports["multiplier_0_source_E"].layer, name=f"{component_name}_M2_DRAIN_S")
+    
+    # Always add ports to both sources, so routing is robust, regardless if sources are connected or not
+    # M1 Source ports
+    top_level.add_port(center=m1_source_center, width=M1_ref.ports["source_W"].width, orientation=0, layer=M1_ref.ports["multiplier_0_drain_E"].layer, name=f"{component_name}_M1_SOURCE_E")
+    top_level.add_port(center=m1_source_center, width=M1_ref.ports["source_W"].width, orientation=90, layer=M1_ref.ports["multiplier_0_drain_E"].layer, name=f"{component_name}_M1_SOURCE_N")
+    top_level.add_port(center=m1_source_center, width=M1_ref.ports["source_W"].width, orientation=180, layer=M1_ref.ports["multiplier_0_drain_E"].layer, name=f"{component_name}_M1_SOURCE_W")
+    top_level.add_port(center=m1_source_center, width=M1_ref.ports["source_W"].width, orientation=270, layer=M1_ref.ports["multiplier_0_drain_E"].layer, name=f"{component_name}_M1_SOURCE_S")
+        
+    # M2 Source ports
+    top_level.add_port(center=m2_source_center, width=M2_ref.ports["source_W"].width, orientation=0, layer=M2_ref.ports["multiplier_0_drain_E"].layer, name=f"{component_name}_M2_SOURCE_E")
+    top_level.add_port(center=m2_source_center, width=M2_ref.ports["source_W"].width, orientation=90, layer=M2_ref.ports["multiplier_0_drain_E"].layer, name=f"{component_name}_M2_SOURCE_N")
+    top_level.add_port(center=m2_source_center, width=M2_ref.ports["source_W"].width, orientation=180, layer=M2_ref.ports["multiplier_0_drain_E"].layer, name=f"{component_name}_M2_SOURCE_W")
+    top_level.add_port(center=m2_source_center, width=M2_ref.ports["source_W"].width, orientation=270, layer=M2_ref.ports["multiplier_0_drain_E"].layer, name=f"{component_name}_M2_SOURCE_S")
     
     return top_level
 

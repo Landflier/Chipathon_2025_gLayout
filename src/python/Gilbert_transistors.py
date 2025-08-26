@@ -15,13 +15,16 @@ if __name__ == "__main__":
     from diff_pair import diff_pair
     from glayout import gf180
     from glayout.util.comp_utils import evaluate_bbox, move, movex, movey
+    from glayout.routing.straight_route import straight_route
+    from glayout.routing.c_route import c_route
+    from glayout.routing.L_route import L_route
     
     pdk_choice = gf180
     RF_FET_kwargs = {
         "with_tie": False,
         "with_dnwell": False,
-        "sd_route_topmet": "met2",
-        "gate_route_topmet": "met3",
+        "sd_route_topmet": "met3",
+        "gate_route_topmet": "met4",
         "sd_route_left": True,
         "sd_rmult" : 2,
         "rmult": None,
@@ -106,9 +109,6 @@ if __name__ == "__main__":
     print(f"DEBUG: RF ports: {list(RF_diff_pair_ref.ports.keys())}")
     print(f"DEBUG: LO_left ports: {list(LO_diff_pair_left_ref.ports.keys())}")
     print(f"DEBUG: LO_right ports: {list(LO_diff_pair_right_ref.ports.keys())}")
-    # LO_diff_pair_left_ref.name = "LO_diff_pair_1"
-    # LO_diff_pair_right_ref.name = "LO_diff_pair_2"
-    # RF_diff_pair_ref.name = "RF_diff_pair"
 
     bbox_RF = evaluate_bbox(RF_diff_pair)
     bbox_LO = evaluate_bbox(LO_diff_pair_left)
@@ -123,16 +123,8 @@ if __name__ == "__main__":
 
     sep = max(sep_met1, sep_met2)
 
-   
-    # Debug: Print initial positions and bbox info
-    print(f"DEBUG: RF center: ({RF_current_x}, {RF_current_y})")
-    print(f"DEBUG: RF bbox: {bbox_RF}")
-    print(f"DEBUG: LO bbox: {bbox_LO}")
-    print(f"DEBUG: Separation: {sep}")
-    
     # Calculate total height of both LO pairs plus separation between them
     total_LO_height = 2 * bbox_LO[1] + sep
-    print(f"DEBUG: Total LO height: {total_LO_height}")
     
     # Calculate new positions - move() expects absolute positions
     # First, position them to the right of RF with proper separation
@@ -144,27 +136,16 @@ if __name__ == "__main__":
     right_new_y = RF_current_y + (bbox_LO[1] + sep)/2
     left_new_y = RF_current_y - (bbox_LO[1] + sep)/2
     
-    print(f"DEBUG: New X position: {new_x}")
-    print(f"DEBUG: Right LO new Y: {right_new_y}")
-    print(f"DEBUG: Left LO new Y: {left_new_y}")
-    print(f"DEBUG: Combined LO center Y should be: {(right_new_y + left_new_y)/2}")
-    
     # Position LO pairs so their combined center aligns with RF center
     # Calculate relative movements from current positions
     right_current_x, right_current_y = LO_diff_pair_right_ref.center
     left_current_x, left_current_y = LO_diff_pair_left_ref.center
-    
-    print(f"DEBUG: Right LO current: ({right_current_x}, {right_current_y})")
-    print(f"DEBUG: Left LO current: ({left_current_x}, {left_current_y})")
     
     # Calculate relative movements needed
     right_dx = new_x - right_current_x
     right_dy = right_new_y - right_current_y
     left_dx = new_x - left_current_x
     left_dy = left_new_y - left_current_y
-    
-    print(f"DEBUG: Right LO movement: ({right_dx}, {right_dy})")
-    print(f"DEBUG: Left LO movement: ({left_dx}, {left_dy})")
     
     # Apply relative movements
     LO_diff_pair_right_ref = move(LO_diff_pair_right_ref, (right_dx, right_dy))
@@ -173,6 +154,31 @@ if __name__ == "__main__":
     # Print basic info
     print(f"✓ Created Gilbert cell (without resistors): {comp.name}")
     
+        # Based on our debug output, the actual port names should be:
+    lo_1_M1_source_port_name = "LO_diff_pair_1_M1_SOURCE_W"
+    rf_M2_drain_port_name = "RF_diff_pair_M2_DRAIN_S"
+    
+    print(f"DEBUG: {lo_1_M1_source_port_name} port: {LO_diff_pair_left_ref.ports[lo_1_M1_source_port_name]}")
+    print(f"DEBUG: {rf_M2_drain_port_name} port: {RF_diff_pair_ref.ports[rf_M2_drain_port_name]}")
+    
+    if  lo_1_M1_source_port_name in LO_diff_pair_left_ref.ports and rf_M2_drain_port_name in RF_diff_pair_ref.ports:
+        try:
+            # Try straight route first
+            route = L_route(
+                pdk_choice, 
+                LO_diff_pair_left_ref.ports[lo_1_M1_source_port_name], 
+                RF_diff_pair_ref.ports[rf_M2_drain_port_name],
+           )
+
+            comp << route
+            print("✓ Connected LO_left SOURCE_COMMON to RF M1_DRAIN using straight route")
+        except Exception as e:
+            print(f"DEBUG: Straight route failed: {e}")
+    else:
+        print(f"⚠ Required ports not found!")
+        print(f"  LO port '{lo_1_M1_source_port_name}' exists: {lo_1_M1_source_port_name in LO_diff_pair_left_ref.ports}")
+        print(f"  RF port '{rf_M2_drain_port_name}' exists: {rf_M2_drain_port_name in RF_diff_pair_ref.ports}")
+
     # Write GDS file
     print("✓ Writing GDS file...")
     comp.write_gds('Gilbert_cell.gds')
@@ -191,4 +197,5 @@ if __name__ == "__main__":
     print("\n" + "="*60)
     print("TEST COMPLETED - GDS file generated successfully!")
     print("="*60)
+    
     
