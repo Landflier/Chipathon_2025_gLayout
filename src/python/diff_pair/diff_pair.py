@@ -123,7 +123,7 @@ def create_and_connect_tapring(top_level, M1_ref, M2_ref, pdk, placement, diff_p
     ## Using substrate tap for NMOS devices in bulk
     tapring_comp = tapring(
         pdk=pdk,
-        enclosed_rectangle=evaluate_bbox(top_level.flatten(), padding=pdk.get_grule("nwell", "active_diff")["min_enclosure"])
+        enclosed_rectangle=evaluate_bbox(top_level, padding=pdk.get_grule("nwell", "active_diff")["min_enclosure"])
     )
     
     ## Center the tapring around the differential pair
@@ -226,6 +226,7 @@ def diff_pair_pins(
     M2_ref: Component,
     pdk: MappedPDK,
     connected_sources: bool,
+    component_name: str = "diff_pair",
 ) -> Component:
 
     top_level.unlock()
@@ -331,23 +332,23 @@ def diff_pair_pins(
     m2_drain_ref.move(m2_drain_center)
     
     # Add electrical ports for connectivity using the calculated centers
-    top_level.add_port(center=m1_gate_center, width=0.5, orientation=0, layer=M1_ref.ports["multiplier_0_gate_E"].layer, name="M1_GATE")
-    top_level.add_port(center=m2_gate_center, width=0.5, orientation=0, layer=M2_ref.ports["multiplier_0_gate_E"].layer, name="M2_GATE")
+    top_level.add_port(center=m1_gate_center, width=M1_ref.ports["gate_W"].width, orientation=0, layer=M1_ref.ports["multiplier_0_gate_E"].layer, name=f"{component_name}_M1_GATE")
+    top_level.add_port(center=m2_gate_center, width=M2_ref.ports["gate_W"].width, orientation=0, layer=M2_ref.ports["multiplier_0_gate_E"].layer, name=f"{component_name}_M2_GATE")
     
     # Add drain ports (always separate)
-    top_level.add_port(center=m1_drain_center, width=0.5, orientation=0, layer=M1_ref.ports["multiplier_0_source_E"].layer, name="M1_DRAIN")
-    top_level.add_port(center=m2_drain_center, width=0.5, orientation=0, layer=M2_ref.ports["multiplier_0_source_E"].layer, name="M2_DRAIN")
+    top_level.add_port(center=m1_drain_center, width=M1_ref.ports["drain_W"].width, orientation=0, layer=M1_ref.ports["multiplier_0_source_E"].layer, name=f"{component_name}_M1_DRAIN")
+    top_level.add_port(center=m2_drain_center, width=M2_ref.ports["drain_W"].width, orientation=0, layer=M2_ref.ports["multiplier_0_source_E"].layer, name=f"{component_name}_M2_DRAIN")
     
     # Add source ports with conditional naming based on connected_sources
     if connected_sources:
         # If sources are connected, only add one common source port (use M1's center as reference)
-        top_level.add_port(center=m1_source_center, width=0.5, orientation=0, layer=M1_ref.ports["multiplier_0_drain_E"].layer, name="SOURCE_COMMON")
+        top_level.add_port(center=m1_source_center, width=M2_ref.ports["drain_W"].width, orientation=0, layer=M1_ref.ports["multiplier_0_drain_E"].layer, name=f"{component_name}_SOURCE_COMMON")
     else:
         # If sources are separate, add both individual source ports
-        top_level.add_port(center=m1_source_center, width=0.5, orientation=0, layer=M1_ref.ports["multiplier_0_drain_E"].layer, name="M1_SOURCE")
-        top_level.add_port(center=m2_source_center, width=0.5, orientation=0, layer=M2_ref.ports["multiplier_0_drain_E"].layer, name="M2_SOURCE")
+        top_level.add_port(center=m1_source_center, width=M1_ref.ports["source_W"].width, orientation=0, layer=M1_ref.ports["multiplier_0_drain_E"].layer, name=f"{component_name}_M1_SOURCE")
+        top_level.add_port(center=m2_source_center, width=M2_ref.ports["source_W"].width, orientation=0, layer=M2_ref.ports["multiplier_0_drain_E"].layer, name=f"{component_name}_M2_SOURCE")
     
-    return top_level.flatten()
+    return top_level
 
     
 @cell
@@ -389,8 +390,8 @@ def diff_pair(
     M1_temp = nmos(pdk, width=width[0], fingers=fingers[0], multipliers=multipliers[0], with_dummy=dummy_1, with_substrate_tap=False, length=length1, tie_layers=tie_layers1,  **M1_kwargs)
     M2_temp = nmos(pdk, width=width[1], fingers=fingers[1], multipliers=multipliers[1], with_dummy=dummy_2, with_substrate_tap=False, length=length2, tie_layers=tie_layers2,  **M2_kwargs)
     
-    M1_temp.name=f"{component_name}_M1"
-    M2_temp.name=f"{component_name}_M2"
+    M1_temp.name=f"{component_name}_M1_temp"
+    M2_temp.name=f"{component_name}_M2_temp"
 
     M1 = swap_drain_source_ports(M1_temp)
     M2 = swap_drain_source_ports(M2_temp)
@@ -428,7 +429,7 @@ def diff_pair(
     create_and_connect_tapring(top_level, M1_ref, M2_ref, pdk, placement, diff_pair_center)
 
     #Routing
-    top_level_with_pins = diff_pair_pins(top_level, M1_ref, M2_ref, gf180, connected_sources)
+    top_level_with_pins = diff_pair_pins(top_level, M1_ref, M2_ref, gf180, connected_sources, component_name)
     
     return component_snap_to_grid(rename_ports_by_orientation(top_level_with_pins))
 
