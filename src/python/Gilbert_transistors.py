@@ -113,10 +113,6 @@ if __name__ == "__main__":
     bbox_RF = evaluate_bbox(RF_diff_pair)
     bbox_LO = evaluate_bbox(LO_diff_pair_left)
 
-    # RF_diff_pair_ref.move((0,0))
-    # LO_diff_pair_right_ref.move(bbox_RF)
-    # LO_diff_pair_left_ref.move(bbox_RF)
-
     RF_current_x, RF_current_y = RF_diff_pair_ref.center
     LO_current_x, LO_current_y = LO_diff_pair_right_ref.center
 
@@ -126,9 +122,54 @@ if __name__ == "__main__":
     # sep_pplus = pdk_choice.get_grule('pplus', 'pplus')['min_separation']
 
     sep = max(sep_met1, sep_met2)
-    LO_diff_pair_right_ref.move((RF_current_x + bbox_RF[0] + sep , RF_current_y + bbox_LO[1]/2 + sep/2)) 
-    LO_diff_pair_left_ref.move((RF_current_x + bbox_RF[0] + sep , RF_current_y - bbox_LO[1]/2 - sep/2))
 
+   
+    # Debug: Print initial positions and bbox info
+    print(f"DEBUG: RF center: ({RF_current_x}, {RF_current_y})")
+    print(f"DEBUG: RF bbox: {bbox_RF}")
+    print(f"DEBUG: LO bbox: {bbox_LO}")
+    print(f"DEBUG: Separation: {sep}")
+    
+    # Calculate total height of both LO pairs plus separation between them
+    total_LO_height = 2 * bbox_LO[1] + sep
+    print(f"DEBUG: Total LO height: {total_LO_height}")
+    
+    # Calculate new positions - move() expects absolute positions
+    # First, position them to the right of RF with proper separation
+    new_x = bbox_RF[0] + sep
+    
+    # For Y positioning: center the combined LO pairs with RF center
+    # The combined center should be at RF_current_y
+    # So position them symmetrically around RF_current_y
+    right_new_y = RF_current_y + (bbox_LO[1] + sep)/2
+    left_new_y = RF_current_y - (bbox_LO[1] + sep)/2
+    
+    print(f"DEBUG: New X position: {new_x}")
+    print(f"DEBUG: Right LO new Y: {right_new_y}")
+    print(f"DEBUG: Left LO new Y: {left_new_y}")
+    print(f"DEBUG: Combined LO center Y should be: {(right_new_y + left_new_y)/2}")
+    
+    # Position LO pairs so their combined center aligns with RF center
+    # Calculate relative movements from current positions
+    right_current_x, right_current_y = LO_diff_pair_right_ref.center
+    left_current_x, left_current_y = LO_diff_pair_left_ref.center
+    
+    print(f"DEBUG: Right LO current: ({right_current_x}, {right_current_y})")
+    print(f"DEBUG: Left LO current: ({left_current_x}, {left_current_y})")
+    
+    # Calculate relative movements needed
+    right_dx = new_x - right_current_x
+    right_dy = right_new_y - right_current_y
+    left_dx = new_x - left_current_x
+    left_dy = left_new_y - left_current_y
+    
+    print(f"DEBUG: Right LO movement: ({right_dx}, {right_dy})")
+    print(f"DEBUG: Left LO movement: ({left_dx}, {left_dy})")
+    
+    # Apply relative movements
+    LO_diff_pair_right_ref = move(LO_diff_pair_right_ref, (right_dx, right_dy))
+    LO_diff_pair_left_ref = move(LO_diff_pair_left_ref, (left_dx, left_dy))
+    
     # Print basic info
     print(f"✓ Created Gilbert cell (without resistors): {comp.name}")
     
