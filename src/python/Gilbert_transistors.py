@@ -18,13 +18,14 @@ if __name__ == "__main__":
     from glayout.routing.straight_route import straight_route
     from glayout.routing.c_route import c_route
     from glayout.routing.L_route import L_route
+    from glayout import via_stack, via_array
     
     pdk_choice = gf180
     RF_FET_kwargs = {
         "with_tie": False,
         "with_dnwell": False,
-        "sd_route_topmet": "met3",
-        "gate_route_topmet": "met4",
+        "sd_route_topmet": "met2",
+        "gate_route_topmet": "met1",
         "sd_route_left": True,
         "sd_rmult" : 2,
         "rmult": None,
@@ -154,30 +155,48 @@ if __name__ == "__main__":
     # Print basic info
     print(f"✓ Created Gilbert cell (without resistors): {comp.name}")
     
-        # Based on our debug output, the actual port names should be:
     lo_1_M1_source_port_name = "LO_diff_pair_1_M1_SOURCE_W"
+    lo_2_M2_source_port_name = "LO_diff_pair_2_M2_SOURCE_W"
+    rf_M1_drain_port_name = "RF_diff_pair_M1_DRAIN_N"
     rf_M2_drain_port_name = "RF_diff_pair_M2_DRAIN_S"
-    
-    print(f"DEBUG: {lo_1_M1_source_port_name} port: {LO_diff_pair_left_ref.ports[lo_1_M1_source_port_name]}")
-    print(f"DEBUG: {rf_M2_drain_port_name} port: {RF_diff_pair_ref.ports[rf_M2_drain_port_name]}")
-    
-    if  lo_1_M1_source_port_name in LO_diff_pair_left_ref.ports and rf_M2_drain_port_name in RF_diff_pair_ref.ports:
-        try:
-            # Try straight route first
-            route = L_route(
-                pdk_choice, 
-                LO_diff_pair_left_ref.ports[lo_1_M1_source_port_name], 
-                RF_diff_pair_ref.ports[rf_M2_drain_port_name],
-           )
 
-            comp << route
-            print("✓ Connected LO_left SOURCE_COMMON to RF M1_DRAIN using straight route")
-        except Exception as e:
-            print(f"DEBUG: Straight route failed: {e}")
-    else:
-        print(f"⚠ Required ports not found!")
-        print(f"  LO port '{lo_1_M1_source_port_name}' exists: {lo_1_M1_source_port_name in LO_diff_pair_left_ref.ports}")
-        print(f"  RF port '{rf_M2_drain_port_name}' exists: {rf_M2_drain_port_name in RF_diff_pair_ref.ports}")
+    rf_sd_layer = RF_FET_kwargs["sd_route_topmet"]
+    
+    try:
+        route_lo1 = L_route(
+            pdk_choice, 
+            LO_diff_pair_left_ref.ports[lo_1_M1_source_port_name], 
+            RF_diff_pair_ref.ports[rf_M2_drain_port_name],
+            vglayer="met3"
+       )
+        route_lo2 = L_route(
+            pdk_choice, 
+            LO_diff_pair_right_ref.ports[lo_2_M2_source_port_name], 
+            RF_diff_pair_ref.ports[rf_M1_drain_port_name],
+            vglayer="met3"
+       )
+
+        # Vias at the end of the L routings
+        sd_width = RF_diff_pair_ref.ports[rf_M1_drain_port_name].width
+        via_rf_m1 = via_array(pdk_choice, "met3", rf_sd_layer, 
+                size=(sd_width, sd_width),
+                fullbottom=True,
+                lay_every_layer=True)
+        via_rf_m2 = via_array(pdk_choice, "met3", rf_sd_layer, 
+                size=(sd_width, sd_width),
+                fullbottom=True,
+                lay_every_layer=True)
+
+        via_rf_m1_ref = comp << via_rf_m1
+        via_rf_m2_ref = comp << via_rf_m2
+        
+        via_rf_m1_ref.move(RF_diff_pair_ref.ports[rf_M1_drain_port_name].center)
+        via_rf_m2_ref.move(RF_diff_pair_ref.ports[rf_M2_drain_port_name].center)
+        
+        comp << route_lo2
+        comp << route_lo1
+    except Exception as e:
+        print(f"DEBUG: L_route route failed: {e}")
 
     # Write GDS file
     print("✓ Writing GDS file...")
