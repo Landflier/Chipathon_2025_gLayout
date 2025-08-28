@@ -237,14 +237,14 @@ def diff_pair_pins(
     # M1 Gate pin - dynamic layer from port
     m1_gate_port = M1_ref.ports["multiplier_0_gate_E"]
     m1_gate_pin_layer, m1_gate_label_layer = get_pin_layers(m1_gate_port.layer, pdk)
-    m1_gate_label = rectangle(layer=m1_gate_pin_layer, size=(M1_ref.ports["gate_W"].width, M1_ref.ports["gate_W"].width), centered=True).copy()
+    m1_gate_label = rectangle(layer=m1_gate_pin_layer, size=(m1_gate_port.width, m1_gate_port.width), centered=True).copy()
     m1_gate_label.add_label(text="M1_GATE", layer=m1_gate_label_layer)
     move_info.append((m1_gate_label, m1_gate_port, None))
   
     # M1 Drain pin - dynamic layer from port (drains are always separate)
     m1_drain_port = M1_ref.ports["multiplier_0_drain_W"]
     m1_drain_pin_layer, m1_drain_label_layer = get_pin_layers(m1_drain_port.layer, pdk)
-    m1_drain_label = rectangle(layer=m1_drain_pin_layer, size=(M1_ref.ports["drain_W"].width, M1_ref.ports["drain_W"].width), centered=True).copy()
+    m1_drain_label = rectangle(layer=m1_drain_pin_layer, size=(m1_drain_port.width, m1_drain_port.width), centered=True).copy()
     m1_drain_label.add_label(text="M1_DRAIN", layer=m1_drain_label_layer)
     move_info.append((m1_drain_label, m1_drain_port, None))
 
@@ -260,21 +260,21 @@ def diff_pair_pins(
         # And place the source pin for M1
         m1_source_port = M1_ref.ports["multiplier_0_source_W"]
         m1_source_pin_layer, m1_source_label_layer = get_pin_layers(m1_source_port.layer, pdk)
-        m1_source_label = rectangle(layer=m1_source_pin_layer, size=(M1_ref.ports["source_W"].width, M1_ref.ports["source_W"].width), centered=True).copy()
+        m1_source_label = rectangle(layer=m1_source_pin_layer, size=(m1_source_port.width, m1_source_port.width), centered=True).copy()
         m1_source_label.add_label(text="M1_SOURCE", layer=m1_source_label_layer)
         move_info.append((m1_source_label, m1_source_port, None))
     
     # M2 Source pin - dynamic layer from port, this is the same as M!
     m2_source_port = M1_ref.ports["multiplier_0_source_E"]
     m2_source_pin_layer, m2_source_label_layer = get_pin_layers(m2_source_port.layer, pdk)
-    m2_source_label = rectangle(layer=m2_source_pin_layer, size=(M2_ref.ports["source_W"].width, M2_ref.ports["source_W"].width), centered=True).copy()
+    m2_source_label = rectangle(layer=m2_source_pin_layer, size=(m2_source_port.width, m2_source_port.width), centered=True).copy()
     m2_source_label.add_label(text=f"{source_name}", layer=m2_source_label_layer)
     move_info.append((m2_source_label, m2_source_port, None))
     
     # M2 Gate pin - dynamic layer from port
     m2_gate_port = M2_ref.ports["multiplier_0_gate_E"]
     m2_gate_pin_layer, m2_gate_label_layer = get_pin_layers(m2_gate_port.layer, pdk)
-    m2_gate_label = rectangle(layer=m2_gate_pin_layer, size=(M2_ref.ports["gate_W"].width, M2_ref.ports["gate_W"].width), centered=True).copy()
+    m2_gate_label = rectangle(layer=m2_gate_pin_layer, size=(m2_gate_port.width, m2_gate_port.width), centered=True).copy()
     m2_gate_label.add_label(text="M2_GATE", layer=m2_gate_label_layer)
     move_info.append((m2_gate_label, m2_gate_port, None))
     
@@ -282,7 +282,7 @@ def diff_pair_pins(
     # M2 Drain pin - dynamic layer from port (drains are always separate)
     m2_drain_port = M2_ref.ports["multiplier_0_drain_W"]
     m2_drain_pin_layer, m2_drain_label_layer = get_pin_layers(m2_drain_port.layer, pdk)
-    m2_drain_label = rectangle(layer=m2_drain_pin_layer, size=(M2_ref.ports["drain_W"].width, M2_ref.ports["drain_W"].width), centered=True).copy()
+    m2_drain_label = rectangle(layer=m2_drain_pin_layer, size=(m2_drain_port.width, m2_drain_port.width), centered=True).copy()
     m2_drain_label.add_label(text="M2_DRAIN", layer=m2_drain_label_layer)
     move_info.append((m2_drain_label, m2_drain_port, None))
     
