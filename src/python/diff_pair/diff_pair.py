@@ -285,9 +285,15 @@ def diff_pair_pins(
     move_info.append((m2_drain_label, m2_drain_port, None))
     
     # Calculate terminal centers first
-    m1_gate_center = calculate_terminal_center((
+    ## Gate centers are more finicky for some reason. TODO: simpler logic
+    m1_gate_center_x = calculate_terminal_center((
         M1_ref.ports["multiplier_0_gate_N"], M1_ref.ports["multiplier_0_gate_S"]
     ))
+    m1_gate_center_y = calculate_terminal_center((
+        M1_ref.ports["multiplier_0_gate_W"], M1_ref.ports["multiplier_0_gate_E"]
+    ))
+    m1_gate_center = (m1_gate_center_x[0], m1_gate_center_y[1])
+
     m1_drain_center = calculate_terminal_center((
         M1_ref.ports["multiplier_0_drain_W"], M1_ref.ports["multiplier_0_drain_E"]
     ))
@@ -296,9 +302,15 @@ def diff_pair_pins(
     ))
     
     # M2 terminal centers
-    m2_gate_center = calculate_terminal_center((
+    ## Gate centers are more finicky for some reason. TODO: simpler logic
+    m2_gate_center_x = calculate_terminal_center((
+        M2_ref.ports["multiplier_0_gate_N"], M2_ref.ports["multiplier_0_gate_S"]
+    ))
+    m2_gate_center_y = calculate_terminal_center((
         M2_ref.ports["multiplier_0_gate_W"], M2_ref.ports["multiplier_0_gate_E"]
     ))
+    m2_gate_center = (m2_gate_center_x[0], m2_gate_center_y[1])
+
     m2_drain_center = calculate_terminal_center((
         M2_ref.ports["multiplier_0_drain_W"], M2_ref.ports["multiplier_0_drain_E"]
     ))
