@@ -197,22 +197,20 @@ def get_pin_layers(port_layer, pdk=None):
     # Default fallback - use the port layer itself
     return port_layer, port_layer
 
-# Calculate the center of a FET terminal, from the four sides of the FET
-def calculate_terminal_center(port_W, port_E):
+# Calculate the center of a FET terminal, from any number of ports
+def calculate_terminal_center(ports):
     """
-    Calculate the center point of a terminal (gate, source, or drain) by averaging
-    the center coordinates of its four directional ports.
+    Calculate the center point of a terminal by averaging the center coordinates 
+    of any number of ports.
 
     Args:
-        port_S, port_N, port_W, port_E: Port objects for South, North, West, East directions
+        ports: Tuple or list of Port objects to average over
 
     Returns:
         tuple: (x, y) coordinates of the terminal center
     """
-    import numpy as np
-
-    # Get center coordinates of all four ports
-    centers = [port.center for port in [ port_W, port_E]]
+    # Get center coordinates of all ports
+    centers = [port.center for port in ports]
 
     # Average the coordinates
     center_array = np.array(centers)
@@ -237,7 +235,7 @@ def diff_pair_pins(
     # M1 Gate pin - dynamic layer from port
     m1_gate_port = M1_ref.ports["multiplier_0_gate_E"]
     m1_gate_pin_layer, m1_gate_label_layer = get_pin_layers(m1_gate_port.layer, pdk)
-    m1_gate_label = rectangle(layer=m1_gate_pin_layer, size=(m1_gate_port.width, m1_gate_port.width), centered=True).copy()
+    m1_gate_label = rectangle(layer=m1_gate_pin_layer, size=(2*m1_gate_port.width, 2*m1_gate_port.width), centered=True).copy()
     m1_gate_label.add_label(text="M1_GATE", layer=m1_gate_label_layer)
     move_info.append((m1_gate_label, m1_gate_port, None))
   
@@ -274,7 +272,7 @@ def diff_pair_pins(
     # M2 Gate pin - dynamic layer from port
     m2_gate_port = M2_ref.ports["multiplier_0_gate_E"]
     m2_gate_pin_layer, m2_gate_label_layer = get_pin_layers(m2_gate_port.layer, pdk)
-    m2_gate_label = rectangle(layer=m2_gate_pin_layer, size=(m2_gate_port.width, m2_gate_port.width), centered=True).copy()
+    m2_gate_label = rectangle(layer=m2_gate_pin_layer, size=(2*m2_gate_port.width, 2*m2_gate_port.width), centered=True).copy()
     m2_gate_label.add_label(text="M2_GATE", layer=m2_gate_label_layer)
     move_info.append((m2_gate_label, m2_gate_port, None))
     
@@ -287,26 +285,26 @@ def diff_pair_pins(
     move_info.append((m2_drain_label, m2_drain_port, None))
     
     # Calculate terminal centers first
-    m1_gate_center = calculate_terminal_center(
-        M1_ref.ports["multiplier_0_gate_W"], M1_ref.ports["multiplier_0_gate_E"]
-    )
-    m1_drain_center = calculate_terminal_center(
+    m1_gate_center = calculate_terminal_center((
+        M1_ref.ports["multiplier_0_gate_N"], M1_ref.ports["multiplier_0_gate_S"]
+    ))
+    m1_drain_center = calculate_terminal_center((
         M1_ref.ports["multiplier_0_drain_W"], M1_ref.ports["multiplier_0_drain_E"]
-    )
-    m1_source_center = calculate_terminal_center(
+    ))
+    m1_source_center = calculate_terminal_center((
         M1_ref.ports["multiplier_0_source_W"], M1_ref.ports["multiplier_0_source_E"]
-    )
+    ))
     
     # M2 terminal centers
-    m2_gate_center = calculate_terminal_center(
+    m2_gate_center = calculate_terminal_center((
         M2_ref.ports["multiplier_0_gate_W"], M2_ref.ports["multiplier_0_gate_E"]
-    )
-    m2_drain_center = calculate_terminal_center(
+    ))
+    m2_drain_center = calculate_terminal_center((
         M2_ref.ports["multiplier_0_drain_W"], M2_ref.ports["multiplier_0_drain_E"]
-    )
-    m2_source_center = calculate_terminal_center(
+    ))
+    m2_source_center = calculate_terminal_center((
         M2_ref.ports["multiplier_0_source_W"], M2_ref.ports["multiplier_0_source_E"]
-    )
+    ))
     
     # Position visual pins at the same calculated centers as electrical ports
     m1_gate_ref = top_level << m1_gate_label
@@ -332,16 +330,16 @@ def diff_pair_pins(
     # Create ports with all four orientations (E=0°, N=90°, W=180°, S=270°)
     
     # M1 Gate ports (all orientations)
-    top_level.add_port(center=m1_gate_center, width=M1_ref.ports["gate_W"].width, orientation=0, layer=M1_ref.ports["multiplier_0_gate_E"].layer, name=f"{component_name}_M1_GATE_E")
-    top_level.add_port(center=m1_gate_center, width=M1_ref.ports["gate_W"].width, orientation=90, layer=M1_ref.ports["multiplier_0_gate_E"].layer, name=f"{component_name}_M1_GATE_N")
-    top_level.add_port(center=m1_gate_center, width=M1_ref.ports["gate_W"].width, orientation=180, layer=M1_ref.ports["multiplier_0_gate_E"].layer, name=f"{component_name}_M1_GATE_W")
-    top_level.add_port(center=m1_gate_center, width=M1_ref.ports["gate_W"].width, orientation=270, layer=M1_ref.ports["multiplier_0_gate_E"].layer, name=f"{component_name}_M1_GATE_S")
+    top_level.add_port(center=m1_gate_center, width=2*M1_ref.ports["multiplier_0_gate_W"].width, orientation=0, layer=M1_ref.ports["multiplier_0_gate_E"].layer, name=f"{component_name}_M1_GATE_E")
+    top_level.add_port(center=m1_gate_center, width=2*M1_ref.ports["multiplier_0_gate_W"].width, orientation=90, layer=M1_ref.ports["multiplier_0_gate_E"].layer, name=f"{component_name}_M1_GATE_N")
+    top_level.add_port(center=m1_gate_center, width=2*M1_ref.ports["multiplier_0_gate_W"].width, orientation=180, layer=M1_ref.ports["multiplier_0_gate_E"].layer, name=f"{component_name}_M1_GATE_W")
+    top_level.add_port(center=m1_gate_center, width=2*M1_ref.ports["multiplier_0_gate_W"].width, orientation=270, layer=M1_ref.ports["multiplier_0_gate_E"].layer, name=f"{component_name}_M1_GATE_S")
     
     # M2 Gate ports (all orientations)
-    top_level.add_port(center=m2_gate_center, width=M2_ref.ports["gate_W"].width, orientation=0, layer=M2_ref.ports["multiplier_0_gate_E"].layer, name=f"{component_name}_M2_GATE_E")
-    top_level.add_port(center=m2_gate_center, width=M2_ref.ports["gate_W"].width, orientation=90, layer=M2_ref.ports["multiplier_0_gate_E"].layer, name=f"{component_name}_M2_GATE_N")
-    top_level.add_port(center=m2_gate_center, width=M2_ref.ports["gate_W"].width, orientation=180, layer=M2_ref.ports["multiplier_0_gate_E"].layer, name=f"{component_name}_M2_GATE_W")
-    top_level.add_port(center=m2_gate_center, width=M2_ref.ports["gate_W"].width, orientation=270, layer=M2_ref.ports["multiplier_0_gate_E"].layer, name=f"{component_name}_M2_GATE_S")
+    top_level.add_port(center=m2_gate_center, width=2*M2_ref.ports["multiplier_0_gate_W"].width, orientation=0, layer=M2_ref.ports["multiplier_0_gate_E"].layer, name=f"{component_name}_M2_GATE_E")
+    top_level.add_port(center=m2_gate_center, width=2*M2_ref.ports["multiplier_0_gate_W"].width, orientation=90, layer=M2_ref.ports["multiplier_0_gate_E"].layer, name=f"{component_name}_M2_GATE_N")
+    top_level.add_port(center=m2_gate_center, width=2*M2_ref.ports["multiplier_0_gate_W"].width, orientation=180, layer=M2_ref.ports["multiplier_0_gate_E"].layer, name=f"{component_name}_M2_GATE_W")
+    top_level.add_port(center=m2_gate_center, width=2*M2_ref.ports["multiplier_0_gate_W"].width, orientation=270, layer=M2_ref.ports["multiplier_0_gate_E"].layer, name=f"{component_name}_M2_GATE_S")
     
     # Add drain ports (always separate) - all orientations
     top_level.add_port(center=m1_drain_center, width=M1_ref.ports["drain_W"].width, orientation=0, layer=M1_ref.ports["multiplier_0_source_E"].layer, name=f"{component_name}_M1_DRAIN_E")
