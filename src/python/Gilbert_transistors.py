@@ -120,6 +120,7 @@ if __name__ == "__main__":
     # get minimal separtion needed for tapring separations
     sep_met1 = pdk_choice.get_grule('met1', 'met1')['min_separation']
     sep_met2 = pdk_choice.get_grule('met2', 'met2')['min_separation']
+    sep_met3 = pdk_choice.get_grule('met3', 'met3')['min_separation']
     # sep_pplus = pdk_choice.get_grule('pplus', 'pplus')['min_separation']
 
     sep = max(sep_met1, sep_met2)
@@ -152,9 +153,9 @@ if __name__ == "__main__":
     LO_diff_pair_right_ref = move(LO_diff_pair_right_ref, (right_dx, right_dy))
     LO_diff_pair_left_ref = move(LO_diff_pair_left_ref, (left_dx, left_dy))
     
-    # Print basic info
-    print(f"✓ Created Gilbert cell (without resistors): {comp.name}")
-    
+    # Route the LO pairs' (left and right) sources to the drains of the RF_diff_pair
+
+    ## choose ports to route
     lo_1_M1_source_port_name = "LO_diff_pair_1_M1_SOURCE_W"
     lo_2_M2_source_port_name = "LO_diff_pair_2_M2_SOURCE_W"
     rf_M1_drain_port_name = "RF_diff_pair_M1_DRAIN_N"
@@ -176,7 +177,7 @@ if __name__ == "__main__":
             vglayer="met3"
        )
 
-        # Vias at the end of the L routings
+        # Vias at the end of the L routings, i.e on the drains of the RF FETs
         sd_width = RF_diff_pair_ref.ports[rf_M1_drain_port_name].width
         via_rf_m1 = via_array(pdk_choice, "met3", rf_sd_layer, 
                 size=(sd_width, sd_width),
@@ -197,6 +198,94 @@ if __name__ == "__main__":
         comp << route_lo1
     except Exception as e:
         print(f"DEBUG: L_route route failed: {e}")
+
+
+
+    # Routing the LO drains towards VDD and outside pins
+    ## Get the LO drain port names (using the updated naming scheme)
+    lo_left_m1_drain = "LO_diff_pair_1_M1_DRAIN_E"  
+    lo_right_m1_drain = "LO_diff_pair_2_M1_DRAIN_E"
+    lo_left_m2_drain = "LO_diff_pair_1_M2_DRAIN_E"  
+    lo_right_m2_drain = "LO_diff_pair_2_M2_DRAIN_E"
+
+    ## Check if the ports exist and get their centers
+    lo_left_M1_drain = LO_diff_pair_left_ref.ports[lo_left_m1_drain]
+    lo_right_M1_drain = LO_diff_pair_right_ref.ports[lo_right_m1_drain]
+    lo_left_M2_drain = LO_diff_pair_left_ref.ports[lo_left_m2_drain]
+    lo_right_M2_drain = LO_diff_pair_right_ref.ports[lo_right_m2_drain]
+    
+    ## Get port properties
+    drain_width = lo_left_M1_drain.width
+    lo_left_M1_center = lo_left_M1_drain.center
+    lo_right_M1_center = lo_right_M1_drain.center
+    lo_left_M2_center = lo_left_M2_drain.center
+    lo_right_M2_center = lo_right_M2_drain.center
+    
+    # Calculate Y position (middle of the two drain centers)
+    via_M1_y = (lo_left_M1_center[1] + lo_right_M1_center[1]) / 2
+    via_M2_y = (lo_left_M2_center[1] + lo_right_M2_center[1]) / 2
+    
+    # Get tapring boundaries
+    # For the right border of taprings, we need the rightmost edge of each tapring
+    lo_left_bbox = evaluate_bbox(LO_diff_pair_left_ref)
+    
+    # Calculate via X positions: 0.5um right of the right border of each tapring
+    via_M1_drains_LO_x = lo_left_M1_center[0] + lo_left_bbox[0] / 2 + 1.0  # Right edge of left tapring + 0.5um
+    via_M2_drains_LO_x = lo_left_M2_center[0] + lo_left_bbox[0] / 2 + 1.0 + drain_width + sep_met3  # Right edge of left tapring + 0.5um
+
+    # Create vias - using drain/drain layer from LO FET kwargs
+    lo_sd_layer = LO_FET_kwargs["sd_route_topmet"]  # Should be "met2"
+    
+    # Create vias (square, matching the drain port width)
+    via_drains_M1_LO = via_array(pdk_choice, "met4", "met3", 
+                       size=(drain_width, drain_width),
+                       fullbottom=True)
+    via_drains_M2_LO = via_array(pdk_choice, "met4", "met3", 
+                       size=(drain_width, drain_width),
+                       fullbottom=True)
+    
+    # Add vias to component and position them
+    via_drains_M1_LO_ref = comp << via_drains_M1_LO
+    via_drains_M2_LO_ref = comp << via_drains_M2_LO
+    
+    via_drains_M1_LO_ref.move((via_M1_drains_LO_x, via_M1_y))
+    via_drains_M2_LO_ref.move((via_M2_drains_LO_x, via_M2_y))
+    
+ 
+    route_lo_drain_1_M1 = L_route(
+        pdk_choice, 
+        lo_left_M1_drain,
+        via_drains_M1_LO_ref['top_met_N'],
+        hglayer=lo_sd_layer,
+        vglayer="met3"
+    )
+    route_lo_drain_2_M1 = L_route(
+        pdk_choice, 
+        lo_right_M1_drain,
+        via_drains_M1_LO_ref['top_met_N'],
+        hglayer=lo_sd_layer,
+        vglayer="met3"
+    )
+
+    route_lo_drain_1_M2 = L_route(
+        pdk_choice, 
+        lo_left_M2_drain,
+        via_drains_M2_LO_ref['top_met_N'],
+        hglayer=lo_sd_layer,
+        vglayer="met3"
+    )
+    route_lo_drain_2_M2 = L_route(
+        pdk_choice, 
+        lo_right_M2_drain,
+        via_drains_M2_LO_ref['top_met_N'],
+        hglayer=lo_sd_layer,
+        vglayer="met3"
+    )
+    
+    comp << route_lo_drain_1_M1
+    comp << route_lo_drain_2_M1
+    comp << route_lo_drain_1_M2
+    comp << route_lo_drain_2_M2
 
     # Write GDS file
     print("✓ Writing GDS file...")
