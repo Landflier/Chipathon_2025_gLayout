@@ -140,6 +140,7 @@ if __name__ == "__main__":
         tie_layers2=("met2", "met1"),  # Tie layers for M2
         connected_sources=False,    # Connect sources together
         component_name = "RF_diff_pair",   # Component's name
+        gate_pin_offset_x = 1,               # offset of the gate pins in the x direction
         M1_kwargs=RF_FET_kwargs,              # Additional M1 parameters
         M2_kwargs=RF_FET_kwargs              # Additional M2 parameters
     )

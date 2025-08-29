@@ -225,6 +225,7 @@ def diff_pair_pins(
     pdk: MappedPDK,
     connected_sources: bool,
     component_name: str = "diff_pair",
+    gate_pin_offset_x: float = 0,
 ) -> Component:
 
     top_level.unlock()
@@ -297,7 +298,7 @@ def diff_pair_pins(
     m1_gate_center_y = calculate_terminal_center((
         M1_ref.ports["multiplier_0_gate_W"], M1_ref.ports["multiplier_0_gate_E"]
     ))
-    m1_gate_center = (m1_gate_center_x[0], m1_gate_center_y[1])
+    m1_gate_center = (m1_gate_center_x[0] + gate_pin_offset_x, m1_gate_center_y[1])
 
     m1_drain_center = calculate_terminal_center((
         M1_ref.ports["multiplier_0_drain_W"], M1_ref.ports["multiplier_0_drain_E"]
@@ -314,7 +315,7 @@ def diff_pair_pins(
     m2_gate_center_y = calculate_terminal_center((
         M2_ref.ports["multiplier_0_gate_W"], M2_ref.ports["multiplier_0_gate_E"]
     ))
-    m2_gate_center = (m2_gate_center_x[0], m2_gate_center_y[1])
+    m2_gate_center = (m2_gate_center_x[0] + gate_pin_offset_x, m2_gate_center_y[1])
 
     m2_drain_center = calculate_terminal_center((
         M2_ref.ports["multiplier_0_drain_W"], M2_ref.ports["multiplier_0_drain_E"]
@@ -399,6 +400,7 @@ def diff_pair(
         tie_layers2: tuple[str,str] = ("met2","met1"),
         sd_rmult: int=1,
         connected_sources: bool = True,
+        gate_pin_offset_x: float = 0,
         M1_kwargs: dict = None,
         M2_kwargs: dict = None,
         component_name: str = "diff_pair",
@@ -463,7 +465,7 @@ def diff_pair(
     create_and_connect_tapring(top_level, M1_ref, M2_ref, pdk, placement, diff_pair_center)
 
     #Routing
-    top_level_with_pins = diff_pair_pins(top_level, M1_ref, M2_ref, gf180, connected_sources, component_name)
+    top_level_with_pins = diff_pair_pins(top_level, M1_ref, M2_ref, gf180, connected_sources, component_name, gate_pin_offset_x)
     
     return component_snap_to_grid(top_level_with_pins)
 
