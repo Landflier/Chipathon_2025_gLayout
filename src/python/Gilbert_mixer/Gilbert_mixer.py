@@ -15,7 +15,7 @@ def add_via_pins_and_labels(
     pin_name: str,
     pdk: MappedPDK,
     pin_layer: str = "met4",
-    debug_mode: bool = True,
+    debug_mode: str = True,
 ) -> Component:
     """
     Add pins and labels to a via for external connectivity.
@@ -26,7 +26,7 @@ def add_via_pins_and_labels(
         pin_name: Name for the pin and label
         pdk: PDK for layer information
         pin_layer: Metal layer for the pin (default: "met4")
-        debug_mode: Whether to add visual labels (default: True)
+        debug_mode: whether to show rectangles where the pin should be
     
     Returns:
         Component: The modified top_level component
@@ -52,7 +52,11 @@ def add_via_pins_and_labels(
     
     # Create visual pin rectangle following diff_pair pattern
     top_level.add_label(text=pin_name, position=via_center, layer=label_layer_gds)
-        
+    
+    if debug_mode:
+        pin_label = rectangle(layer=pin_layer_gds, size=(pin_size, pin_size), centered=True).copy()
+        pin_label_ref = top_level << pin_label
+        pin_label_ref.move(via_center)
     
     # Add electrical ports for connectivity using the via center
     # Create ports with all four orientations (E=0°, N=90°, W=180°, S=270°)
@@ -365,8 +369,8 @@ if __name__ == "__main__":
         via_rf_m2_ref.move(RF_diff_pair_ref.ports[rf_M2_drain_port_name].center)
         
         # Add pins and labels to RF vias
-        add_via_pins_and_labels(comp, via_rf_m1_ref, "I_bias_p", pdk_choice, pin_layer="met3", debug_mode=True)
-        add_via_pins_and_labels(comp, via_rf_m2_ref, "I_bias_n", pdk_choice, pin_layer="met3", debug_mode=True)
+        add_via_pins_and_labels(comp, via_rf_m1_ref, "I_bias_p", pdk_choice, pin_layer="met3", debug_mode=False)
+        add_via_pins_and_labels(comp, via_rf_m2_ref, "I_bias_n", pdk_choice, pin_layer="met3", debug_mode=False)
         
         comp << route_lo2
         comp << route_lo1
@@ -402,8 +406,8 @@ if __name__ == "__main__":
     )
     
     # Add pins and labels to IF output vias
-    add_via_pins_and_labels(comp, via_IF_pos_ref, "V_out_p", pdk_choice, pin_layer="met4", debug_mode=True)
-    add_via_pins_and_labels(comp, via_IF_neg_ref, "V_out_n", pdk_choice, pin_layer="met4", debug_mode=True)
+    add_via_pins_and_labels(comp, via_IF_pos_ref, "V_out_p", pdk_choice, pin_layer="met4", debug_mode=False)
+    add_via_pins_and_labels(comp, via_IF_neg_ref, "V_out_n", pdk_choice, pin_layer="met4", debug_mode=False)
 
 
     ## Get the LO drain port names (using the updated naming scheme)
@@ -436,8 +440,8 @@ if __name__ == "__main__":
     )
     
     # Add pins and labels to LO input vias
-    add_via_pins_and_labels(comp, via_LO_ref, "V_LO", pdk_choice, pin_layer="met4", debug_mode=True)
-    add_via_pins_and_labels(comp, via_LO_b_ref, "V_LO_b", pdk_choice, pin_layer="met4", debug_mode=True)
+    add_via_pins_and_labels(comp, via_LO_ref, "V_LO", pdk_choice, pin_layer="met4", debug_mode=False)
+    add_via_pins_and_labels(comp, via_LO_b_ref, "V_LO_b", pdk_choice, pin_layer="met4", debug_mode=False)
 
  
     # Add labels directly to RF gate ports
@@ -460,8 +464,8 @@ if __name__ == "__main__":
     
     # Write both hierarchical and flattened GDS files
     print("✓ Writing GDS files...")
-    comp.write_gds('Gilbert_cell_hierarchical.gds', cellname="Gilbert_cell")
-    flat_comp.write_gds('Gilbert_cell.gds', cellname="Gilbert_cell")
+    comp.write_gds('lvs/Gilbert_cell_hierarchical.gds', cellname="Gilbert_cell")
+    # flat_comp.write_gds('lvs/Gilbert_cell.gds', cellname="Gilbert_cell")
     print("  - Hierarchical GDS: Gilbert_cell_hierarchical.gds")
     print("  - Flattened GDS: Gilbert_cell.gds (recommended for extraction)")
     
