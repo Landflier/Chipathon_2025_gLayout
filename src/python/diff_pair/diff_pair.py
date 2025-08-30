@@ -104,9 +104,10 @@ def swap_drain_source_ports(mosfet_component):
     return mosfet_component
 
 # Get dynamic layers from the actual port layers
-def create_and_connect_tapring(top_level, M1_ref, M2_ref, pdk, placement, diff_pair_center):
+def create_and_connect_tapring(top_level, M1_ref, M2_ref, pdk, placement, diff_pair_center, debug_mode=True, comp_name="diff_pair"):
     """
     Create tapring around the differential pair and connect dummy devices to it.
+    Also adds a GND pin connected to the tapring.
     
     Args:
         top_level: Main component to add tapring to
@@ -115,6 +116,8 @@ def create_and_connect_tapring(top_level, M1_ref, M2_ref, pdk, placement, diff_p
         pdk: Process design kit
         placement: "vertical" or "horizontal" placement
         diff_pair_center: Center coordinates of the differential pair
+        comp_name: Component name to use as prefix for port names (default: "diff_pair")
+        debug_mode: whether to place phsyical rectangles where pin names are
         
     Returns:
         None (modifies top_level in place)
@@ -171,6 +174,36 @@ def create_and_connect_tapring(top_level, M1_ref, M2_ref, pdk, placement, diff_p
             top_level << straight_route(pdk, device_ref.ports[device_port_name], tapring_ref.ports[closest_tapring_port.name])
         except:
             top_level << c_route(pdk, device_ref.ports[device_port_name], tapring_ref.ports[closest_tapring_port.name])
+    
+    ## Add GND pin connected to the tapring
+
+    # Find a suitable tapring port for VSS connection (use the first available port)
+    all_tapring_ports = [port for port in tapring_ref.get_ports_list() if "bottom_met" in port.name.lower()]
+    if all_tapring_ports:
+        vss_tapring_port = all_tapring_ports[0]  # Use first available port
+        
+        # Get the port properties for creating the VSS pin
+        vss_port_center = vss_tapring_port.center
+        vss_port_width = vss_tapring_port.width
+        vss_port_layer = vss_tapring_port.layer
+        
+        # Get pin and label layers for the VSS pin
+        vss_pin_layer, vss_label_layer = get_pin_layers(vss_port_layer, pdk)
+        
+        # Create visual VSS pin rectangle (if debug mode would be enabled)
+        if debug_mode:
+            vss_label = rectangle(layer=vss_pin_layer, size=(vss_port_width, vss_port_width), centered=True).copy()
+            vss_label.add_label(text="VSS", layer=vss_label_layer)
+            # Add the visual pin to the component
+            vss_label_ref = top_level << vss_label
+            vss_label_ref.move(vss_port_center)
+        else: 
+            top_level.add_label(text="VSS", position=vss_tapring_port.center, layer=vss_label_layer)
+        # Add electrical ports for VSS connectivity (all four orientations)
+        top_level.add_port(center=vss_port_center, width=vss_port_width, orientation=0, layer=vss_port_layer, name=f"{comp_name}_VSS_E")
+        top_level.add_port(center=vss_port_center, width=vss_port_width, orientation=90, layer=vss_port_layer, name=f"{comp_name}_VSS_N")
+        top_level.add_port(center=vss_port_center, width=vss_port_width, orientation=180, layer=vss_port_layer, name=f"{comp_name}_VSS_W")
+        top_level.add_port(center=vss_port_center, width=vss_port_width, orientation=270, layer=vss_port_layer, name=f"{comp_name}_VSS_S")
 
 
 def get_pin_layers(port_layer, pdk=None):
@@ -463,7 +496,7 @@ def diff_pair(
     diff_pair_center = top_level.center
     
     # Create and connect tapring
-    create_and_connect_tapring(top_level, M1_ref, M2_ref, pdk, placement, diff_pair_center)
+    create_and_connect_tapring(top_level, M1_ref, M2_ref, pdk, placement, diff_pair_center, debug_mode, component_name)
 
     #Routing
     top_level_with_pins = diff_pair_pins(top_level, M1_ref, M2_ref, gf180, connected_sources, component_name, gate_pin_offset_x, debug_mode)
