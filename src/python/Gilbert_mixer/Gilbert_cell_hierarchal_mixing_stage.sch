@@ -106,7 +106,7 @@ C {ipin.sym} 630 -805 2 1 {name=p4 lab=V_RF_b
 C {opin.sym} 760 -1310 3 0 {name=p5 lab=V_out_p}
 C {opin.sym} 1130 -1310 3 0 {name=p7 lab=V_out_n}
 C {lab_wire.sym} 1260 -1090 0 1 {name=p6 sig_type=std_logic lab=V_LO}
-C {symbols/nfet_03v3.sym} 740 -1090 0 0 {name=M_dp_lo_pos
+C {symbols/nfet_03v3.sym} 740 -1090 0 0 {name=M_dp_lo_pos_M1
 L=0.28u
 W=20u
 nf=5
@@ -120,7 +120,7 @@ sa=0 sb=0 sd=0
 model=nfet_03v3
 spiceprefix=X
 }
-C {symbols/nfet_03v3.sym} 860 -1090 0 1 {name=M_dp_lo_neg
+C {symbols/nfet_03v3.sym} 860 -1090 0 1 {name=M_dp_lo_pos_M2
 L=0.28u
 W=20u
 nf=5
@@ -134,7 +134,7 @@ sa=0 sb=0 sd=0
 model=nfet_03v3
 spiceprefix=X
 }
-C {symbols/nfet_03v3.sym} 1030 -1090 0 0 {name=M_dp_lo_b_pos
+C {symbols/nfet_03v3.sym} 1030 -1090 0 0 {name=M_dp_lo_neg_M1
 L=0.28u
 W=20u
 nf=5
@@ -148,7 +148,7 @@ sa=0 sb=0 sd=0
 model=nfet_03v3
 spiceprefix=X
 }
-C {symbols/nfet_03v3.sym} 1150 -1090 0 1 {name=M_dp_lo_b_neg
+C {symbols/nfet_03v3.sym} 1150 -1090 0 1 {name=M_dp_lo_neg_M2
 L=0.28u
 W=20u
 nf=5
@@ -162,7 +162,7 @@ sa=0 sb=0 sd=0
 model=nfet_03v3
 spiceprefix=X
 }
-C {symbols/nfet_03v3.sym} 890 -910 0 0 {name=M_rf_pos
+C {symbols/nfet_03v3.sym} 890 -910 0 0 {name=M_rf_M1
 L=0.28u
 W=10u
 nf=5
@@ -176,7 +176,7 @@ sa=0 sb=0 sd=0
 model=nfet_03v3
 spiceprefix=X
 }
-C {symbols/nfet_03v3.sym} 1010 -910 0 1 {name=M_rf_neg
+C {symbols/nfet_03v3.sym} 1010 -910 0 1 {name=M_rf_M2
 L=0.28u
 W=10u
 nf=5

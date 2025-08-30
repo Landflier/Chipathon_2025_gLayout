@@ -3,10 +3,89 @@
 import os
 import sys
 from gdsfactory import Component
+from gdsfactory.components import rectangle
+from glayout import MappedPDK
 
 # Add the diff_pair module to the path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../diff_pair'))
 
+def add_via_pins_and_labels(
+    top_level: Component,
+    via_ref: Component,
+    pin_name: str,
+    pdk: MappedPDK,
+    pin_layer: str = "met4",
+    debug_mode: bool = True,
+) -> Component:
+    """
+    Add pins and labels to a via for external connectivity.
+    
+    Args:
+        top_level: Component to add pins and labels to
+        via_ref: Reference to the via component
+        pin_name: Name for the pin and label
+        pdk: PDK for layer information
+        pin_layer: Metal layer for the pin (default: "met4")
+        debug_mode: Whether to add visual labels (default: True)
+    
+    Returns:
+        Component: The modified top_level component
+    """
+
+    top_level.unlock()
+    
+    # print(f"DEBUG: {via_ref.ports}")
+    # print(f"DEBUG: {via_ref.center}")
+    # print(f"DEBUG: {via_ref.size}")
+    # Get via center and size
+    via_center = via_ref.center
+    via_size = via_ref.size
+    
+    # Use the largest dimension for pin size
+    pin_size = max(via_size[0], via_size[1])
+    
+    # Get the metal layer and convert to pin/label layers using diff_pair function
+    metal_layer = pdk.get_glayer(pin_layer)
+    
+    # Get pin and label layers - dynamic layer from via top metal layer
+    pin_layer_gds, label_layer_gds = get_pin_layers(metal_layer, pdk)
+    
+    # Create visual pin rectangle following diff_pair pattern
+    top_level.add_label(text=pin_name, position=via_center, layer=label_layer_gds)
+        
+    
+    # Add electrical ports for connectivity using the via center
+    # Create ports with all four orientations (E=0°, N=90°, W=180°, S=270°)
+    top_level.add_port(
+        center=via_center,
+        width=pin_size,
+        orientation=0,  # East orientation
+        layer=metal_layer,
+        name=f"{pin_name}_E"
+    )
+    top_level.add_port(
+        center=via_center,
+        width=pin_size,
+        orientation=90,  # North orientation
+        layer=metal_layer,
+        name=f"{pin_name}_N"
+    )
+    top_level.add_port(
+        center=via_center,
+        width=pin_size,
+        orientation=180,  # West orientation
+        layer=metal_layer,
+        name=f"{pin_name}_W"
+    )
+    top_level.add_port(
+        center=via_center,
+        width=pin_size,
+        orientation=270,  # South orientation
+        layer=metal_layer,
+        name=f"{pin_name}_S"
+    )
+    
+    return top_level
 # Routing the LO drains towards VDD and outside pins
 def create_vias_and_route(comp, pin1, pin2, pin3, pin4, pdk_choice, lo_bbox, offset=1.0, route_hlayer="met2", route_vlayer="met3", via_top_layer="met4", via_bottom_layer="met3"):
     """
@@ -99,7 +178,7 @@ def create_vias_and_route(comp, pin1, pin2, pin3, pin4, pdk_choice, lo_bbox, off
     
     
 if __name__ == "__main__":
-    from diff_pair import diff_pair
+    from diff_pair import diff_pair, get_pin_layers
     from glayout import gf180
     from glayout.util.comp_utils import evaluate_bbox, move, movex, movey
     from glayout.routing.straight_route import straight_route
@@ -135,6 +214,7 @@ if __name__ == "__main__":
         tie_layers1=("met2", "met1"),  # Tie layers for M1
         tie_layers2=("met2", "met1"),  # Tie layers for M2
         connected_sources=False,    # Connect sources together
+        debug_mode = False,                  # dont add terminal labels and visual pins
         component_name = "RF_diff_pair",   # Component's name
         gate_pin_offset_x = 2,               # offset of the gate pins in the x direction
         M1_kwargs=RF_FET_kwargs,              # Additional M1 parameters
@@ -167,6 +247,7 @@ if __name__ == "__main__":
         tie_layers1=("met2", "met1"),  # Tie layers for M1
         tie_layers2=("met2", "met1"),  # Tie layers for M2
         connected_sources=True,    # Connect sources together
+        debug_mode = False,                  # dont add terminal labels and visual pins
         component_name = "LO_diff_pair_1",   # Component's name
         M1_kwargs=LO_FET_kwargs,             # Additional M1 parameters
         M2_kwargs=LO_FET_kwargs              # Additional M2 parameters
@@ -283,6 +364,10 @@ if __name__ == "__main__":
         via_rf_m1_ref.move(RF_diff_pair_ref.ports[rf_M1_drain_port_name].center)
         via_rf_m2_ref.move(RF_diff_pair_ref.ports[rf_M2_drain_port_name].center)
         
+        # Add pins and labels to RF vias
+        add_via_pins_and_labels(comp, via_rf_m1_ref, "I_bias_p", pdk_choice, pin_layer="met3", debug_mode=True)
+        add_via_pins_and_labels(comp, via_rf_m2_ref, "I_bias_n", pdk_choice, pin_layer="met3", debug_mode=True)
+        
         comp << route_lo2
         comp << route_lo1
     except Exception as e:
@@ -315,6 +400,10 @@ if __name__ == "__main__":
         route_hlayer=lo_sd_layer,
         route_vlayer="met3",
     )
+    
+    # Add pins and labels to IF output vias
+    add_via_pins_and_labels(comp, via_IF_pos_ref, "V_out_p", pdk_choice, pin_layer="met4", debug_mode=True)
+    add_via_pins_and_labels(comp, via_IF_neg_ref, "V_out_n", pdk_choice, pin_layer="met4", debug_mode=True)
 
 
     ## Get the LO drain port names (using the updated naming scheme)
@@ -345,15 +434,36 @@ if __name__ == "__main__":
         route_hlayer=lo_sd_layer,
         route_vlayer="met3",
     )
+    
+    # Add pins and labels to LO input vias
+    add_via_pins_and_labels(comp, via_LO_ref, "V_LO", pdk_choice, pin_layer="met4", debug_mode=True)
+    add_via_pins_and_labels(comp, via_LO_b_ref, "V_LO_b", pdk_choice, pin_layer="met4", debug_mode=True)
 
+ 
+    # Add labels directly to RF gate ports
+    rf_m1_gate_port = RF_diff_pair_ref.ports["RF_diff_pair_M1_GATE_E"]
+    rf_m2_gate_port = RF_diff_pair_ref.ports["RF_diff_pair_M2_GATE_E"]
+    
+    # Get label layer
+    pin_layer_gds, label_layer_gds = get_pin_layers(rf_m1_gate_port.layer, pdk_choice)
+    
+    # Add labels directly
+    comp.add_label(text="RF_POS", position=rf_m1_gate_port.center, layer=label_layer_gds)
+    comp.add_label(text="RF_NEG", position=rf_m2_gate_port.center, layer=label_layer_gds)
+    
+    print(f"Added RF gate labels at M1: {rf_m1_gate_port.center}, M2: {rf_m2_gate_port.center}")
 
-    # Route the gates of the RF FETs
-
-
-    # Write GDS file
-    print("✓ Writing GDS file...")
-    comp.write_gds('Gilbert_cell.gds')
-    print("  - GDS file: Gilbert_cell.gds")
+    
+    # Flatten the component for easier extraction
+    flat_comp = comp.flatten()
+    flat_comp.name = "Gilbert_cell"
+    
+    # Write both hierarchical and flattened GDS files
+    print("✓ Writing GDS files...")
+    comp.write_gds('Gilbert_cell_hierarchical.gds', cellname="Gilbert_cell")
+    flat_comp.write_gds('Gilbert_cell.gds', cellname="Gilbert_cell")
+    print("  - Hierarchical GDS: Gilbert_cell_hierarchical.gds")
+    print("  - Flattened GDS: Gilbert_cell.gds (recommended for extraction)")
     
     # Simple DRC checks (skip if they fail due to Nix paths)
 
