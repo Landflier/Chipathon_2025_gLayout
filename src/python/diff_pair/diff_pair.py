@@ -103,6 +103,101 @@ def swap_drain_source_ports(mosfet_component):
     
     return mosfet_component
 
+
+def extend_lvpwell_to_tapring(top_level, M1_ref, M2_ref, tapring_ref, pdk, placement):
+    """
+    Extend lvpwell rectangles beneath each MOSFET towards the tapring sides.
+    This mimics the with_tie functionality by ensuring the well regions reach the tapring vias.
+    
+    Args:
+        top_level: Main component to add extended lvpwell rectangles to
+        M1_ref: Reference to M1 transistor
+        M2_ref: Reference to M2 transistor
+        tapring_ref: Reference to the tapring component
+        pdk: Process design kit
+        placement: "vertical" or "horizontal" placement
+    """
+    # Get the lvpwell layer
+    try:
+        lvpwell_layer = pdk.get_glayer("lvpwell")
+    except:
+        # Fallback to pwell if lvpwell doesn't exist
+        try:
+            lvpwell_layer = pdk.get_glayer("pwell")
+        except:
+            print("Warning: Could not find lvpwell or pwell layer, skipping well extension")
+            return
+    
+            # Get tapring boundaries
+    tapring_bbox = evaluate_bbox(tapring_ref)
+    tapring_center = tapring_ref.center
+    tapring_width = tapring_bbox[0]
+    tapring_height = tapring_bbox[1]
+    tapring_left = tapring_center[0] - tapring_width/2
+    tapring_right = tapring_center[0] + tapring_width/2
+    tapring_bottom = tapring_center[1] - tapring_height/2
+    tapring_top = tapring_center[1] + tapring_height/2
+    
+    # Create extended lvpwell rectangles for each MOSFET
+    for mosfet_ref, mosfet_name in [(M1_ref, "M1"), (M2_ref, "M2")]:
+        mosfet_bbox = evaluate_bbox(mosfet_ref)
+        mosfet_center = mosfet_ref.center
+        mosfet_width = mosfet_bbox[0]
+        mosfet_height = mosfet_bbox[1]
+        mosfet_left = mosfet_center[0] - mosfet_width/2
+        mosfet_right = mosfet_center[0] + mosfet_width/2
+        mosfet_bottom = mosfet_center[1] - mosfet_height/2
+        mosfet_top = mosfet_center[1] + mosfet_height/2
+        if placement == "vertical":
+            # For vertical placement, extend left, right, and bottom sides towards tapring
+            # Don't extend the side facing the other MOSFET (top for M1, bottom for M2)
+            if mosfet_name == "M1":
+                # M1 is on top, extend left, right, and bottom
+                extended_left = tapring_left
+                extended_right = tapring_right
+                # If the lvpwell should conver entire diff_piar, switch the following two lines to tapring_bottom and mosfet_top
+                extended_bottom = mosfet_bottom
+                extended_top = tapring_top  # Keep original top boundary
+            else:  # M2
+                # M2 is on bottom, extend left, right, and top
+                extended_left = tapring_left
+                extended_right = tapring_right
+                # If the lvpwell should conver entire diff_piar, switch the following two lines to mosfet_bottom and tapring_top
+                extended_bottom = tapring_bottom  
+                extended_top = mosfet_top
+                
+        elif placement == "horizontal":
+            # For horizontal placement, extend top, bottom, and outer sides towards tapring
+            # Don't extend the side facing the other MOSFET (right for M1, left for M2)
+            if mosfet_name == "M1":
+                # M1 is on left, extend left, top, and bottom
+                extended_left = tapring_left
+                extended_right = mosfet_right  # Keep original right boundary
+                extended_bottom = tapring_bottom
+                extended_top = tapring_top
+            else:  # M2
+                # M2 is on right, extend right, top, and bottom
+                extended_left = mosfet_left  # Keep original left boundary
+                extended_right = tapring_right
+                extended_bottom = tapring_bottom
+                extended_top = tapring_top
+        
+        # Calculate extended rectangle dimensions
+        extended_width = extended_right - extended_left
+        extended_height = extended_top - extended_bottom
+        extended_center = ((extended_left + extended_right) / 2, (extended_bottom + extended_top) / 2)
+        
+        # Create and add the extended lvpwell rectangle
+        extended_lvpwell = rectangle(
+            layer=lvpwell_layer,
+            size=(extended_width, extended_height),
+            centered=True
+        )
+        
+        extended_lvpwell_ref = top_level << extended_lvpwell
+        extended_lvpwell_ref.name = f"extended_lvpwell_{mosfet_name}"
+        extended_lvpwell_ref.move(extended_center)
+        
 # Get dynamic layers from the actual port layers
 def create_and_connect_tapring(top_level, M1_ref, M2_ref, pdk, placement, diff_pair_center, debug_mode=True, comp_name="diff_pair"):
     """
@@ -126,7 +221,7 @@ def create_and_connect_tapring(top_level, M1_ref, M2_ref, pdk, placement, diff_p
     ## Using substrate tap for NMOS devices in bulk
     tapring_comp = tapring(
         pdk=pdk,
-        enclosed_rectangle=evaluate_bbox(top_level, padding=pdk.get_grule("nwell", "active_diff")["min_enclosure"])
+        enclosed_rectangle=evaluate_bbox(top_level, padding=pdk.get_grule("nwell", "active_diff")["min_enclosure"]),
     )
     
     ## Center the tapring around the differential pair
@@ -134,6 +229,8 @@ def create_and_connect_tapring(top_level, M1_ref, M2_ref, pdk, placement, diff_p
     tapring_ref.name = "bulk_tapring_diff_pair"
     tapring_ref.move(diff_pair_center)
 
+    ## Extend lvpwell rectangles towards tapring sides (similar to with_tie functionality)
+    extend_lvpwell_to_tapring(top_level, M1_ref, M2_ref, tapring_ref, pdk, placement)
     ## connect up the dummy transistors to the tapring
     ## Get connection points for all devices
     if placement == "vertical":
@@ -177,15 +274,18 @@ def create_and_connect_tapring(top_level, M1_ref, M2_ref, pdk, placement, diff_p
     
     ## Add GND pin connected to the tapring
 
-    # Find a suitable tapring port for VSS connection (use the first available port)
-    all_tapring_ports = [port for port in tapring_ref.get_ports_list() if "bottom_met" in port.name.lower()]
+    # Find tapring ports with specific criteria: S_array, row_0, bottom_met, and N in their names
+    all_tapring_ports = [port for port in tapring_ref.get_ports_list() 
+                        if all(keyword in port.name for keyword in ["N_array", "row0", "top_met", "_W"])]
+    
+    print(f"DEBUG: tapring_ports: {all_tapring_ports}")
     if all_tapring_ports:
-        vss_tapring_port = all_tapring_ports[0]  # Use first available port
+        ref_tapring_port = all_tapring_ports[0]  # Use first available port
         
-        # Get the port properties for creating the VSS pin
-        vss_port_center = vss_tapring_port.center
-        vss_port_width = vss_tapring_port.width
-        vss_port_layer = vss_tapring_port.layer
+       # Get the port properties for creating the VSS pin
+        vss_port_center = calculate_terminal_center(all_tapring_ports)
+        vss_port_width = ref_tapring_port.width
+        vss_port_layer = ref_tapring_port.layer
         
         # Get pin and label layers for the VSS pin
         vss_pin_layer, vss_label_layer = get_pin_layers(vss_port_layer, pdk)
@@ -198,7 +298,7 @@ def create_and_connect_tapring(top_level, M1_ref, M2_ref, pdk, placement, diff_p
             vss_label_ref = top_level << vss_label
             vss_label_ref.move(vss_port_center)
         else: 
-            top_level.add_label(text="VSS", position=vss_tapring_port.center, layer=vss_label_layer)
+            top_level.add_label(text="VSS", position=vss_port_center , layer=vss_label_layer)
         # Add electrical ports for VSS connectivity (all four orientations)
         top_level.add_port(center=vss_port_center, width=vss_port_width, orientation=0, layer=vss_port_layer, name=f"{comp_name}_VSS_E")
         top_level.add_port(center=vss_port_center, width=vss_port_width, orientation=90, layer=vss_port_layer, name=f"{comp_name}_VSS_N")
