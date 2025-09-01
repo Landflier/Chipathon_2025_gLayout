@@ -308,7 +308,7 @@ def create_and_connect_tapring(top_level, M1_ref, M2_ref, pdk, placement, diff_p
         # Create visual VSS pin rectangle (if debug mode would be enabled)
         if debug_mode:
             vss_label = rectangle(layer=vss_pin_layer, size=(vss_port_width, vss_port_width), centered=True).copy()
-            vss_label.add_label(text="VSS", layer=vss_label_layer)
+            vss_label.add_label(text=f"{comp_name}VSS", layer=vss_label_layer)
             # Add the visual pin to the component
             vss_label_ref = top_level << vss_label
             vss_label_ref.move(vss_port_center)

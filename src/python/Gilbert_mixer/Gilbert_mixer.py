@@ -219,7 +219,7 @@ if __name__ == "__main__":
         tie_layers2=("met2", "met1"),  # Tie layers for M2
         connected_sources=False,    # Connect sources together
         debug_mode = True,                  # dont add terminal labels and visual pins
-        vss_port_placement = "W",            # VSS tapring port placement 
+        vss_port_placement = "E",            # VSS tapring port placement 
         component_name = "RF_diff_pair",     # Component's name
         gate_pin_offset_x = 2,               # offset of the gate pins in the x direction
         M1_kwargs=RF_FET_kwargs,             # Additional M1 parameters
@@ -241,7 +241,7 @@ if __name__ == "__main__":
     }
 
     # Generate differential pair with explicit parameters
-    LO_diff_pair_left = diff_pair(
+    LO_diff_pair_top = diff_pair(
         pdk=pdk_choice,
         placement="vertical",
         width=(20.0, 20.0),          # Width in micrometers
@@ -254,12 +254,12 @@ if __name__ == "__main__":
         connected_sources=True,    # Connect sources together
         debug_mode = True,                  # dont add terminal labels and visual pins
         component_name = "LO_diff_pair_1",   # Component's name
-        vss_port_placement = "E",            # VSS tapring port placement 
+        vss_port_placement = "S",            # VSS tapring port placement 
         M1_kwargs=LO_FET_kwargs,             # Additional M1 parameters
         M2_kwargs=LO_FET_kwargs              # Additional M2 parameters
     )
 
-    LO_diff_pair_right = diff_pair(
+    LO_diff_pair_bot = diff_pair(
         pdk=pdk_choice,
         placement="vertical",
         width=(20.0, 20.0),          # Width in micrometers
@@ -272,7 +272,7 @@ if __name__ == "__main__":
         connected_sources=True,    # Connect sources together
         debug_mode = True,                  # dont add terminal labels and visual pins
         component_name = "LO_diff_pair_2",   # Component's name
-        vss_port_placement = "S",            # VSS tapring port placement 
+        vss_port_placement = "N",            # VSS tapring port placement 
         M1_kwargs=LO_FET_kwargs,             # Additional M1 parameters
         M2_kwargs=LO_FET_kwargs              # Additional M2 parameters
     )
@@ -280,19 +280,19 @@ if __name__ == "__main__":
     comp = Component( name = "Gilbert_cell" )
 
     RF_diff_pair_ref = comp << RF_diff_pair
-    LO_diff_pair_left_ref = comp << LO_diff_pair_left
-    LO_diff_pair_right_ref = comp << LO_diff_pair_right
+    LO_diff_pair_top_ref = comp << LO_diff_pair_top
+    LO_diff_pair_bot_ref = comp << LO_diff_pair_bot
 
     # Print available ports for debugging
     # print(f"DEBUG: RF ports: {list(RF_diff_pair_ref.ports.keys())}")
-    # print(f"DEBUG: LO_left ports: {list(LO_diff_pair_left_ref.ports.keys())}")
-    # print(f"DEBUG: LO_right ports: {list(LO_diff_pair_right_ref.ports.keys())}")
+    # print(f"DEBUG: LO_left ports: {list(LO_diff_pair_top_ref.ports.keys())}")
+    # print(f"DEBUG: LO_right ports: {list(LO_diff_pair_bot_ref.ports.keys())}")
     
     bbox_RF = evaluate_bbox(RF_diff_pair)
-    bbox_LO = evaluate_bbox(LO_diff_pair_left)
+    bbox_LO = evaluate_bbox(LO_diff_pair_top)
 
     RF_current_x, RF_current_y = RF_diff_pair_ref.center
-    LO_current_x, LO_current_y = LO_diff_pair_right_ref.center
+    LO_current_x, LO_current_y = LO_diff_pair_bot_ref.center
 
     # get minimal separtion needed for tapring separations
     sep_met1 = pdk_choice.get_grule('met1', 'met1')['min_separation']
@@ -312,13 +312,13 @@ if __name__ == "__main__":
     # For Y positioning: center the combined LO pairs with RF center
     # The combined center should be at RF_current_y
     # So position them symmetrically around RF_current_y
-    right_new_y = RF_current_y + (bbox_LO[1] + sep)/2
-    left_new_y = RF_current_y - (bbox_LO[1] + sep)/2
+    right_new_y = RF_current_y - (bbox_LO[1] + sep)/2
+    left_new_y = RF_current_y + (bbox_LO[1] + sep)/2
     
     # Position LO pairs so their combined center aligns with RF center
     # Calculate relative movements from current positions
-    right_current_x, right_current_y = LO_diff_pair_right_ref.center
-    left_current_x, left_current_y = LO_diff_pair_left_ref.center
+    right_current_x, right_current_y = LO_diff_pair_bot_ref.center
+    left_current_x, left_current_y = LO_diff_pair_top_ref.center
     
     # Calculate relative movements needed
     right_dx = new_x - right_current_x
@@ -327,14 +327,14 @@ if __name__ == "__main__":
     left_dy = left_new_y - left_current_y
     
     # Apply relative movements
-    LO_diff_pair_right_ref = move(LO_diff_pair_right_ref, (right_dx, right_dy))
-    LO_diff_pair_left_ref = move(LO_diff_pair_left_ref, (left_dx, left_dy))
+    LO_diff_pair_bot_ref = move(LO_diff_pair_bot_ref, (right_dx, right_dy))
+    LO_diff_pair_top_ref = move(LO_diff_pair_top_ref, (left_dx, left_dy))
     
     # Route the LO pairs' (left and right) sources to the drains of the RF_diff_pair
 
     ## choose ports to route
-    lo_1_M1_source_port_name = "LO_diff_pair_1_M1_SOURCE_W"
-    lo_2_M2_source_port_name = "LO_diff_pair_2_M2_SOURCE_W"
+    lo_1_M2_source_port_name = "LO_diff_pair_1_M2_SOURCE_W"
+    lo_2_M1_source_port_name = "LO_diff_pair_2_M1_SOURCE_W"
     rf_M1_drain_port_name = "RF_diff_pair_M1_DRAIN_N"
     rf_M2_drain_port_name = "RF_diff_pair_M2_DRAIN_S"
 
@@ -343,15 +343,15 @@ if __name__ == "__main__":
     try:
         route_lo1 = L_route(
             pdk_choice, 
-            LO_diff_pair_left_ref.ports[lo_1_M1_source_port_name], 
-            RF_diff_pair_ref.ports[rf_M2_drain_port_name],
+            LO_diff_pair_top_ref.ports[lo_1_M2_source_port_name], 
+            RF_diff_pair_ref.ports[rf_M1_drain_port_name],
             hglayer="met2",
             vglayer="met3"
        )
         route_lo2 = L_route(
             pdk_choice, 
-            LO_diff_pair_right_ref.ports[lo_2_M2_source_port_name], 
-            RF_diff_pair_ref.ports[rf_M1_drain_port_name],
+            LO_diff_pair_bot_ref.ports[lo_2_M1_source_port_name], 
+            RF_diff_pair_ref.ports[rf_M2_drain_port_name],
             hglayer="met2",
             vglayer="met3"
        )
@@ -384,28 +384,28 @@ if __name__ == "__main__":
 
 
     ## Get the LO drain port names (using the updated naming scheme)
-    lo_left_m1_drain = "LO_diff_pair_1_M1_DRAIN_E"  
-    lo_right_m1_drain = "LO_diff_pair_2_M1_DRAIN_E"
-    lo_left_m2_drain = "LO_diff_pair_1_M2_DRAIN_E"  
-    lo_right_m2_drain = "LO_diff_pair_2_M2_DRAIN_E"
+    lo_top_m1_drain = "LO_diff_pair_1_M1_DRAIN_E"  
+    lo_bot_m1_drain = "LO_diff_pair_2_M1_DRAIN_E"
+    lo_top_m2_drain = "LO_diff_pair_1_M2_DRAIN_E"  
+    lo_bot_m2_drain = "LO_diff_pair_2_M2_DRAIN_E"
 
     ## get the ports
-    lo_left_M1_drain = LO_diff_pair_left_ref.ports[lo_left_m1_drain]
-    lo_right_M1_drain = LO_diff_pair_right_ref.ports[lo_right_m1_drain]
-    lo_left_M2_drain = LO_diff_pair_left_ref.ports[lo_left_m2_drain]
-    lo_right_M2_drain = LO_diff_pair_right_ref.ports[lo_right_m2_drain]
+    lo_top_M1_drain = LO_diff_pair_top_ref.ports[lo_top_m1_drain]
+    lo_bot_M1_drain = LO_diff_pair_bot_ref.ports[lo_bot_m1_drain]
+    lo_top_M2_drain = LO_diff_pair_top_ref.ports[lo_top_m2_drain]
+    lo_bot_M2_drain = LO_diff_pair_bot_ref.ports[lo_bot_m2_drain]
     
     # Use the new function to create vias and routing
     lo_sd_layer = LO_FET_kwargs["sd_route_topmet"]  # Should be "met2"
-    lo_left_bbox = evaluate_bbox(LO_diff_pair_left_ref)
-    # print(f"DEBUG: lo_left_bbox coordinates before via_IFs: {lo_left_bbox}")
+    lo_top_bbox = evaluate_bbox(LO_diff_pair_top_ref)
+    # print(f"DEBUG: lo_top_bbox coordinates before via_IFs: {lo_top_bbox}")
     via_IF_pos_ref, via_IF_neg_ref = create_vias_and_route(
         comp, 
-        lo_left_M1_drain, lo_right_M1_drain,  # First pair (M1 drains)
-        lo_left_M2_drain, lo_right_M2_drain,  # Second pair (M2 drains)
+        lo_top_M1_drain, lo_bot_M1_drain,  # First pair (M1 drains)
+        lo_top_M2_drain, lo_bot_M2_drain,  # Second pair (M2 drains)
         pdk_choice,
-        offset = lo_left_M1_drain.width,
-        lo_bbox=lo_left_bbox[0],  # Use actual bbox width
+        offset = lo_top_M1_drain.width,
+        lo_bbox=lo_top_bbox[0],  # Use actual bbox width
         route_hlayer=lo_sd_layer,
         route_vlayer="met3",
     )
@@ -416,28 +416,28 @@ if __name__ == "__main__":
 
 
     ## Get the LO drain port names (using the updated naming scheme)
-    lo_left_m1_gate = "LO_diff_pair_1_M1_GATE_E"  
-    lo_right_m1_gate = "LO_diff_pair_2_M1_GATE_E"
-    lo_left_m2_gate = "LO_diff_pair_1_M2_GATE_E"  
-    lo_right_m2_gate = "LO_diff_pair_2_M2_GATE_E"
+    lo_top_m1_gate = "LO_diff_pair_1_M1_GATE_E"  
+    lo_bot_m1_gate = "LO_diff_pair_2_M1_GATE_E"
+    lo_top_m2_gate = "LO_diff_pair_1_M2_GATE_E"  
+    lo_bot_m2_gate = "LO_diff_pair_2_M2_GATE_E"
 
     ## get the ports
-    lo_left_M1_gate = LO_diff_pair_left_ref.ports[lo_left_m1_gate]
-    lo_right_M1_gate = LO_diff_pair_right_ref.ports[lo_right_m1_gate]
-    lo_left_M2_gate = LO_diff_pair_left_ref.ports[lo_left_m2_gate]
-    lo_right_M2_gate = LO_diff_pair_right_ref.ports[lo_right_m2_gate]
+    lo_top_M1_gate = LO_diff_pair_top_ref.ports[lo_top_m1_gate]
+    lo_bot_M1_gate = LO_diff_pair_bot_ref.ports[lo_bot_m1_gate]
+    lo_top_M2_gate = LO_diff_pair_top_ref.ports[lo_top_m2_gate]
+    lo_bot_M2_gate = LO_diff_pair_bot_ref.ports[lo_bot_m2_gate]
     
     # Use the new function to create vias and routing
     lo_sd_layer = LO_FET_kwargs["gate_route_topmet"]  # Should be "met2"
-    lo_left_bbox = evaluate_bbox(LO_diff_pair_left_ref)
+    lo_top_bbox = evaluate_bbox(LO_diff_pair_top_ref)
 
-    offset = 2*(via_IF_neg_ref.center[0] - via_IF_pos_ref.center[0]) + lo_left_M1_gate.width/2 + lo_left_M1_drain.width/2
+    offset = 2*(via_IF_neg_ref.center[0] - via_IF_pos_ref.center[0]) + lo_top_M1_gate.width/2 + lo_top_M1_drain.width/2
     via_LO_ref, via_LO_b_ref = create_vias_and_route(
         comp, 
-        lo_left_M1_gate, lo_right_M1_gate,  # First pair (M1 gates)
-        lo_left_M2_gate, lo_right_M2_gate,  # Second pair (M2 gates)
+        lo_top_M1_gate, lo_bot_M1_gate,  # First pair (M1 gates)
+        lo_top_M2_gate, lo_bot_M2_gate,  # Second pair (M2 gates)
         pdk_choice,
-        lo_bbox=lo_left_bbox[0],  # Use actual bbox width
+        lo_bbox=lo_top_bbox[0],  # Use actual bbox width
         offset = offset, 
         route_hlayer=lo_sd_layer,
         route_vlayer="met3",
@@ -474,11 +474,11 @@ if __name__ == "__main__":
     vss_pin_layer, vss_label_layer = get_pin_layers(vss_rf_port.layer, pdk_choice)
     comp.add_label(text="VSS", position = vss_rf_port.center, layer = vss_label_layer)
 
-    vss_lo_1_port =  LO_diff_pair_left_ref.ports["LO_diff_pair_1_VSS_E"]
+    vss_lo_1_port =  LO_diff_pair_top_ref.ports["LO_diff_pair_1_VSS_E"]
     vss_pin_layer, vss_label_layer = get_pin_layers(vss_lo_1_port.layer, pdk_choice)
     comp.add_label(text="VSS", position = vss_lo_1_port.center, layer = vss_label_layer)
 
-    vss_lo_2_port =  LO_diff_pair_right_ref.ports["LO_diff_pair_2_VSS_E"]
+    vss_lo_2_port =  LO_diff_pair_bot_ref.ports["LO_diff_pair_2_VSS_E"]
     vss_pin_layer, vss_label_layer = get_pin_layers(vss_lo_2_port.layer, pdk_choice)
     comp.add_label(text="VSS", position = vss_lo_2_port.center, layer = vss_label_layer)
 
