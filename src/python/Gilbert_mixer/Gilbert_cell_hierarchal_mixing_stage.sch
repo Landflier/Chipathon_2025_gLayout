@@ -97,6 +97,40 @@ N 910 -880 910 -730 {
 lab=I_bias_pos}
 N 990 -880 990 -730 {
 lab=I_bias_neg}
+N 1380 -850 1380 -820 {
+lab=#net1}
+N 1380 -850 1460 -850 {
+lab=#net1}
+N 1460 -850 1460 -710 {
+lab=#net1}
+N 1330 -710 1460 -710 {
+lab=#net1}
+N 1380 -760 1380 -710 {
+lab=#net1}
+N 1420 -790 1420 -710 {
+lab=#net1}
+N 1360 -790 1380 -790 {
+lab=#net1}
+N 1360 -790 1360 -710 {
+lab=#net1}
+N 1460 -710 1600 -710 {
+lab=#net1}
+N 1600 -790 1600 -710 {
+lab=#net1}
+N 1560 -760 1560 -710 {
+lab=#net1}
+N 1530 -790 1560 -790 {
+lab=#net1}
+N 1530 -790 1530 -710 {
+lab=#net1}
+N 1560 -850 1560 -820 {
+lab=#net1}
+N 1560 -850 1640 -850 {
+lab=#net1}
+N 1640 -850 1640 -710 {
+lab=#net1}
+N 1600 -710 1640 -710 {
+lab=#net1}
 C {ipin.sym} 630 -1090 0 0 {name=p1 lab=V_LO}
 C {ipin.sym} 630 -1000 0 0 {name=p2 lab=V_LO_b
 }
@@ -201,3 +235,34 @@ C {lab_wire.sym} 1090 -990 0 0 {name=p15 sig_type=std_logic lab=rf_diff_pair_neg
 }
 C {lab_wire.sym} 800 -990 0 0 {name=p16 sig_type=std_logic lab=rf_diff_pair_pos_input hide_texts=true
 }
+C {symbols/nfet_03v3.sym} 1400 -790 0 1 {name=M_RF_dummies
+L=0.28u
+W=2u
+nf=1
+m=4
+hide_texts=false
+ad="'int((nf+1)/2) * W/nf * 0.18u'"
+pd="'2*int((nf+1)/2) * (W/nf + 0.18u)'"
+as="'int((nf+2)/2) * W/nf * 0.18u'"
+ps="'2*int((nf+2)/2) * (W/nf + 0.18u)'"
+nrd="'0.18u / W'" nrs="'0.18u / W'"
+sa=0 sb=0 sd=0
+model=nfet_03v3
+spiceprefix=X
+}
+C {symbols/nfet_03v3.sym} 1580 -790 0 1 {name=M_LO_dummies
+L=0.28u
+W=4u
+nf=1
+m=8
+hide_texts=false
+ad="'int((nf+1)/2) * W/nf * 0.18u'"
+pd="'2*int((nf+1)/2) * (W/nf + 0.18u)'"
+as="'int((nf+2)/2) * W/nf * 0.18u'"
+ps="'2*int((nf+2)/2) * (W/nf + 0.18u)'"
+nrd="'0.18u / W'" nrs="'0.18u / W'"
+sa=0 sb=0 sd=0
+model=nfet_03v3
+spiceprefix=X
+}
+C {lab_pin.sym} 1330 -710 0 0 {name=p10 sig_type=std_logic lab=VSS}

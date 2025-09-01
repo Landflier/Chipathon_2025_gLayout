@@ -1,0 +1,163 @@
+
+Cell nfet_03v3 (1) disconnected node: drain
+Cell nfet_03v3 (1) disconnected node: gate
+Cell nfet_03v3 (1) disconnected node: source
+Cell nfet_03v3 (1) disconnected node: bulk
+Warning: Equate pins:  cell nfet_03v3 is a placeholder, treated as a black box.
+
+Subcircuit pins:
+Circuit 1: nfet_03v3                       |Circuit 2: nfet_03v3                       
+-------------------------------------------|-------------------------------------------
+(no matching pin)                          |drain                                      
+(no matching pin)                          |gate                                       
+(no matching pin)                          |source                                     
+(no matching pin)                          |bulk                                       
+1                                          |(no matching pin)                          
+2                                          |(no matching pin)                          
+3                                          |(no matching pin)                          
+4                                          |(no matching pin)                          
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes nfet_03v3 and nfet_03v3 are equivalent.
+Flattening unmatched subcell diff_pair_664457bf in circuit Gilbert_cell (0)(1 instance)
+Flattening unmatched subcell diff_pair_56ee14b3 in circuit Gilbert_cell (0)(1 instance)
+Flattening unmatched subcell diff_pair_8230b491 in circuit Gilbert_cell (0)(1 instance)
+
+Class Gilbert_cell (0):  Merged 2 parallel devices.
+Class Gilbert_cell_hierarchal_mixing_stage (1):  Merged 1 parallel devices.
+Subcircuit summary:
+Circuit 1: Gilbert_cell                    |Circuit 2: Gilbert_cell_hierarchal_mixing_ 
+-------------------------------------------|-------------------------------------------
+nfet_03v3 (42->7)                          |nfet_03v3 (18->7)                          
+Number of devices: 7                       |Number of devices: 7                       
+Number of nets: 39                         |Number of nets: 39                         
+---------------------------------------------------------------------------------------
+NET mismatches: Class fragments follow (with fanout counts):
+Circuit 1: Gilbert_cell                    |Circuit 2: Gilbert_cell_hierarchal_mixing_ 
+
+---------------------------------------------------------------------------------------
+Net: VSS                                   |Net: VSS                                   
+  nfet_03v3/(1|3) = 2                      |  nfet_03v3/bulk = 7                       
+  nfet_03v3/2 = 1                          |  nfet_03v3/(drain|source) = 2             
+  nfet_03v3/4 = 7                          |  nfet_03v3/gate = 1                       
+---------------------------------------------------------------------------------------
+
+---------------------------------------------------------------------------------------
+Net: /diff_pair_8230b491_0/dummy_18        |Net: dummy_39                              
+  nfet_03v3/proxybulk = 1                  |  nfet_03v3/proxy4 = 1                     
+                                           |                                           
+Net: /diff_pair_8230b491_0/dummy_14        |Net: dummy_38                              
+  nfet_03v3/proxybulk = 1                  |  nfet_03v3/proxy3 = 1                     
+                                           |                                           
+Net: /diff_pair_56ee14b3_0/dummy_18        |Net: dummy_37                              
+  nfet_03v3/proxybulk = 1                  |  nfet_03v3/proxy2 = 1                     
+                                           |                                           
+Net: /diff_pair_56ee14b3_0/dummy_14        |Net: dummy_36                              
+  nfet_03v3/proxybulk = 1                  |  nfet_03v3/proxy1 = 1                     
+                                           |                                           
+Net: /diff_pair_8230b491_0/dummy_17        |Net: dummy_27                              
+  nfet_03v3/proxysource = 1                |  nfet_03v3/proxy4 = 1                     
+                                           |                                           
+Net: /diff_pair_8230b491_0/dummy_13        |Net: dummy_23                              
+  nfet_03v3/proxysource = 1                |  nfet_03v3/proxy4 = 1                     
+                                           |                                           
+Net: /diff_pair_56ee14b3_0/dummy_17        |Net: dummy_19                              
+  nfet_03v3/proxysource = 1                |  nfet_03v3/proxy4 = 1                     
+                                           |                                           
+Net: /diff_pair_56ee14b3_0/dummy_13        |Net: dummy_15                              
+  nfet_03v3/proxysource = 1                |  nfet_03v3/proxy4 = 1                     
+                                           |                                           
+Net: /diff_pair_8230b491_0/dummy_16        |Net: dummy_26                              
+  nfet_03v3/proxygate = 1                  |  nfet_03v3/proxy3 = 1                     
+                                           |                                           
+Net: /diff_pair_8230b491_0/dummy_12        |Net: dummy_22                              
+  nfet_03v3/proxygate = 1                  |  nfet_03v3/proxy3 = 1                     
+                                           |                                           
+Net: /diff_pair_56ee14b3_0/dummy_16        |Net: dummy_18                              
+  nfet_03v3/proxygate = 1                  |  nfet_03v3/proxy3 = 1                     
+                                           |                                           
+Net: /diff_pair_56ee14b3_0/dummy_12        |Net: dummy_14                              
+  nfet_03v3/proxygate = 1                  |  nfet_03v3/proxy3 = 1                     
+                                           |                                           
+Net: /diff_pair_8230b491_0/dummy_15        |Net: dummy_25                              
+  nfet_03v3/proxydrain = 1                 |  nfet_03v3/proxy2 = 1                     
+                                           |                                           
+Net: /diff_pair_8230b491_0/dummy_11        |Net: dummy_21                              
+  nfet_03v3/proxydrain = 1                 |  nfet_03v3/proxy2 = 1                     
+                                           |                                           
+Net: /diff_pair_56ee14b3_0/dummy_15        |Net: dummy_17                              
+  nfet_03v3/proxydrain = 1                 |  nfet_03v3/proxy2 = 1                     
+                                           |                                           
+Net: /diff_pair_56ee14b3_0/dummy_11        |Net: dummy_13                              
+  nfet_03v3/proxydrain = 1                 |  nfet_03v3/proxy2 = 1                     
+                                           |                                           
+Net: /diff_pair_664457bf_0/dummy_11        |Net: dummy_24                              
+  nfet_03v3/proxybulk = 1                  |  nfet_03v3/proxy1 = 1                     
+                                           |                                           
+Net: /diff_pair_664457bf_0/dummy_10        |Net: dummy_20                              
+  nfet_03v3/proxysource = 1                |  nfet_03v3/proxy1 = 1                     
+                                           |                                           
+Net: /diff_pair_664457bf_0/dummy_9         |Net: dummy_16                              
+  nfet_03v3/proxygate = 1                  |  nfet_03v3/proxy1 = 1                     
+                                           |                                           
+Net: /diff_pair_664457bf_0/dummy_8         |Net: dummy_12                              
+  nfet_03v3/proxydrain = 1                 |  nfet_03v3/proxy1 = 1                     
+---------------------------------------------------------------------------------------
+DEVICE mismatches: Class fragments follow (with node fanout counts):
+Circuit 1: Gilbert_cell                    |Circuit 2: Gilbert_cell_hierarchal_mixing_ 
+
+---------------------------------------------------------------------------------------
+Instance: diff_pair_8230b491_0/nfet_03v3:2 |Instance: nfet_03v3:_RF_dummies            
+  (1,3) = (3,2)                            |  proxy1 = 1                               
+  2 = 2                                    |  proxy2 = 1                               
+  4 = 10                                   |  proxy3 = 1                               
+  proxydrain = 1                           |  proxy4 = 1                               
+  proxygate = 1                            |  (drain,source) = (10,10)                 
+  proxysource = 1                          |  gate = 10                                
+  proxybulk = 1                            |  bulk = 10                                
+                                           |                                           
+Instance: diff_pair_8230b491_0/nfet_03v3:1 |Instance: nfet_03v3:_LO_2_M2               
+  (1,3) = (3,2)                            |  proxy1 = 1                               
+  2 = 2                                    |  proxy2 = 1                               
+  4 = 10                                   |  proxy3 = 1                               
+  proxydrain = 1                           |  proxy4 = 1                               
+  proxygate = 1                            |  (drain,source) = (3,2)                   
+  proxysource = 1                          |  gate = 2                                 
+  proxybulk = 1                            |  bulk = 10                                
+                                           |                                           
+Instance: diff_pair_56ee14b3_0/nfet_03v3:2 |Instance: nfet_03v3:_LO_2_M1               
+  (1,3) = (3,2)                            |  proxy1 = 1                               
+  2 = 2                                    |  proxy2 = 1                               
+  4 = 10                                   |  proxy3 = 1                               
+  proxydrain = 1                           |  proxy4 = 1                               
+  proxygate = 1                            |  (drain,source) = (3,2)                   
+  proxysource = 1                          |  gate = 2                                 
+  proxybulk = 1                            |  bulk = 10                                
+                                           |                                           
+Instance: diff_pair_56ee14b3_0/nfet_03v3:1 |Instance: nfet_03v3:_LO_1_M2               
+  (1,3) = (3,2)                            |  proxy1 = 1                               
+  2 = 2                                    |  proxy2 = 1                               
+  4 = 10                                   |  proxy3 = 1                               
+  proxydrain = 1                           |  proxy4 = 1                               
+  proxygate = 1                            |  (drain,source) = (3,2)                   
+  proxysource = 1                          |  gate = 2                                 
+  proxybulk = 1                            |  bulk = 10                                
+                                           |                                           
+Instance: diff_pair_664457bf_0/nfet_03v3:0 |Instance: nfet_03v3:_LO_1_M1               
+  (1,3) = (10,10)                          |  proxy1 = 1                               
+  2 = 10                                   |  proxy2 = 1                               
+  4 = 10                                   |  proxy3 = 1                               
+  proxydrain = 1                           |  proxy4 = 1                               
+  proxygate = 1                            |  (drain,source) = (3,2)                   
+  proxysource = 1                          |  gate = 2                                 
+  proxybulk = 1                            |  bulk = 10                                
+---------------------------------------------------------------------------------------
+Netlists do not match.
+
+Subcircuit pins:
+Circuit 1: Gilbert_cell                    |Circuit 2: Gilbert_cell_hierarchal_mixing_ 
+-------------------------------------------|-------------------------------------------
+Cell pin lists are equivalent.
+Device classes Gilbert_cell and Gilbert_cell_hierarchal_mixing_stage are equivalent.
+
+Final result: Netlists do not match.

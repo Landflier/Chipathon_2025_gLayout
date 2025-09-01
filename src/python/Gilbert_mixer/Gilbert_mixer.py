@@ -183,7 +183,7 @@ def create_vias_and_route(comp, pin1, pin2, pin3, pin4, pdk_choice, lo_bbox, off
     
 if __name__ == "__main__":
     from diff_pair import diff_pair, get_pin_layers
-    from glayout import gf180
+    from glayout import gf180, sky130
     from glayout.util.comp_utils import evaluate_bbox, move, movex, movey
     from glayout.routing.straight_route import straight_route
     from glayout.routing.c_route import c_route
@@ -199,7 +199,7 @@ if __name__ == "__main__":
         "sd_route_left": True,
         "sd_rmult" : 2,
         "rmult": None,
-        "gate_rmult": 4,
+        "gate_rmult": 2,
         "interfinger_rmult": 2,
         "substrate_tap_layers": ("met2","met1"),
         "dummy_routes": False
@@ -218,7 +218,7 @@ if __name__ == "__main__":
         tie_layers1=("met2", "met1"),  # Tie layers for M1
         tie_layers2=("met2", "met1"),  # Tie layers for M2
         connected_sources=False,    # Connect sources together
-        debug_mode = True,                  # dont add terminal labels and visual pins
+        debug_mode = False,                  # dont add terminal labels and visual pins
         vss_port_placement = "E",            # VSS tapring port placement 
         component_name = "RF_diff_pair",     # Component's name
         gate_pin_offset_x = 2,               # offset of the gate pins in the x direction
@@ -234,7 +234,7 @@ if __name__ == "__main__":
         "sd_route_left": True,
         "sd_rmult" : 4,
         "rmult": None,
-        "gate_rmult": 4,
+        "gate_rmult": 2,
         "interfinger_rmult": 2,
         "substrate_tap_layers": ("met2","met1"),
         "dummy_routes": False
@@ -252,7 +252,7 @@ if __name__ == "__main__":
         tie_layers1=("met2", "met1"),  # Tie layers for M1
         tie_layers2=("met2", "met1"),  # Tie layers for M2
         connected_sources=True,    # Connect sources together
-        debug_mode = True,                  # dont add terminal labels and visual pins
+        debug_mode = False,                  # dont add terminal labels and visual pins
         component_name = "LO_diff_pair_1",   # Component's name
         vss_port_placement = "S",            # VSS tapring port placement 
         M1_kwargs=LO_FET_kwargs,             # Additional M1 parameters
@@ -270,7 +270,7 @@ if __name__ == "__main__":
         tie_layers1=("met2", "met1"),  # Tie layers for M1
         tie_layers2=("met2", "met1"),  # Tie layers for M2
         connected_sources=True,    # Connect sources together
-        debug_mode = True,                  # dont add terminal labels and visual pins
+        debug_mode = False,                  # dont add terminal labels and visual pins
         component_name = "LO_diff_pair_2",   # Component's name
         vss_port_placement = "N",            # VSS tapring port placement 
         M1_kwargs=LO_FET_kwargs,             # Additional M1 parameters
@@ -434,8 +434,8 @@ if __name__ == "__main__":
     offset = 2*(via_IF_neg_ref.center[0] - via_IF_pos_ref.center[0]) + lo_top_M1_gate.width/2 + lo_top_M1_drain.width/2
     via_LO_ref, via_LO_b_ref = create_vias_and_route(
         comp, 
-        lo_top_M1_gate, lo_bot_M1_gate,  # First pair (M1 gates)
-        lo_top_M2_gate, lo_bot_M2_gate,  # Second pair (M2 gates)
+        lo_top_M1_gate, lo_bot_M2_gate,  # First pair, V_LO
+        lo_top_M2_gate, lo_bot_M1_gate,  # Second pair, V_LO_b 
         pdk_choice,
         lo_bbox=lo_top_bbox[0],  # Use actual bbox width
         offset = offset, 
@@ -456,8 +456,8 @@ if __name__ == "__main__":
     pin_layer_gds, gate_label_gds = get_pin_layers(rf_m1_gate_port.layer, pdk_choice)
     
     # Add labels to RF gates
-    comp.add_label(text="RF_POS", position=rf_m1_gate_port.center, layer=gate_label_gds)
-    comp.add_label(text="RF_NEG", position=rf_m2_gate_port.center, layer=gate_label_gds)
+    comp.add_label(text="V_RF", position=rf_m1_gate_port.center, layer=gate_label_gds)
+    comp.add_label(text="V_RF_b", position=rf_m2_gate_port.center, layer=gate_label_gds)
 
     # Add labels directly to RF gate ports
     rf_m1_source_port = RF_diff_pair_ref.ports["RF_diff_pair_M1_SOURCE_N"]
@@ -489,7 +489,7 @@ if __name__ == "__main__":
     
     # Write both hierarchical and flattened GDS files
     print("✓ Writing GDS files...")
-    comp.write_gds('lvs/Gilbert_cell_hierarchical.gds', cellname="Gilbert_cell")
+    comp.write_gds('lvs/gds/Gilbert_cell_hierarchical.gds', cellname="Gilbert_cell")
     # flat_comp.write_gds('lvs/Gilbert_cell_flat.gds', cellname="Gilbert_cell")
     print("  - Hierarchical GDS: Gilbert_cell_hierarchical.gds")
     print("  - Flattened GDS: Gilbert_cell.gds (recommended for extraction)")
