@@ -1,13 +1,32 @@
 ** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/python/Gilbert_mixer/Gilbert_cell_hierarchal_mixing_stage.sch
-.subckt Gilbert_cell_hierarchal_mixing_stage V_out_n V_out_p V_LO V_LO_b V_RF V_RF_b I_bias_pos I_bias_neg VSS
+.subckt Gilbert_cell_xschem V_out_n V_out_p V_LO V_LO_b V_RF V_RF_b I_bias_pos I_bias_neg VSS
 *.PININFO V_LO:I V_LO_b:I V_RF:I V_RF_b:I V_out_p:O V_out_n:O I_bias_neg:B I_bias_pos:B VSS:B
-M_LO_1_M1 V_out_p V_LO rf_diff_pair_pos_input VSS nfet_03v3 L=0.28u W=20u nf=5 m=1
-M_LO_1_M2 V_out_n V_LO_b rf_diff_pair_pos_input VSS nfet_03v3 L=0.28u W=20u nf=5 m=1
-M_LO_2_M1 V_out_p V_LO_b rf_diff_pair_neg_input VSS nfet_03v3 L=0.28u W=20u nf=5 m=1
-M_LO_2_M2 V_out_n V_LO rf_diff_pair_neg_input VSS nfet_03v3 L=0.28u W=20u nf=5 m=1
-M_RF_M1 rf_diff_pair_pos_input V_RF I_bias_pos VSS nfet_03v3 L=0.28u W=10u nf=5 m=1
-M_RF_M2 rf_diff_pair_neg_input V_RF_b I_bias_neg VSS nfet_03v3 L=0.28u W=10u nf=5 m=1
-M_RF_dummies VSS VSS VSS VSS nfet_03v3 L=0.28u W=2u nf=1 m=4
-M_LO_dummies VSS VSS VSS VSS nfet_03v3 L=0.28u W=4u nf=1 m=8
+XM_LO_1_XM1 V_out_p V_LO RF_M1_drain VSS nfet_03v3 L=0.28u W=20u nf=5 m=1
+XM_LO_1_XM2 V_out_n V_LO_b RF_M1_drain VSS nfet_03v3 L=0.28u W=20u nf=5 m=1
+XM_LO_2_XM1 V_out_p V_LO_b RF_M2_drain VSS nfet_03v3 L=0.28u W=20u nf=5 m=1
+XM_LO_2_XM2 V_out_n V_LO RF_M2_drain VSS nfet_03v3 L=0.28u W=20u nf=5 m=1
+XM_RF_M1 RF_M1_drain V_RF I_bias_pos VSS nfet_03v3 L=0.28u W=10u nf=5 m=1
+XM_RF_M2 RF_M2_drain V_RF_b I_bias_neg VSS nfet_03v3 L=0.28u W=10u nf=5 m=1
+XM_RF_dummies VSS VSS VSS VSS nfet_03v3 L=0.28u W=2u nf=1 m=4
+XM_LO_dummies VSS VSS VSS VSS nfet_03v3 L=0.28u W=4u nf=1 m=8
+.ends
+.end
+*.PININFO V_LO:I V_LO_b:I V_RF:I V_RF_b:I V_out_p:O V_out_n:O I_bias_neg:B I_bias_pos:B VSS:B
+XM_LO_1_M1 V_out_p V_LO RF_M1_drain VSS nfet_03v3 L=0.28u W=20u nf=5 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u'
++ pd='2*int((nf+1)/2) * (W/nf + 0.18u)' ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
+XM_LO_1_M2 V_out_n V_LO_b RF_M1_drain VSS nfet_03v3 L=0.28u W=20u nf=5 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u'
++ pd='2*int((nf+1)/2) * (W/nf + 0.18u)' ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
+XM_LO_2_M1 V_out_p V_LO_b RF_M2_drain VSS nfet_03v3 L=0.28u W=20u nf=5 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u'
++ pd='2*int((nf+1)/2) * (W/nf + 0.18u)' ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
+XM_LO_2_M2 V_out_n V_LO RF_M2_drain VSS nfet_03v3 L=0.28u W=20u nf=5 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u'
++ pd='2*int((nf+1)/2) * (W/nf + 0.18u)' ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
+XM_RF_M1 RF_M1_drain V_RF I_bias_pos VSS nfet_03v3 L=0.28u W=10u nf=5 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u'
++ pd='2*int((nf+1)/2) * (W/nf + 0.18u)' ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
+XM_RF_M2 RF_M2_drain V_RF_b I_bias_neg VSS nfet_03v3 L=0.28u W=10u nf=5 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u'
++ pd='2*int((nf+1)/2) * (W/nf + 0.18u)' ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
+XM_RF_dummies VSS VSS VSS VSS nfet_03v3 L=0.28u W=2u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
++ ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=4
+XM_LO_dummies VSS VSS VSS VSS nfet_03v3 L=0.28u W=4u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
++ ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=8
 .ends
 .end

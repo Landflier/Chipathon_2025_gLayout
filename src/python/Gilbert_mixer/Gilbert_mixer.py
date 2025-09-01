@@ -374,8 +374,8 @@ if __name__ == "__main__":
         via_rf_m2_ref.move(RF_diff_pair_ref.ports[rf_M2_drain_port_name].center)
         
         # Add pins and labels to RF vias
-        add_via_pins_and_labels(comp, via_rf_m1_ref, "RF_M1_drain", pdk_choice, pin_layer="met3", debug_mode=False)
-        add_via_pins_and_labels(comp, via_rf_m2_ref, "RF_M2_drain", pdk_choice, pin_layer="met3", debug_mode=False)
+        # add_via_pins_and_labels(comp, via_rf_m1_ref, "RF_M1_drain", pdk_choice, pin_layer="met3", debug_mode=False)
+        # add_via_pins_and_labels(comp, via_rf_m2_ref, "RF_M2_drain", pdk_choice, pin_layer="met3", debug_mode=False)
         
         comp << route_lo2
         comp << route_lo1
@@ -466,31 +466,52 @@ if __name__ == "__main__":
     # Get label layer
     pin_layer_gds, source_label_gds = get_pin_layers(rf_m1_source_port.layer, pdk_choice)
     # Add labels to RF sources
-    comp.add_label(text="I_bias_p", position=rf_m1_source_port.center, layer=source_label_gds)
-    comp.add_label(text="I_bias_n", position=rf_m2_source_port.center, layer=source_label_gds)
+    comp.add_label(text="I_bias_pos", position=rf_m1_source_port.center, layer=source_label_gds)
+    comp.add_label(text="I_bias_neg", position=rf_m2_source_port.center, layer=source_label_gds)
 
     ## Adding VSS ports to the taprings
     vss_rf_port =  RF_diff_pair_ref.ports["RF_diff_pair_VSS_E"]
     vss_pin_layer, vss_label_layer = get_pin_layers(vss_rf_port.layer, pdk_choice)
     comp.add_label(text="VSS", position = vss_rf_port.center, layer = vss_label_layer)
 
-    vss_lo_1_port =  LO_diff_pair_top_ref.ports["LO_diff_pair_1_VSS_E"]
+    vss_lo_1_port =  LO_diff_pair_top_ref.ports["LO_diff_pair_1_VSS_S"]
     vss_pin_layer, vss_label_layer = get_pin_layers(vss_lo_1_port.layer, pdk_choice)
     comp.add_label(text="VSS", position = vss_lo_1_port.center, layer = vss_label_layer)
 
-    vss_lo_2_port =  LO_diff_pair_bot_ref.ports["LO_diff_pair_2_VSS_E"]
+    vss_lo_2_port =  LO_diff_pair_bot_ref.ports["LO_diff_pair_2_VSS_N"]
     vss_pin_layer, vss_label_layer = get_pin_layers(vss_lo_2_port.layer, pdk_choice)
     comp.add_label(text="VSS", position = vss_lo_2_port.center, layer = vss_label_layer)
 
-    
-    # Flatten the component for easier extraction
-    flat_comp = comp.flatten()
-    flat_comp.name = "Gilbert_cell"
-    
+    ## Route the vss pins
+    route_vss_rf_to_lo1 = L_route(
+        pdk_choice, 
+        vss_rf_port,
+        vss_lo_1_port,
+        hglayer="met1",
+        vglayer="met1",
+        hwidth = 2*vss_rf_port.width
+    )
+
+    route_vss_rf_to_lo2 = L_route(
+        pdk_choice, 
+        vss_rf_port,
+        vss_lo_2_port,
+        hglayer="met1",
+        vglayer="met1",
+        hwidth = 2*vss_rf_port.width,
+        vwidth = 2*vss_rf_port.width + 0.05
+    )
+
+    comp << route_vss_rf_to_lo1
+    comp << route_vss_rf_to_lo2
+    # Flattened hierarchy 
+    # flat_comp = comp.flatten()
+    # flat_comp.name = "Gilbert_cell"
+    # flat_comp.write_gds('lvs/Gilbert_cell_flat.gds', cellname="Gilbert_cell")
+
     # Write both hierarchical and flattened GDS files
     print("✓ Writing GDS files...")
     comp.write_gds('lvs/gds/Gilbert_cell_hierarchical.gds', cellname="Gilbert_cell")
-    # flat_comp.write_gds('lvs/Gilbert_cell_flat.gds', cellname="Gilbert_cell")
     print("  - Hierarchical GDS: Gilbert_cell_hierarchical.gds")
     print("  - Flattened GDS: Gilbert_cell.gds (recommended for extraction)")
     

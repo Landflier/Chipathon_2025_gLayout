@@ -1,4 +1,4 @@
-* NGSPICE file created from Gilbert_cell.ext - technology: gf180mcuD
+* NGSPICE file created from Gilbert_cell_layout.ext - technology: gf180mcuD
 
 .subckt diff_pair_664457bf a_n628_n2315# a_n856_n1947# a_n856_n99# a_n572_n1947# a_n572_n99#
 + a_n1848_n2577# a_n628_n147#
@@ -21,10 +21,13 @@ X1 a_n572_n3147# a_n628_n3515# a_n856_n3147# a_n1848_n3777# nfet_03v3 ad=4.56p p
 X2 a_n572_n3147# a_n628_n147# a_n856_n99# a_n1848_n3777# nfet_03v3 ad=2.44p pd=5.22u as=2.44p ps=5.22u w=4u l=0.28u M=5
 .ends
 
-.subckt Gilbert_cell RF_M1_drain RF_M2_drain V_out_p V_out_n V_LO V_LO_b V_RF V_RF_b
-+ I_bias_p I_bias_n VSS
-Xdiff_pair_664457bf_0 V_RF_b RF_M2_drain RF_M1_drain I_bias_n I_bias_p VSS V_RF diff_pair_664457bf
-Xdiff_pair_56ee14b3_0 V_out_p VSS V_out_n V_LO_b RF_M1_drain V_LO diff_pair_56ee14b3
-Xdiff_pair_8230b491_0 V_out_p VSS V_out_n V_LO RF_M2_drain V_LO_b diff_pair_8230b491
+.subckt Gilbert_cell_layout V_out_p V_out_n V_LO V_LO_b V_RF V_RF_b I_bias_pos I_bias_neg
++ VSS
+Xdiff_pair_664457bf_0 V_RF_b L_route_b553b302_0/m2_n100_n3285# diff_pair_664457bf_0/a_n856_n99#
++ I_bias_neg I_bias_pos VSS V_RF diff_pair_664457bf
+Xdiff_pair_56ee14b3_0 V_out_p VSS V_out_n V_LO_b diff_pair_664457bf_0/a_n856_n99#
++ V_LO diff_pair_56ee14b3
+Xdiff_pair_8230b491_0 V_out_p VSS V_out_n V_LO L_route_b553b302_0/m2_n100_n3285# V_LO_b
++ diff_pair_8230b491
 .ends
 

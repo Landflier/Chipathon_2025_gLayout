@@ -18,9 +18,9 @@ lab=V_LO_b}
 N 760 -910 850 -910 {
 lab=V_RF}
 N 800 -970 910 -970 {
-lab=rf_diff_pair_pos_input}
+lab=RF_M1_drain}
 N 800 -1020 800 -970 {
-lab=rf_diff_pair_pos_input}
+lab=RF_M1_drain}
 N 990 -970 1090 -970 {
 lab=rf_diff_pair_neg_input}
 N 1090 -1020 1090 -970 {
@@ -76,11 +76,11 @@ lab=V_LO}
 N 1090 -1060 1090 -1020 {
 lab=rf_diff_pair_neg_input}
 N 760 -1060 840 -1060 {
-lab=rf_diff_pair_pos_input}
+lab=RF_M1_drain}
 N 800 -1060 800 -1020 {
-lab=rf_diff_pair_pos_input}
+lab=RF_M1_drain}
 N 910 -970 910 -940 {
-lab=rf_diff_pair_pos_input}
+lab=RF_M1_drain}
 N 850 -910 870 -910 {
 lab=V_RF}
 N 1030 -910 1050 -910 {
@@ -98,39 +98,39 @@ lab=I_bias_pos}
 N 990 -880 990 -730 {
 lab=I_bias_neg}
 N 1380 -850 1380 -820 {
-lab=#net1}
+lab=VSS}
 N 1380 -850 1460 -850 {
-lab=#net1}
+lab=VSS}
 N 1460 -850 1460 -710 {
-lab=#net1}
+lab=VSS}
 N 1330 -710 1460 -710 {
-lab=#net1}
+lab=VSS}
 N 1380 -760 1380 -710 {
-lab=#net1}
+lab=VSS}
 N 1420 -790 1420 -710 {
-lab=#net1}
+lab=VSS}
 N 1360 -790 1380 -790 {
-lab=#net1}
+lab=VSS}
 N 1360 -790 1360 -710 {
-lab=#net1}
+lab=VSS}
 N 1460 -710 1600 -710 {
-lab=#net1}
+lab=VSS}
 N 1600 -790 1600 -710 {
-lab=#net1}
+lab=VSS}
 N 1560 -760 1560 -710 {
-lab=#net1}
+lab=VSS}
 N 1530 -790 1560 -790 {
-lab=#net1}
+lab=VSS}
 N 1530 -790 1530 -710 {
-lab=#net1}
+lab=VSS}
 N 1560 -850 1560 -820 {
-lab=#net1}
+lab=VSS}
 N 1560 -850 1640 -850 {
-lab=#net1}
+lab=VSS}
 N 1640 -850 1640 -710 {
-lab=#net1}
+lab=VSS}
 N 1600 -710 1640 -710 {
-lab=#net1}
+lab=VSS}
 C {ipin.sym} 630 -1090 0 0 {name=p1 lab=V_LO}
 C {ipin.sym} 630 -1000 0 0 {name=p2 lab=V_LO_b
 }
@@ -231,9 +231,11 @@ C {lab_wire.sym} 1090 -1090 0 0 {name=p14 sig_type=std_logic lab=VSS}
 C {iopin.sym} 990 -730 1 0 {name=p8 lab=I_bias_neg}
 C {iopin.sym} 910 -730 1 0 {name=p9 lab=I_bias_pos}
 C {iopin.sym} 620 -710 2 0 {name=p11 lab=VSS}
-C {lab_wire.sym} 1090 -990 0 0 {name=p15 sig_type=std_logic lab=rf_diff_pair_neg_input hide_texts=true
+C {lab_wire.sym} 1090 -990 0 0 {name=p15 sig_type=std_logic lab=RF_M2_drain hide_texts=false
+
 }
-C {lab_wire.sym} 800 -990 0 0 {name=p16 sig_type=std_logic lab=rf_diff_pair_pos_input hide_texts=true
+C {lab_wire.sym} 800 -990 0 0 {name=p16 sig_type=std_logic lab=RF_M1_drain hide_texts=false
+
 }
 C {symbols/nfet_03v3.sym} 1400 -790 0 1 {name=M_RF_dummies
 L=0.28u

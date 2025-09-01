@@ -222,7 +222,7 @@ def create_and_connect_tapring(top_level, M1_ref, M2_ref, pdk, placement, diff_p
     ## Using substrate tap for NMOS devices in bulk
     tapring_comp = tapring(
         pdk=pdk,
-        enclosed_rectangle=evaluate_bbox(top_level, padding=pdk.get_grule("nwell", "active_diff")["min_enclosure"]),
+        enclosed_rectangle=evaluate_bbox(top_level, padding=pdk.get_grule("nwell", "active_diff")["min_enclosure"] + 0.4),
     )
     
     ## Center the tapring around the differential pair

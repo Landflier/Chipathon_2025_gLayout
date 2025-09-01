@@ -10,10 +10,10 @@ gds read gds/Gilbert_cell_hierarchical.gds
 # Check what cells are available and load the flattened one
 cellname list allcells
 load Gilbert_cell
+cellname rename Gilbert_cell Gilbert_cell_layout
 
 # Extract with more detailed options
 extract all
-
 ext2spice lvs
 ext2spice cthresh inf
 ext2spice rthresh inf
