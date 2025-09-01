@@ -103,7 +103,226 @@ def swap_drain_source_ports(mosfet_component):
     
     return mosfet_component
 
+
+def extend_lvpwell_to_tapring(top_level, M1_ref, M2_ref, tapring_ref, pdk, placement):
+    """
+    Extend lvpwell rectangles beneath each MOSFET towards the tapring sides.
+    This mimics the with_tie functionality by ensuring the well regions reach the tapring vias.
+    
+    Args:
+        top_level: Main component to add extended lvpwell rectangles to
+        M1_ref: Reference to M1 transistor
+        M2_ref: Reference to M2 transistor
+        tapring_ref: Reference to the tapring component
+        pdk: Process design kit
+        placement: "vertical" or "horizontal" placement
+    """
+    # Get the lvpwell layer
+    try:
+        lvpwell_layer = pdk.get_glayer("lvpwell")
+    except:
+        # Fallback to pwell if lvpwell doesn't exist
+        try:
+            lvpwell_layer = pdk.get_glayer("pwell")
+        except:
+            print("Warning: Could not find lvpwell or pwell layer, skipping well extension")
+            return
+    
+            # Get tapring boundaries
+    tapring_bbox = evaluate_bbox(tapring_ref)
+    tapring_center = tapring_ref.center
+    tapring_width = tapring_bbox[0]
+    tapring_height = tapring_bbox[1]
+    tapring_left = tapring_center[0] - tapring_width/2
+    tapring_right = tapring_center[0] + tapring_width/2
+    tapring_bottom = tapring_center[1] - tapring_height/2
+    tapring_top = tapring_center[1] + tapring_height/2
+    
+    # Create extended lvpwell rectangles for each MOSFET
+    for mosfet_ref, mosfet_name in [(M1_ref, "M1"), (M2_ref, "M2")]:
+        mosfet_bbox = evaluate_bbox(mosfet_ref)
+        mosfet_center = mosfet_ref.center
+        mosfet_width = mosfet_bbox[0]
+        mosfet_height = mosfet_bbox[1]
+        mosfet_left = mosfet_center[0] - mosfet_width/2
+        mosfet_right = mosfet_center[0] + mosfet_width/2
+        mosfet_bottom = mosfet_center[1] - mosfet_height/2
+        mosfet_top = mosfet_center[1] + mosfet_height/2
+        if placement == "vertical":
+            # For vertical placement, extend left, right, and bottom sides towards tapring
+            # Don't extend the side facing the other MOSFET (top for M1, bottom for M2)
+            if mosfet_name == "M1":
+                # M1 is on top, extend left, right, and bottom
+                extended_left = tapring_left
+                extended_right = tapring_right
+                # If the lvpwell should conver entire diff_piar, switch the following two lines to tapring_bottom and mosfet_top
+                extended_bottom = mosfet_bottom
+                extended_top = tapring_top  # Keep original top boundary
+            else:  # M2
+                # M2 is on bottom, extend left, right, and top
+                extended_left = tapring_left
+                extended_right = tapring_right
+                # If the lvpwell should conver entire diff_piar, switch the following two lines to mosfet_bottom and tapring_top
+                extended_bottom = tapring_bottom  
+                extended_top = mosfet_top
+                
+        elif placement == "horizontal":
+            # For horizontal placement, extend top, bottom, and outer sides towards tapring
+            # Don't extend the side facing the other MOSFET (right for M1, left for M2)
+            if mosfet_name == "M1":
+                # M1 is on left, extend left, top, and bottom
+                extended_left = tapring_left
+                extended_right = mosfet_right  # Keep original right boundary
+                extended_bottom = tapring_bottom
+                extended_top = tapring_top
+            else:  # M2
+                # M2 is on right, extend right, top, and bottom
+                extended_left = mosfet_left  # Keep original left boundary
+                extended_right = tapring_right
+                extended_bottom = tapring_bottom
+                extended_top = tapring_top
+        
+        # Calculate extended rectangle dimensions
+        extended_width = extended_right - extended_left
+        extended_height = extended_top - extended_bottom
+        extended_center = ((extended_left + extended_right) / 2, (extended_bottom + extended_top) / 2)
+        
+        # Create and add the extended lvpwell rectangle
+        extended_lvpwell = rectangle(
+            layer=lvpwell_layer,
+            size=(extended_width, extended_height),
+            centered=True
+        )
+        
+        extended_lvpwell_ref = top_level << extended_lvpwell
+        extended_lvpwell_ref.name = f"extended_lvpwell_{mosfet_name}"
+        extended_lvpwell_ref.move(extended_center)
+        
 # Get dynamic layers from the actual port layers
+def create_and_connect_tapring(top_level, M1_ref, M2_ref, pdk, placement, diff_pair_center, debug_mode=True, comp_name="diff_pair", vss_port_placement="N"):
+    """
+    Create tapring around the differential pair and connect dummy devices to it.
+    Also adds a VSS pin connected to the tapring.
+    
+    Args:
+        top_level: Main component to add tapring to
+        M1_ref: Reference to M1 transistor
+        M2_ref: Reference to M2 transistor  
+        pdk: Process design kit
+        placement: "vertical" or "horizontal" placement
+        diff_pair_center: Center coordinates of the differential pair
+        debug_mode: whether to place physical rectangles where pin names are
+        comp_name: Component name to use as prefix for port names (default: "diff_pair")
+        vss_port_placement: VSS port placement direction - "N", "S", "E", or "W" (default: "N")
+        
+    Returns:
+        None (modifies top_level in place)
+    """
+    ## Create the tapring with appropriate parameters
+    ## Using substrate tap for NMOS devices in bulk
+    tapring_comp = tapring(
+        pdk=pdk,
+        enclosed_rectangle=evaluate_bbox(top_level, padding=pdk.get_grule("nwell", "active_diff")["min_enclosure"] + 0.4),
+    )
+    
+    ## Center the tapring around the differential pair
+    tapring_ref = top_level << tapring_comp
+    tapring_ref.name = "bulk_tapring_diff_pair"
+    tapring_ref.move(diff_pair_center)
+
+    ## Extend lvpwell rectangles towards tapring sides (similar to with_tie functionality)
+    extend_lvpwell_to_tapring(top_level, M1_ref, M2_ref, tapring_ref, pdk, placement)
+    ## connect up the dummy transistors to the tapring
+    ## Get connection points for all devices
+    if placement == "vertical":
+        device_gdscons = {
+            'M1_L': M1_ref.ports["multiplier_0_dummy_L_gsdcon_bottom_met_E"].center,
+            'M1_R': M1_ref.ports["multiplier_0_dummy_R_gsdcon_bottom_met_W"].center,
+            'M2_L': M2_ref.ports["multiplier_0_dummy_L_gsdcon_bottom_met_E"].center,
+            'M2_R': M2_ref.ports["multiplier_0_dummy_R_gsdcon_bottom_met_W"].center
+        }
+    if placement == "horizontal":
+        device_gdscons = {
+            'M1_L': M1_ref.ports["multiplier_0_dummy_L_gsdcon_bottom_met_N"].center,
+            'M1_R': M1_ref.ports["multiplier_0_dummy_R_gsdcon_bottom_met_S"].center,
+            'M2_L': M2_ref.ports["multiplier_0_dummy_L_gsdcon_bottom_met_N"].center,
+            'M2_R': M2_ref.ports["multiplier_0_dummy_R_gsdcon_bottom_met_S"].center
+        }
+        
+    ## Get all tapring ports with "bottom_met" in name
+    ## this gets the closest ports along the west and east wall of the tapring (works for vertical placement only)
+    if placement == "vertical":
+        tapring_ports = [port for port in tapring_ref.get_ports_list() if "bottom_met" in port.name.lower() and ("E_array" in port.name or "W_array" in port.name)]
+    if placement == "horizontal":
+        tapring_ports = [port for port in tapring_ref.get_ports_list() if "bottom_met" in port.name.lower() and ("S_array" in port.name or "N_array" in port.name)]
+    
+    def find_closest_port(target_pos, ports):
+        #Find the closest port to a target position.
+        distances = [(np.linalg.norm(np.array(target_pos) - np.array(port.center)), port) 
+                     for port in ports]
+        return min(distances, key=lambda x: x[0])[1]
+    
+    ## Create routes for all connections
+    for device_name, gdscon_pos in device_gdscons.items():
+        device_port_name = f"multiplier_0_dummy_{'L' if 'L' in device_name else 'R'}_gsdcon_bottom_met_{'E' if 'L' in device_name else 'W'}"
+        device_ref = M1_ref if 'M1' in device_name else M2_ref
+
+        closest_tapring_port = find_closest_port(gdscon_pos, tapring_ports)
+        try:
+            top_level << straight_route(pdk, device_ref.ports[device_port_name], tapring_ref.ports[closest_tapring_port.name])
+        except:
+            top_level << c_route(pdk, device_ref.ports[device_port_name], tapring_ref.ports[closest_tapring_port.name])
+    
+    ## Add GND pin connected to the tapring
+
+    # Define port selection criteria based on VSS port placement
+    vss_port_criteria = {
+        "N": ["N_array", "row0", "bottom_met", "_W"],
+        "S": ["S_array", "bottom_met", "_W"],
+        "E": ["E_array", "bottom_met", "_N"],
+        "W": ["W_array", "col0", "bottom_met", "_N"]
+    }
+    
+    # Get the criteria for the specified placement
+    if vss_port_placement not in vss_port_criteria:
+        raise ValueError(f"Invalid vss_port_placement: {vss_port_placement}. Must be one of: N, S, E, W")
+    
+    criteria = vss_port_criteria[vss_port_placement]
+    
+    # Find tapring ports with the specified criteria
+    all_tapring_ports = [port for port in tapring_ref.get_ports_list() 
+                        if all(keyword in port.name for keyword in criteria)]
+    
+    # print(f"DEBUG: tapring_ports: {all_tapring_ports}")
+    if all_tapring_ports:
+        ref_tapring_port = all_tapring_ports[0]  # Use first available port
+        
+       # Get the port properties for creating the VSS pin
+        vss_port_center = calculate_terminal_center(all_tapring_ports)
+        vss_port_width = ref_tapring_port.width
+        vss_port_layer = ref_tapring_port.layer
+        
+        # Get pin and label layers for the VSS pin
+        vss_pin_layer, vss_label_layer = get_pin_layers(vss_port_layer, pdk)
+        
+        # Create visual VSS pin rectangle (if debug mode would be enabled)
+        if debug_mode:
+            vss_label = rectangle(layer=vss_pin_layer, size=(vss_port_width, vss_port_width), centered=True).copy()
+            vss_label.add_label(text=f"{comp_name}VSS", layer=vss_label_layer)
+            # Add the visual pin to the component
+            vss_label_ref = top_level << vss_label
+            vss_label_ref.move(vss_port_center)
+        else: 
+            # Dont add label here, magic doesnt extract it correctly. Port is added at top level, which calls diff_pair
+            # top_level.add_label(text="VSS", position=vss_port_center , layer=vss_label_layer)
+            pass
+        # Add electrical ports for VSS connectivity (all four orientations)
+        top_level.add_port(center=vss_port_center, width=vss_port_width, orientation=0, layer=vss_port_layer, name=f"{comp_name}_VSS_E")
+        top_level.add_port(center=vss_port_center, width=vss_port_width, orientation=90, layer=vss_port_layer, name=f"{comp_name}_VSS_N")
+        top_level.add_port(center=vss_port_center, width=vss_port_width, orientation=180, layer=vss_port_layer, name=f"{comp_name}_VSS_W")
+        top_level.add_port(center=vss_port_center, width=vss_port_width, orientation=270, layer=vss_port_layer, name=f"{comp_name}_VSS_S")
+
+
 def get_pin_layers(port_layer, pdk=None):
     # Convert port layer to corresponding pin and label layers
     # Get all available metal layers from PDK to find which one matches
@@ -128,98 +347,193 @@ def get_pin_layers(port_layer, pdk=None):
     # Default fallback - use the port layer itself
     return port_layer, port_layer
 
+# Calculate the center of a FET terminal, from any number of ports
+def calculate_terminal_center(ports):
+    """
+    Calculate the center point of a terminal by averaging the center coordinates 
+    of any number of ports.
+
+    Args:
+        ports: Tuple or list of Port objects to average over
+
+    Returns:
+        tuple: (x, y) coordinates of the terminal center
+    """
+    # Get center coordinates of all ports
+    centers = [port.center for port in ports]
+
+    # Average the coordinates
+    center_array = np.array(centers)
+    average_center = np.mean(center_array, axis=0)
+
+    return tuple(average_center)
+
 def diff_pair_pins(
     top_level: Component,
     M1_ref: Component,
     M2_ref: Component,
     pdk: MappedPDK,
     connected_sources: bool,
+    component_name: str = "diff_pair",
+    gate_pin_offset_x: float = 0,
+    debug_mode: bool = True,
 ) -> Component:
 
     top_level.unlock()
     
-    # Pin rectangle size
-    psize = (0.5, 0.5)
-    
     # List that will contain all port/component info
     move_info = list()
         
-    # M1 Gate pin - dynamic layer from port
-    m1_gate_port = M1_ref.ports["multiplier_0_gate_E"]
-    m1_gate_pin_layer, m1_gate_label_layer = get_pin_layers(m1_gate_port.layer, pdk)
-    m1_gate_label = rectangle(layer=m1_gate_pin_layer, size=psize, centered=True).copy()
-    m1_gate_label.add_label(text="M1_GATE", layer=m1_gate_label_layer)
-    move_info.append((m1_gate_label, m1_gate_port, None))
+    # TODO: these gate width calculation is a bit sketchy, although it works perfectly. Find another way
+    m1_gate_full_width = abs(M1_ref.ports['gate_E'].center[1] - M1_ref.ports['gate_W'].center[1]) 
+    m2_gate_full_width = abs(M2_ref.ports['gate_E'].center[1] - M2_ref.ports['gate_W'].center[1]) 
+
+
+    # If in debug mode, add visual rectangles and pin labels where the electrical ports are
+    if debug_mode:
+        # M1 Gate pin - dynamic layer from port
+        m1_gate_port = M1_ref.ports["multiplier_0_gate_E"]
+        m1_gate_pin_layer, m1_gate_label_layer = get_pin_layers(m1_gate_port.layer, pdk)
+        m1_gate_label = rectangle(layer=m1_gate_pin_layer, size=(m1_gate_full_width, m1_gate_full_width), centered=True).copy()
+        #m1_gate_label = rectangle(layer=m1_gate_pin_layer, size=(2*m1_gate_port.width, 2*m1_gate_port.width), centered=True).copy()
+        m1_gate_label.add_label(text="M1_GATE", layer=m1_gate_label_layer)
+      
+        # M1 Drain pin - dynamic layer from port (drains are always separate)
+        m1_drain_port = M1_ref.ports["multiplier_0_drain_W"]
+        m1_drain_pin_layer, m1_drain_label_layer = get_pin_layers(m1_drain_port.layer, pdk)
+        m1_drain_label = rectangle(layer=m1_drain_pin_layer, size=(m1_drain_port.width, m1_drain_port.width), centered=True).copy()
+        m1_drain_label.add_label(text="M1_DRAIN", layer=m1_drain_label_layer)
+
+        # Check if sources should be connected and named accordingly
+        if connected_sources:
+            # If sources are connected, give them the same name
+            source_name = "SOURCE_COMMON"
+
+        else:
+            # If sources are separate, give them different names
+            source_name = "M2_SOURCE"  # Will be set individually below
+
+            # And place the source pin for M1
+            m1_source_port = M1_ref.ports["multiplier_0_source_W"]
+            m1_source_pin_layer, m1_source_label_layer = get_pin_layers(m1_source_port.layer, pdk)
+            m1_source_label = rectangle(layer=m1_source_pin_layer, size=(m1_source_port.width, m1_source_port.width), centered=True).copy()
+            m1_source_label.add_label(text="M1_SOURCE", layer=m1_source_label_layer)
+        
+        # M2 Source pin - dynamic layer from port, this is the same as M!
+        m2_source_port = M1_ref.ports["multiplier_0_source_E"]
+        m2_source_pin_layer, m2_source_label_layer = get_pin_layers(m2_source_port.layer, pdk)
+        m2_source_label = rectangle(layer=m2_source_pin_layer, size=(m2_source_port.width, m2_source_port.width), centered=True).copy()
+        m2_source_label.add_label(text=f"{source_name}", layer=m2_source_label_layer)
+        
+        # M2 Gate pin - dynamic layer from port
+        m2_gate_port = M2_ref.ports["multiplier_0_gate_E"]
+        m2_gate_pin_layer, m2_gate_label_layer = get_pin_layers(m2_gate_port.layer, pdk)
+        m2_gate_label = rectangle(layer=m2_gate_pin_layer, size=(m2_gate_full_width, m2_gate_full_width), centered=True).copy()
+        #m2_gate_label = rectangle(layer=m2_gate_pin_layer, size=(2*m2_gate_port.width, 2*m2_gate_port.width), centered=True).copy()
+        m2_gate_label.add_label(text="M2_GATE", layer=m2_gate_label_layer)
+        
+        
+        # M2 Drain pin - dynamic layer from port (drains are always separate)
+        m2_drain_port = M2_ref.ports["multiplier_0_drain_W"]
+        m2_drain_pin_layer, m2_drain_label_layer = get_pin_layers(m2_drain_port.layer, pdk)
+        m2_drain_label = rectangle(layer=m2_drain_pin_layer, size=(m2_drain_port.width, m2_drain_port.width), centered=True).copy()
+        m2_drain_label.add_label(text="M2_DRAIN", layer=m2_drain_label_layer)
     
-    # M1 Source pin - dynamic layer from port
-    m1_source_port = M1_ref.ports["multiplier_0_source_E"]
-    m1_source_pin_layer, m1_source_label_layer = get_pin_layers(m1_source_port.layer, pdk)
-    m1_source_label = rectangle(layer=m1_source_pin_layer, size=psize, centered=True).copy()
-    m1_source_label.add_label(text="M1_SOURCE", layer=m1_source_label_layer)
-    move_info.append((m1_source_label, m1_source_port, None))
+    # Calculate M1 terminal centers
+    ## Gate centers are more finicky for some reason. TODO: simpler logic
+    m1_gate_center_x = calculate_terminal_center((
+        M1_ref.ports["multiplier_0_gate_N"], M1_ref.ports["multiplier_0_gate_S"]
+    ))
+    m1_gate_center_y = calculate_terminal_center((
+        M1_ref.ports["multiplier_0_gate_W"], M1_ref.ports["multiplier_0_gate_E"]
+    ))
+    m1_gate_center = (m1_gate_center_x[0] + gate_pin_offset_x, m1_gate_center_y[1])
+
+    m1_drain_center = calculate_terminal_center((
+        M1_ref.ports["multiplier_0_drain_W"], M1_ref.ports["multiplier_0_drain_E"]
+    ))
+    m1_source_center = calculate_terminal_center((
+        M1_ref.ports["multiplier_0_source_W"], M1_ref.ports["multiplier_0_source_E"]
+    ))
     
-    # Check if sources should be connected and named accordingly
-    if connected_sources:
-        # If drains are connected, give them the same name
-        drain_name = "DRAIN_COMMON"
-        # Connect the drains with a route
-        top_level << straight_route(pdk, M1_ref.ports["multiplier_0_drain_W"], M2_ref.ports["multiplier_0_drain_W"])
-    else:
-        # If drains are separate, give them different names
-        drain_name = None  # Will be set individually below
+    # M2 terminal centers
+    ## Gate centers are more finicky for some reason. TODO: simpler logic
+    m2_gate_center_x = calculate_terminal_center((
+        M2_ref.ports["multiplier_0_gate_N"], M2_ref.ports["multiplier_0_gate_S"]
+    ))
+    m2_gate_center_y = calculate_terminal_center((
+        M2_ref.ports["multiplier_0_gate_W"], M2_ref.ports["multiplier_0_gate_E"]
+    ))
+    m2_gate_center = (m2_gate_center_x[0] + gate_pin_offset_x, m2_gate_center_y[1])
+
+    m2_drain_center = calculate_terminal_center((
+        M2_ref.ports["multiplier_0_drain_W"], M2_ref.ports["multiplier_0_drain_E"]
+    ))
+    m2_source_center = calculate_terminal_center((
+        M2_ref.ports["multiplier_0_source_W"], M2_ref.ports["multiplier_0_source_E"]
+    ))
     
-    # M1 Drain pin - dynamic layer from port
-    m1_drain_port = M1_ref.ports["multiplier_0_drain_W"]
-    m1_drain_pin_layer, m1_drain_label_layer = get_pin_layers(m1_drain_port.layer, pdk)
-    m1_drain_name = drain_name if drain_name else "M1_DRAIN"
-    m1_drain_label = rectangle(layer=m1_drain_pin_layer, size=psize, centered=True).copy()
-    m1_drain_label.add_label(text=m1_drain_name, layer=m1_drain_label_layer)
-    move_info.append((m1_drain_label, m1_drain_port, None))
+    if debug_mode:
+        # Position visual pins at the same calculated centers as electrical ports
+        m1_gate_ref = top_level << m1_gate_label
+        m1_gate_ref.move(m1_gate_center)
+        
+        m1_drain_ref = top_level << m1_drain_label
+        m1_drain_ref.move(m1_drain_center)
+        
+        if not connected_sources:
+            m1_source_ref = top_level << m1_source_label
+            m1_source_ref.move(m1_source_center)
+        
+        m2_source_ref = top_level << m2_source_label
+        m2_source_ref.move(m2_source_center)
+        
+        m2_gate_ref = top_level << m2_gate_label
+        m2_gate_ref.move(m2_gate_center)
+        
+        m2_drain_ref = top_level << m2_drain_label
+        m2_drain_ref.move(m2_drain_center)
     
-    # M2 Gate pin - dynamic layer from port
-    m2_gate_port = M2_ref.ports["multiplier_0_gate_E"]
-    m2_gate_pin_layer, m2_gate_label_layer = get_pin_layers(m2_gate_port.layer, pdk)
-    m2_gate_label = rectangle(layer=m2_gate_pin_layer, size=psize, centered=True).copy()
-    m2_gate_label.add_label(text="M2_GATE", layer=m2_gate_label_layer)
-    move_info.append((m2_gate_label, m2_gate_port, None))
+    # Add electrical ports for connectivity using the calculated centers
+    # Create ports with all four orientations (E=0°, N=90°, W=180°, S=270°)
     
-    # M2 Source pin - dynamic layer from port
-    m2_source_port = M2_ref.ports["multiplier_0_source_E"]
-    m2_source_pin_layer, m2_source_label_layer = get_pin_layers(m2_source_port.layer, pdk)
-    m2_source_label = rectangle(layer=m2_source_pin_layer, size=psize, centered=True).copy()
-    m2_source_label.add_label(text="M2_SOURCE", layer=m2_source_label_layer)
-    move_info.append((m2_source_label, m2_source_port, None))
+    # M1 Gate ports (all orientations)
+    top_level.add_port(center=m1_gate_center, width=m1_gate_full_width, orientation=0, layer=M1_ref.ports["multiplier_0_gate_E"].layer, name=f"{component_name}_M1_GATE_E")
+    top_level.add_port(center=m1_gate_center, width=m1_gate_full_width, orientation=90, layer=M1_ref.ports["multiplier_0_gate_E"].layer, name=f"{component_name}_M1_GATE_N")
+    top_level.add_port(center=m1_gate_center, width=m1_gate_full_width, orientation=180, layer=M1_ref.ports["multiplier_0_gate_E"].layer, name=f"{component_name}_M1_GATE_W")
+    top_level.add_port(center=m1_gate_center, width=m1_gate_full_width, orientation=270, layer=M1_ref.ports["multiplier_0_gate_E"].layer, name=f"{component_name}_M1_GATE_S")
     
-    # M2 Drain pin - dynamic layer from port
-    m2_drain_port = M2_ref.ports["multiplier_0_drain_W"]
-    m2_drain_pin_layer, m2_drain_label_layer = get_pin_layers(m2_drain_port.layer, pdk)
-    m2_drain_name = drain_name if drain_name else "M2_DRAIN"
-    m2_drain_label = rectangle(layer=m2_drain_pin_layer, size=psize, centered=True).copy()
-    m2_drain_label.add_label(text=m2_drain_name, layer=m2_drain_label_layer)
-    move_info.append((m2_drain_label, m2_drain_port, None))
+    # M2 Gate ports (all orientations)
+    top_level.add_port(center=m2_gate_center, width=m2_gate_full_width, orientation=0, layer=M2_ref.ports["multiplier_0_gate_E"].layer, name=f"{component_name}_M2_GATE_E")
+    top_level.add_port(center=m2_gate_center, width=m2_gate_full_width, orientation=90, layer=M2_ref.ports["multiplier_0_gate_E"].layer, name=f"{component_name}_M2_GATE_N")
+    top_level.add_port(center=m2_gate_center, width=m2_gate_full_width, orientation=180, layer=M2_ref.ports["multiplier_0_gate_E"].layer, name=f"{component_name}_M2_GATE_W")
+    top_level.add_port(center=m2_gate_center, width=m2_gate_full_width, orientation=270, layer=M2_ref.ports["multiplier_0_gate_E"].layer, name=f"{component_name}_M2_GATE_S")
     
-    # Add all pin rectangles and labels to the component
-    for comp, prt, alignment in move_info:
-        alignment = ('c', 'b') if alignment is None else alignment
-        compref = align_comp_to_port(comp, prt, alignment=alignment)
-        top_level.add(compref)
+    # Add drain ports (always separate) - all orientations
+    top_level.add_port(center=m1_drain_center, width=M1_ref.ports["drain_W"].width, orientation=0, layer=M1_ref.ports["multiplier_0_source_E"].layer, name=f"{component_name}_M1_DRAIN_E")
+    top_level.add_port(center=m1_drain_center, width=M1_ref.ports["drain_W"].width, orientation=90, layer=M1_ref.ports["multiplier_0_source_E"].layer, name=f"{component_name}_M1_DRAIN_N")
+    top_level.add_port(center=m1_drain_center, width=M1_ref.ports["drain_W"].width, orientation=180, layer=M1_ref.ports["multiplier_0_source_E"].layer, name=f"{component_name}_M1_DRAIN_W")
+    top_level.add_port(center=m1_drain_center, width=M1_ref.ports["drain_W"].width, orientation=270, layer=M1_ref.ports["multiplier_0_source_E"].layer, name=f"{component_name}_M1_DRAIN_S")
     
-    # Also add electrical ports for connectivity with appropriate naming
-    top_level.add_port(port=M1_ref.ports["multiplier_0_gate_E"], name="M1_GATE")
-    top_level.add_port(port=M2_ref.ports["multiplier_0_gate_E"], name="M2_GATE")
-    top_level.add_port(port=M1_ref.ports["multiplier_0_source_E"], name="M1_DRAIN")
-    top_level.add_port(port=M2_ref.ports["multiplier_0_source_E"], name="M2_DRAIN")
+    top_level.add_port(center=m2_drain_center, width=M2_ref.ports["drain_W"].width, orientation=0, layer=M2_ref.ports["multiplier_0_source_E"].layer, name=f"{component_name}_M2_DRAIN_E")
+    top_level.add_port(center=m2_drain_center, width=M2_ref.ports["drain_W"].width, orientation=90, layer=M2_ref.ports["multiplier_0_source_E"].layer, name=f"{component_name}_M2_DRAIN_N")
+    top_level.add_port(center=m2_drain_center, width=M2_ref.ports["drain_W"].width, orientation=180, layer=M2_ref.ports["multiplier_0_source_E"].layer, name=f"{component_name}_M2_DRAIN_W")
+    top_level.add_port(center=m2_drain_center, width=M2_ref.ports["drain_W"].width, orientation=270, layer=M2_ref.ports["multiplier_0_source_E"].layer, name=f"{component_name}_M2_DRAIN_S")
     
-    # Add drain ports with conditional naming
-    if connected_sources:
-        # If connected, only add one common drain port (use M1's position as reference)
-        top_level.add_port(port=M1_ref.ports["multiplier_0_drain_W"], name="SOURCE_COMMON")
-    else:
-        # If separate, add both individual drain ports
-        top_level.add_port(port=M1_ref.ports["multiplier_0_drain_W"], name="M1_SOURCE")
-        top_level.add_port(port=M2_ref.ports["multiplier_0_drain_W"], name="M2_SOURCE")
+    # Always add ports to both sources, so routing is robust, regardless if sources are connected or not
+    # M1 Source ports
+    top_level.add_port(center=m1_source_center, width=M1_ref.ports["source_W"].width, orientation=0, layer=M1_ref.ports["multiplier_0_drain_E"].layer, name=f"{component_name}_M1_SOURCE_E")
+    top_level.add_port(center=m1_source_center, width=M1_ref.ports["source_W"].width, orientation=90, layer=M1_ref.ports["multiplier_0_drain_E"].layer, name=f"{component_name}_M1_SOURCE_N")
+    top_level.add_port(center=m1_source_center, width=M1_ref.ports["source_W"].width, orientation=180, layer=M1_ref.ports["multiplier_0_drain_E"].layer, name=f"{component_name}_M1_SOURCE_W")
+    top_level.add_port(center=m1_source_center, width=M1_ref.ports["source_W"].width, orientation=270, layer=M1_ref.ports["multiplier_0_drain_E"].layer, name=f"{component_name}_M1_SOURCE_S")
+        
+    # M2 Source ports
+    top_level.add_port(center=m2_source_center, width=M2_ref.ports["source_W"].width, orientation=0, layer=M2_ref.ports["multiplier_0_drain_E"].layer, name=f"{component_name}_M2_SOURCE_E")
+    top_level.add_port(center=m2_source_center, width=M2_ref.ports["source_W"].width, orientation=90, layer=M2_ref.ports["multiplier_0_drain_E"].layer, name=f"{component_name}_M2_SOURCE_N")
+    top_level.add_port(center=m2_source_center, width=M2_ref.ports["source_W"].width, orientation=180, layer=M2_ref.ports["multiplier_0_drain_E"].layer, name=f"{component_name}_M2_SOURCE_W")
+    top_level.add_port(center=m2_source_center, width=M2_ref.ports["source_W"].width, orientation=270, layer=M2_ref.ports["multiplier_0_drain_E"].layer, name=f"{component_name}_M2_SOURCE_S")
     
-    return top_level.flatten()
+    return top_level
 
     
 @cell
@@ -227,7 +541,7 @@ def diff_pair(
         pdk: MappedPDK,
         placement: str = "vertical",
         width: tuple[float,float] = (3,3),
-        length: tuple[float,float] = (None,None),
+        length: tuple[float,float] | None = None,
         fingers: tuple[int,int] = (1,1),
         multipliers: tuple[int,int] = (1,1),
         dummy_1: tuple[bool,bool] = (True,True),
@@ -236,15 +550,19 @@ def diff_pair(
         tie_layers2: tuple[str,str] = ("met2","met1"),
         sd_rmult: int=1,
         connected_sources: bool = True,
+        gate_pin_offset_x: float = 0,
+        debug_mode: bool = True,
         M1_kwargs: dict = None,
         M2_kwargs: dict = None,
+        component_name: str = "diff_pair",
+        vss_port_placement: str = "N",
         **kwargs        
         ) -> Component:
 
     pdk.activate()
     
     ##top level component
-    top_level = Component(name="diff_pair")
+    top_level = Component(name=component_name)
 
     ## two fets
     ## temp mosfets, so we can switch the drain/source ports
@@ -252,17 +570,25 @@ def diff_pair(
         M1_kwargs = {}
     if M2_kwargs is None:
         M2_kwargs = {}
-    M1_temp = nmos(pdk, width=width[0], fingers=fingers[0], multipliers=multipliers[0], with_dummy=dummy_1, with_substrate_tap=False, length=length[0], tie_layers=tie_layers1, sd_rmult=sd_rmult, **M1_kwargs)
-    M2_temp = nmos(pdk, width=width[1], fingers=fingers[1], multipliers=multipliers[1], with_dummy=dummy_2, with_substrate_tap=False, length=length[1], tie_layers=tie_layers2, sd_rmult=sd_rmult, **M2_kwargs)
     
+    # Handle length parameter - use None for PDK minimum length
+    length1 = length[0] if length is not None else None
+    length2 = length[1] if length is not None else None
+   
+    M1_temp = nmos(pdk, width=width[0], fingers=fingers[0], multipliers=multipliers[0], with_dummy=dummy_1, with_substrate_tap=False, length=length1, tie_layers=tie_layers1,  **M1_kwargs)
+    M2_temp = nmos(pdk, width=width[1], fingers=fingers[1], multipliers=multipliers[1], with_dummy=dummy_2, with_substrate_tap=False, length=length2, tie_layers=tie_layers2,  **M2_kwargs)
+    
+    M1_temp.name=f"{component_name}_M1_temp"
+    M2_temp.name=f"{component_name}_M2_temp"
+
     M1 = swap_drain_source_ports(M1_temp)
     M2 = swap_drain_source_ports(M2_temp)
     
     M1_ref = top_level << M1
     M2_ref = top_level << M2
     
-    M1_ref.name="M1"
-    M2_ref.name="M2"
+    M1_ref.name=f"{component_name}_M1"
+    M2_ref.name=f"{component_name}_M2"
     
     if placement == "horizontal":
         M1_ref.mirror_x()
@@ -278,59 +604,22 @@ def diff_pair(
     ## connect up the drains/sources of the MOSFETS if connect_sources is set to True
     if connected_sources == True:
         if placement == "vertical" :
-            top_level << straight_route(pdk, M1_ref.ports["drain_N"], M2_ref.ports["drain_N"])
+            top_level << straight_route(pdk, M1_ref.ports["source_N"], M2_ref.ports["source_N"])
+            # top_level << straight_route(pdk, M1_ref.ports["source_N"], M2_ref.ports["source_N"], glayer1="met4")
+        if placement == "horizontal" :
+            top_level << straight_route(pdk, M1_ref.ports["source_N"], M2_ref.ports["source_E"])
 
     
     # Tapring surrounding the two transistors
-    
-    ## Center the tapring around the differential pair
     diff_pair_center = top_level.center
     
-    
-    
-    ## Create the tapring with appropriate parameters
-    ## Using substrate tap for NMOS devices in bulk
-    tapring_comp = tapring(
-        pdk=pdk,
-        enclosed_rectangle=evaluate_bbox(top_level.flatten(), padding=pdk.get_grule("nwell", "active_diff")["min_enclosure"])
-    )
-    
-    ## Add the tapring to our component
-    tapring_ref = top_level << tapring_comp
-    tapring_ref.name = "bulk_tapring_diff_pair"
-    tapring_ref.move(diff_pair_center)
-
-    ## connect up the dummy transistors to the tapring
-    ## Get connection points for all devices
-    device_gdscons = {
-        'M1_L': M1_ref.ports["multiplier_0_dummy_L_gsdcon_bottom_met_E"].center,
-        'M1_R': M1_ref.ports["multiplier_0_dummy_R_gsdcon_bottom_met_W"].center,
-        'M2_L': M2_ref.ports["multiplier_0_dummy_L_gsdcon_bottom_met_E"].center,
-        'M2_R': M2_ref.ports["multiplier_0_dummy_R_gsdcon_bottom_met_W"].center
-    }
-    
-    ## Get all tapring ports with "bottom_met" in name
-    tapring_ports = [port for port in tapring_ref.get_ports_list() if "bottom_met" in port.name.lower()]
-    
-    def find_closest_port(target_pos, ports):
-        #Find the closest port to a target position.
-        distances = [(np.linalg.norm(np.array(target_pos) - np.array(port.center)), port) 
-                     for port in ports]
-        return min(distances, key=lambda x: x[0])[1]
-    
-    ## Create routes for all connections
-    for device_name, gdscon_pos in device_gdscons.items():
-        device_port_name = f"multiplier_0_dummy_{'L' if 'L' in device_name else 'R'}_gsdcon_bottom_met_{'E' if 'L' in device_name else 'W'}"
-        device_ref = M1_ref if 'M1' in device_name else M2_ref
-        
-        closest_tapring_port = find_closest_port(gdscon_pos, tapring_ports)
-        top_level << straight_route(pdk, device_ref.ports[device_port_name], tapring_ref.ports[closest_tapring_port.name])
-
+    # Create and connect tapring
+    create_and_connect_tapring(top_level, M1_ref, M2_ref, pdk, placement, diff_pair_center, debug_mode, component_name, vss_port_placement)
 
     #Routing
-    top_level_with_pins = diff_pair_pins(top_level, M1_ref, M2_ref, gf180, connected_sources)
+    top_level_with_pins = diff_pair_pins(top_level, M1_ref, M2_ref, gf180, connected_sources, component_name, gate_pin_offset_x, debug_mode)
     
-    return component_snap_to_grid(rename_ports_by_orientation(top_level_with_pins))
+    return component_snap_to_grid(top_level_with_pins)
 
 
 if __name__ == "__main__":

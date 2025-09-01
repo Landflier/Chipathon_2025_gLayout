@@ -1,0 +1,68 @@
+** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_tb/Biasing_network_tb.sch
+**.subckt Biasing_network_tb
+I0 net1 net2 50u
+X_biasing_cmirrors net2 net5 net7 net3 GND Biasing_network_no_hierarchy
+V1 VDD GND 3.3
+Vmeas1 net4 net3 0
+.save i(vmeas1)
+Vmeas2 net6 net5 0
+.save i(vmeas2)
+Vmeas3 net8 net7 0
+.save i(vmeas3)
+R1 VDD net4 10K m=1
+R2 VDD net6 10K m=1
+R3 VDD net8 100K m=1
+**** begin user architecture code
+
+.include /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/design.ngspice
+.lib /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/sm141064.ngspice typical
+.lib /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/sm141064.ngspice mimcap_typical
+.lib /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/sm141064.ngspice cap_mim
+.lib /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/sm141064.ngspice res_typical
+
+
+
+
+* let sets vectors to a plot, while set sets a variable, globally accessible in .control
+.control
+
+    * operating point
+    op
+    show
+
+    write Biasing_network_sim.raw
+
+    set appendwrite
+
+    * Transient analysis to observe mixing operation
+    tran 1p 0.01u
+    write Biasing_network_sim.raw
+
+.endc
+
+
+**** end user architecture code
+**.ends
+
+* expanding   symbol:  /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Biasing_network_no_hierarchy.sym # of pins=5
+** sym_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Biasing_network_no_hierarchy.sym
+** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Biasing_network_no_hierarchy.sch
+.subckt Biasing_network_no_hierarchy I_BIAS I_out_2 I_out_3 I_out_1 VSS
+*.iopin VSS
+*.iopin I_BIAS
+*.opin I_out_1
+*.opin I_out_2
+*.opin I_out_3
+XM1 I_BIAS I_BIAS VSS net1 nfet_03v3 L=0.28u W=0.22u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
++ ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
+XM2 I_out_1 I_BIAS VSS VSS nfet_03v3 L=0.28u W=0.22u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
++ ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
+XM3 I_out_2 I_BIAS VSS VSS nfet_03v3 L=0.28u W=0.22u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
++ ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
+XM4 I_out_3 I_BIAS VSS VSS nfet_03v3 L=0.28u W=0.22u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
++ ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
+.ends
+
+.GLOBAL GND
+.GLOBAL VDD
+.end

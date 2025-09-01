@@ -1,0 +1,39 @@
+
+Circuit 1 cell nfet_03v3 and Circuit 2 cell nfet_03v3 are black boxes.
+Equate elements:  no current cell.
+Device classes nfet_03v3 and nfet_03v3 are equivalent.
+Flattening unmatched subcell diff_pair_664457bf in circuit Gilbert_cell_layout (0)(1 instance)
+Flattening unmatched subcell diff_pair_56ee14b3 in circuit Gilbert_cell_layout (0)(1 instance)
+Flattening unmatched subcell diff_pair_8230b491 in circuit Gilbert_cell_layout (0)(1 instance)
+
+Class Gilbert_cell_layout (0):  Merged 2 parallel devices.
+Class Gilbert_cell_xschem (1):  Merged 1 parallel devices.
+Subcircuit summary:
+Circuit 1: Gilbert_cell_layout             |Circuit 2: Gilbert_cell_xschem             
+-------------------------------------------|-------------------------------------------
+nfet_03v3 (42->7)                          |nfet_03v3 (18->7)                          
+Number of devices: 7                       |Number of devices: 7                       
+Number of nets: 11                         |Number of nets: 11                         
+---------------------------------------------------------------------------------------
+Resolving symmetries by property value.
+Resolving symmetries by pin name.
+Netlists match uniquely.
+
+Subcircuit pins:
+Circuit 1: Gilbert_cell_layout             |Circuit 2: Gilbert_cell_xschem             
+-------------------------------------------|-------------------------------------------
+V_out_n                                    |V_out_n                                    
+V_out_p                                    |V_out_p                                    
+V_LO                                       |V_LO                                       
+V_LO_b                                     |V_LO_b                                     
+VSS                                        |VSS                                        
+V_RF                                       |V_RF                                       
+V_RF_b                                     |V_RF_b                                     
+I_bias_pos                                 |I_bias_pos                                 
+I_bias_neg                                 |I_bias_neg                                 
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes Gilbert_cell_layout and Gilbert_cell_xschem are equivalent.
+
+Final result: Circuits match uniquely.
+.
