@@ -3,6 +3,7 @@ openfasoc/
 gLayout/
 sscs-chipathon-2024/
 *.svg
+!schematic.svg
 *.gds
 .ipynb_checkpoints
 *.raw
