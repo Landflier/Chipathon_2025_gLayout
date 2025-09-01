@@ -1,0 +1,46 @@
+* NGSPICE file created from Gilbert_mixer.ext - technology: gf180mcuD
+
+.subckt Gilbert_mixer I_bias_p I_bias_n V_out_p V_out_n V_LO V_LO_b RF_POS RF_NEG
++ VSS
+X0 I_bias_p RF_POS a_n572_n259# VSS nfet_03v3 ad=1.22p pd=3.22u as=1.22p ps=3.22u w=2u l=0.28u M=5
+X1 V_out_p V_LO I_bias_p VSS nfet_03v3 ad=2.44p pd=5.22u as=2.44p ps=5.22u w=4u l=0.28u M=5
+X2 VSS VSS VSS VSS nfet_03v3 ad=4.56p pd=10.28u as=91.2p ps=0.21472m w=4u l=0.28u M=8
+X3 V_out_n V_LO_b I_bias_n VSS nfet_03v3 ad=2.44p pd=5.22u as=2.44p ps=5.22u w=4u l=0.28u M=5
+X4 I_bias_n RF_NEG a_n572_n2107# VSS nfet_03v3 ad=1.22p pd=3.22u as=1.22p ps=3.22u w=2u l=0.28u M=5
+X5 I_bias_n V_LO V_out_p VSS nfet_03v3 ad=2.44p pd=5.22u as=2.44p ps=5.22u w=4u l=0.28u M=5
+X6 VSS VSS VSS VSS nfet_03v3 ad=2.28p pd=6.28u as=0 ps=0 w=2u l=0.28u M=4
+X7 I_bias_p V_LO_b V_out_n VSS nfet_03v3 ad=2.44p pd=5.22u as=4.56p ps=10.28u w=4u l=0.28u M=5
+C0 RF_POS I_bias_p 0.915038f
+C1 V_LO_b V_out_n 2.04475f
+C2 V_LO_b I_bias_n 0.508751f
+C3 V_LO_b V_out_p 0.580024f
+C4 V_LO I_bias_p 0.508751f
+C5 a_n572_n259# a_n572_n2107# 0.270103f
+C6 V_out_n V_LO 1.90116f
+C7 a_n572_n2107# RF_NEG 0.351985f
+C8 I_bias_n V_LO 0.508751f
+C9 V_LO V_out_p 1.97062f
+C10 a_n572_n259# I_bias_p 3.05351f
+C11 I_bias_n a_n572_n2107# 3.05351f
+C12 I_bias_n RF_NEG 0.915038f
+C13 V_out_n I_bias_p 4.71835f
+C14 I_bias_n I_bias_p 0.040637f
+C15 I_bias_p V_out_p 4.73456f
+C16 V_LO_b V_LO 1.42877f
+C17 V_out_n I_bias_n 4.7133f
+C18 V_out_n V_out_p 2.76417f
+C19 I_bias_n V_out_p 4.72701f
+C20 RF_POS a_n572_n259# 0.351985f
+C21 V_LO_b I_bias_p 0.508751f
+C22 V_out_n VSS 5.19613f
+C23 V_LO_b VSS 15.8319f
+C24 V_out_p VSS 5.21296f
+C25 V_LO VSS 14.9899f
+C26 I_bias_n VSS 6.59354f
+C27 RF_NEG VSS 4.83795f
+C28 I_bias_p VSS 6.59354f
+C29 RF_POS VSS 4.83795f
+C30 a_n572_n2107# VSS 1.07151f
+C31 a_n572_n259# VSS 1.07151f
+.ends
+

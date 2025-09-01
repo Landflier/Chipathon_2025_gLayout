@@ -110,7 +110,7 @@ def create_vias_and_route(comp, pin1, pin2, pin3, pin4, pdk_choice, lo_bbox, off
     Returns:
         Tuple of (via1_ref, via2_ref) - references to the created vias
     """
-    print(f"DEBUG: offset: {offset}")
+    # print(f"DEBUG: offset: {offset}")
     # Get pin properties
     pin_width = pin1.width
     pin1_center = pin1.center
@@ -284,7 +284,7 @@ if __name__ == "__main__":
     # print(f"DEBUG: RF ports: {list(RF_diff_pair_ref.ports.keys())}")
     # print(f"DEBUG: LO_left ports: {list(LO_diff_pair_left_ref.ports.keys())}")
     # print(f"DEBUG: LO_right ports: {list(LO_diff_pair_right_ref.ports.keys())}")
-
+    
     bbox_RF = evaluate_bbox(RF_diff_pair)
     bbox_LO = evaluate_bbox(LO_diff_pair_left)
 
@@ -342,12 +342,14 @@ if __name__ == "__main__":
             pdk_choice, 
             LO_diff_pair_left_ref.ports[lo_1_M1_source_port_name], 
             RF_diff_pair_ref.ports[rf_M2_drain_port_name],
+            hglayer="met2",
             vglayer="met3"
        )
         route_lo2 = L_route(
             pdk_choice, 
             LO_diff_pair_right_ref.ports[lo_2_M2_source_port_name], 
             RF_diff_pair_ref.ports[rf_M1_drain_port_name],
+            hglayer="met2",
             vglayer="met3"
        )
 
@@ -369,8 +371,8 @@ if __name__ == "__main__":
         via_rf_m2_ref.move(RF_diff_pair_ref.ports[rf_M2_drain_port_name].center)
         
         # Add pins and labels to RF vias
-        add_via_pins_and_labels(comp, via_rf_m1_ref, "I_bias_p", pdk_choice, pin_layer="met3", debug_mode=False)
-        add_via_pins_and_labels(comp, via_rf_m2_ref, "I_bias_n", pdk_choice, pin_layer="met3", debug_mode=False)
+        add_via_pins_and_labels(comp, via_rf_m1_ref, "RF_M1_drain", pdk_choice, pin_layer="met3", debug_mode=False)
+        add_via_pins_and_labels(comp, via_rf_m2_ref, "RF_M2_drain", pdk_choice, pin_layer="met3", debug_mode=False)
         
         comp << route_lo2
         comp << route_lo1
@@ -426,7 +428,6 @@ if __name__ == "__main__":
     lo_sd_layer = LO_FET_kwargs["gate_route_topmet"]  # Should be "met2"
     lo_left_bbox = evaluate_bbox(LO_diff_pair_left_ref)
 
-    print(f"DEBUG: lo_left_bbox coordinates after via_IFs: {lo_left_bbox}")
     offset = 2*(via_IF_neg_ref.center[0] - via_IF_pos_ref.center[0]) + lo_left_M1_gate.width/2 + lo_left_M1_drain.width/2
     via_LO_ref, via_LO_b_ref = create_vias_and_route(
         comp, 
@@ -449,13 +450,34 @@ if __name__ == "__main__":
     rf_m2_gate_port = RF_diff_pair_ref.ports["RF_diff_pair_M2_GATE_E"]
     
     # Get label layer
-    pin_layer_gds, label_layer_gds = get_pin_layers(rf_m1_gate_port.layer, pdk_choice)
+    pin_layer_gds, gate_label_gds = get_pin_layers(rf_m1_gate_port.layer, pdk_choice)
     
-    # Add labels directly
-    comp.add_label(text="RF_POS", position=rf_m1_gate_port.center, layer=label_layer_gds)
-    comp.add_label(text="RF_NEG", position=rf_m2_gate_port.center, layer=label_layer_gds)
+    # Add labels to RF gates
+    comp.add_label(text="RF_POS", position=rf_m1_gate_port.center, layer=gate_label_gds)
+    comp.add_label(text="RF_NEG", position=rf_m2_gate_port.center, layer=gate_label_gds)
+
+    # Add labels directly to RF gate ports
+    rf_m1_source_port = RF_diff_pair_ref.ports["RF_diff_pair_M1_SOURCE_N"]
+    rf_m2_source_port = RF_diff_pair_ref.ports["RF_diff_pair_M2_SOURCE_N"]
     
-    print(f"Added RF gate labels at M1: {rf_m1_gate_port.center}, M2: {rf_m2_gate_port.center}")
+    # Get label layer
+    pin_layer_gds, source_label_gds = get_pin_layers(rf_m1_source_port.layer, pdk_choice)
+    # Add labels to RF sources
+    comp.add_label(text="I_bias_p", position=rf_m1_source_port.center, layer=source_label_gds)
+    comp.add_label(text="I_bias_n", position=rf_m2_source_port.center, layer=source_label_gds)
+
+    ## Adding VSS ports to the taprings
+    vss_rf_port =  RF_diff_pair_ref.ports["RF_diff_pair_VSS_E"]
+    vss_pin_layer, vss_label_layer = get_pin_layers(vss_rf_port.layer, pdk_choice)
+    comp.add_label(text="VSS", position = vss_rf_port.center, layer = vss_label_layer)
+
+    vss_lo_1_port =  LO_diff_pair_left_ref.ports["LO_diff_pair_1_VSS_E"]
+    vss_pin_layer, vss_label_layer = get_pin_layers(vss_lo_1_port.layer, pdk_choice)
+    comp.add_label(text="VSS", position = vss_lo_1_port.center, layer = vss_label_layer)
+
+    vss_lo_2_port =  LO_diff_pair_right_ref.ports["LO_diff_pair_2_VSS_E"]
+    vss_pin_layer, vss_label_layer = get_pin_layers(vss_lo_2_port.layer, pdk_choice)
+    comp.add_label(text="VSS", position = vss_lo_2_port.center, layer = vss_label_layer)
 
     
     # Flatten the component for easier extraction
@@ -465,7 +487,7 @@ if __name__ == "__main__":
     # Write both hierarchical and flattened GDS files
     print("✓ Writing GDS files...")
     comp.write_gds('lvs/Gilbert_cell_hierarchical.gds', cellname="Gilbert_cell")
-    # flat_comp.write_gds('lvs/Gilbert_cell.gds', cellname="Gilbert_cell")
+    # flat_comp.write_gds('lvs/Gilbert_cell_flat.gds', cellname="Gilbert_cell")
     print("  - Hierarchical GDS: Gilbert_cell_hierarchical.gds")
     print("  - Flattened GDS: Gilbert_cell.gds (recommended for extraction)")
     

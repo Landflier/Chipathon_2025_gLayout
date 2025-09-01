@@ -278,7 +278,7 @@ def create_and_connect_tapring(top_level, M1_ref, M2_ref, pdk, placement, diff_p
     all_tapring_ports = [port for port in tapring_ref.get_ports_list() 
                         if all(keyword in port.name for keyword in ["N_array", "row0", "top_met", "_W"])]
     
-    print(f"DEBUG: tapring_ports: {all_tapring_ports}")
+    # print(f"DEBUG: tapring_ports: {all_tapring_ports}")
     if all_tapring_ports:
         ref_tapring_port = all_tapring_ports[0]  # Use first available port
         
@@ -298,7 +298,9 @@ def create_and_connect_tapring(top_level, M1_ref, M2_ref, pdk, placement, diff_p
             vss_label_ref = top_level << vss_label
             vss_label_ref.move(vss_port_center)
         else: 
-            top_level.add_label(text="VSS", position=vss_port_center , layer=vss_label_layer)
+            # Dont add label here, magic doesnt extract it correctly. Port is added at top level, which calls diff_pair
+            # top_level.add_label(text="VSS", position=vss_port_center , layer=vss_label_layer)
+            pass
         # Add electrical ports for VSS connectivity (all four orientations)
         top_level.add_port(center=vss_port_center, width=vss_port_width, orientation=0, layer=vss_port_layer, name=f"{comp_name}_VSS_E")
         top_level.add_port(center=vss_port_center, width=vss_port_width, orientation=90, layer=vss_port_layer, name=f"{comp_name}_VSS_N")

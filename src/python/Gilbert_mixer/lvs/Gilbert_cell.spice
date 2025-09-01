@@ -1,0 +1,35 @@
+* NGSPICE file created from Gilbert_cell.ext - technology: gf180mcuD
+
+.subckt diff_pair_c3be0a62 a_n856_n259# a_n628_n307# a_n856_n3307# a_n628_n3995# a_n1768_n4177#
++ a_n572_n3307#
+X0 a_n856_n259# a_n628_n307# a_n572_n3307# a_n1768_n4177# nfet_03v3 ad=2.44p pd=5.22u as=2.44p ps=5.22u w=4u l=0.28u M=5
+X1 a_n572_n3307# a_n628_n3995# a_n856_n3307# a_n1768_n4177# nfet_03v3 ad=2.44p pd=5.22u as=2.44p ps=5.22u w=4u l=0.28u M=5
+X2 a_n1768_n4177# a_n1768_n4177# a_n1768_n4177# a_n1768_n4177# nfet_03v3 ad=4.56p pd=10.28u as=36.48p ps=82.24u w=4u l=0.28u M=4
+.ends
+
+.subckt diff_pair_b0547c44 a_n856_n259# a_n628_n307# a_n856_n3307# a_n628_n3995# a_n1768_n4177#
++ a_n572_n3307#
+X0 a_n856_n259# a_n628_n307# a_n572_n3307# a_n1768_n4177# nfet_03v3 ad=2.44p pd=5.22u as=2.44p ps=5.22u w=4u l=0.28u M=5
+X1 a_n572_n3307# a_n628_n3995# a_n856_n3307# a_n1768_n4177# nfet_03v3 ad=2.44p pd=5.22u as=2.44p ps=5.22u w=4u l=0.28u M=5
+X2 a_n1768_n4177# a_n1768_n4177# a_n1768_n4177# a_n1768_n4177# nfet_03v3 ad=4.56p pd=10.28u as=36.48p ps=82.24u w=4u l=0.28u M=4
+.ends
+
+.subckt diff_pair_d51754dc a_n628_n2795# a_n856_n259# a_n628_n307# a_n1768_n2977#
++ a_n856_n2107#
+X0 a_n856_n259# a_n628_n307# a_n572_n259# a_n1768_n2977# nfet_03v3 ad=1.22p pd=3.22u as=1.22p ps=3.22u w=2u l=0.28u M=5
+X1 a_n856_n2107# a_n628_n2795# a_n572_n2107# a_n1768_n2977# nfet_03v3 ad=1.22p pd=3.22u as=1.22p ps=3.22u w=2u l=0.28u M=5
+X2 a_n1768_n2977# a_n1768_n2977# a_n1768_n2977# a_n1768_n2977# nfet_03v3 ad=2.28p pd=6.28u as=18.24p ps=50.24u w=2u l=0.28u M=4
+.ends
+
+.subckt Gilbert_cell I_bias_p I_bias_n V_out_p V_out_n V_LO V_LO_b RF_POS RF_NEG VSS
+Xdiff_pair_c3be0a62_0 V_out_p V_LO V_out_n V_LO_b VSS I_bias_p diff_pair_c3be0a62
+Xdiff_pair_b0547c44_0 V_out_p V_LO V_out_n V_LO_b VSS I_bias_n diff_pair_b0547c44
+Xdiff_pair_d51754dc_0 RF_NEG I_bias_p RF_POS VSS I_bias_n diff_pair_d51754dc
+C0 I_bias_p VSS 6.600256f
+C1 V_LO_b VSS 15.952873f
+C2 V_LO VSS 15.13113f
+C3 V_out_p VSS 5.212967f
+C4 I_bias_n VSS 6.600257f
+C5 V_out_n VSS 5.196146f
+.ends
+
