@@ -218,10 +218,11 @@ if __name__ == "__main__":
         tie_layers1=("met2", "met1"),  # Tie layers for M1
         tie_layers2=("met2", "met1"),  # Tie layers for M2
         connected_sources=False,    # Connect sources together
-        debug_mode = False,                  # dont add terminal labels and visual pins
-        component_name = "RF_diff_pair",   # Component's name
+        debug_mode = True,                  # dont add terminal labels and visual pins
+        vss_port_placement = "W",            # VSS tapring port placement 
+        component_name = "RF_diff_pair",     # Component's name
         gate_pin_offset_x = 2,               # offset of the gate pins in the x direction
-        M1_kwargs=RF_FET_kwargs,              # Additional M1 parameters
+        M1_kwargs=RF_FET_kwargs,             # Additional M1 parameters
         M2_kwargs=RF_FET_kwargs              # Additional M2 parameters
     )
 
@@ -251,8 +252,9 @@ if __name__ == "__main__":
         tie_layers1=("met2", "met1"),  # Tie layers for M1
         tie_layers2=("met2", "met1"),  # Tie layers for M2
         connected_sources=True,    # Connect sources together
-        debug_mode = False,                  # dont add terminal labels and visual pins
+        debug_mode = True,                  # dont add terminal labels and visual pins
         component_name = "LO_diff_pair_1",   # Component's name
+        vss_port_placement = "E",            # VSS tapring port placement 
         M1_kwargs=LO_FET_kwargs,             # Additional M1 parameters
         M2_kwargs=LO_FET_kwargs              # Additional M2 parameters
     )
@@ -268,8 +270,9 @@ if __name__ == "__main__":
         tie_layers1=("met2", "met1"),  # Tie layers for M1
         tie_layers2=("met2", "met1"),  # Tie layers for M2
         connected_sources=True,    # Connect sources together
-        debug_mode = False,                  # dont add terminal labels and visual pins
+        debug_mode = True,                  # dont add terminal labels and visual pins
         component_name = "LO_diff_pair_2",   # Component's name
+        vss_port_placement = "S",            # VSS tapring port placement 
         M1_kwargs=LO_FET_kwargs,             # Additional M1 parameters
         M2_kwargs=LO_FET_kwargs              # Additional M2 parameters
     )

@@ -199,10 +199,10 @@ def extend_lvpwell_to_tapring(top_level, M1_ref, M2_ref, tapring_ref, pdk, place
         extended_lvpwell_ref.move(extended_center)
         
 # Get dynamic layers from the actual port layers
-def create_and_connect_tapring(top_level, M1_ref, M2_ref, pdk, placement, diff_pair_center, debug_mode=True, comp_name="diff_pair"):
+def create_and_connect_tapring(top_level, M1_ref, M2_ref, pdk, placement, diff_pair_center, debug_mode=True, comp_name="diff_pair", vss_port_placement="N"):
     """
     Create tapring around the differential pair and connect dummy devices to it.
-    Also adds a GND pin connected to the tapring.
+    Also adds a VSS pin connected to the tapring.
     
     Args:
         top_level: Main component to add tapring to
@@ -211,8 +211,9 @@ def create_and_connect_tapring(top_level, M1_ref, M2_ref, pdk, placement, diff_p
         pdk: Process design kit
         placement: "vertical" or "horizontal" placement
         diff_pair_center: Center coordinates of the differential pair
+        debug_mode: whether to place physical rectangles where pin names are
         comp_name: Component name to use as prefix for port names (default: "diff_pair")
-        debug_mode: whether to place phsyical rectangles where pin names are
+        vss_port_placement: VSS port placement direction - "N", "S", "E", or "W" (default: "N")
         
     Returns:
         None (modifies top_level in place)
@@ -274,9 +275,23 @@ def create_and_connect_tapring(top_level, M1_ref, M2_ref, pdk, placement, diff_p
     
     ## Add GND pin connected to the tapring
 
-    # Find tapring ports with specific criteria: S_array, row_0, bottom_met, and N in their names
+    # Define port selection criteria based on VSS port placement
+    vss_port_criteria = {
+        "N": ["N_array", "row0", "bottom_met", "_W"],
+        "S": ["S_array", "bottom_met", "_W"],
+        "E": ["E_array", "bottom_met", "_N"],
+        "W": ["W_array", "col0", "bottom_met", "_N"]
+    }
+    
+    # Get the criteria for the specified placement
+    if vss_port_placement not in vss_port_criteria:
+        raise ValueError(f"Invalid vss_port_placement: {vss_port_placement}. Must be one of: N, S, E, W")
+    
+    criteria = vss_port_criteria[vss_port_placement]
+    
+    # Find tapring ports with the specified criteria
     all_tapring_ports = [port for port in tapring_ref.get_ports_list() 
-                        if all(keyword in port.name for keyword in ["N_array", "row0", "top_met", "_W"])]
+                        if all(keyword in port.name for keyword in criteria)]
     
     # print(f"DEBUG: tapring_ports: {all_tapring_ports}")
     if all_tapring_ports:
@@ -540,6 +555,7 @@ def diff_pair(
         M1_kwargs: dict = None,
         M2_kwargs: dict = None,
         component_name: str = "diff_pair",
+        vss_port_placement: str = "N",
         **kwargs        
         ) -> Component:
 
@@ -598,7 +614,7 @@ def diff_pair(
     diff_pair_center = top_level.center
     
     # Create and connect tapring
-    create_and_connect_tapring(top_level, M1_ref, M2_ref, pdk, placement, diff_pair_center, debug_mode, component_name)
+    create_and_connect_tapring(top_level, M1_ref, M2_ref, pdk, placement, diff_pair_center, debug_mode, component_name, vss_port_placement)
 
     #Routing
     top_level_with_pins = diff_pair_pins(top_level, M1_ref, M2_ref, gf180, connected_sources, component_name, gate_pin_offset_x, debug_mode)
