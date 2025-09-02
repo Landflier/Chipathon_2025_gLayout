@@ -80,8 +80,8 @@ value="
 .endc
 "}
 C {symbols/nfet_03v3.sym} 820 -1040 0 0 {name=M2
-L=0.28u
-W=0.22u
+L=l_mir
+W=w_mir
 nf=1
 m=1
 ad="'int((nf+1)/2) * W/nf * 0.18u'"
@@ -96,8 +96,8 @@ spiceprefix=X
 C {iopin.sym} 600 -980 0 1 {name=p1 lab=VSS}
 C {opin.sym} 840 -1190 3 0 {name=p7 lab=I_out}
 C {symbols/nfet_03v3.sym} 700 -1040 0 0 {name=M6
-L=0.28u
-W=0.22u
+L=l_ref
+W=w_ref
 nf=1
 m=1
 ad="'int((nf+1)/2) * W/nf * 0.18u'"
@@ -110,9 +110,9 @@ model=nfet_03v3
 spiceprefix=X
 }
 C {iopin.sym} 600 -1110 0 1 {name=p2 lab=I_BIAS}
-C {symbols/cap_nmos_03v3.sym} 650 -1010 0 1 {name=C1
+C {symbols/cap_mim_1f0fF.sym} 650 -1010 0 1 {name=C1
 W=1e-6
 L=1e-6
-model=cap_nmos_03v3
+model=cap_mim_1f0fF
 spiceprefix=X
 m=1}
