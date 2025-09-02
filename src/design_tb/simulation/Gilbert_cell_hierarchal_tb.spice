@@ -18,18 +18,13 @@ V_RF_b V_RF_b GND sin( 1 1 1 0 0 180 )
 .save i(v_rf_b)
 I0 I_bias_pos GND 50u
 I1 I_bias_neg GND 50u
-x1 V_out_n V_out_p V_LO V_LO_b V_RF V_RF_b I_bias_pos I_bias_neg GND Gilbert_cell_hierarchal_mixing_stage
-x2 V_out_p V_out_n VDD Gilbert_cell_hierarchal_loading_stage
+x1 net2 net1 V_LO V_LO_b V_RF V_RF_b I_bias_pos I_bias_neg GND Gilbert_cell_hierarchal_mixing_stage
+x2 net1 net2 VDD Gilbert_cell_hierarchal_loading_stage
 XR_load_3 I_bias_pos I_bias_neg VDD pplus_u r_width=0.5e-6 r_length=5e-6 m=1
+XIO1 VSS VDD VSS VDD V_out_p net1 gf180mcu_fd_io__asig_5p0_extracted
+XIO2 VSS VDD VSS VDD V_out_n net2 gf180mcu_fd_io__asig_5p0_extracted
 **** begin user architecture code
-
-.include /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/design.ngspice
-.lib /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/sm141064.ngspice typical
-.lib /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/sm141064.ngspice mimcap_typical
-.lib /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/sm141064.ngspice cap_mim
-.lib /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/sm141064.ngspice res_typical
-
-
+?
 
 
 * let sets vectors to a plot, while set sets a variable, globally accessible in .control

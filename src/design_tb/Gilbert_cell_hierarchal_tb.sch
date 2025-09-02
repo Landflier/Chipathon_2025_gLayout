@@ -119,7 +119,7 @@ lab=I_bias_neg}
 N 830 -1790 830 -1690 {
 lab=V_out_p}
 N 1030 -1790 1030 -1690 {
-lab=V_out_n}
+lab=#net1}
 N 660 -1940 660 -1910 {
 lab=VDD}
 N 660 -1910 750 -1910 {
@@ -135,7 +135,7 @@ lab=V_RF_b}
 N 670 -1350 730 -1350 {
 lab=GND}
 N 1030 -1720 1160 -1720 {
-lab=V_out_n}
+lab=#net1}
 N 830 -1760 1160 -1760 {
 lab=V_out_p}
 N 910 -1260 910 -1230 {
@@ -158,15 +158,50 @@ N 950 -1230 960 -1230 {
 lab=I_bias_neg}
 N 960 -1130 960 -1120 {
 lab=I_bias_neg}
+N 1470 -1850 1540 -1850 {
+lab=V_out_p}
+N 1470 -1630 1530 -1630 {
+lab=V_out_n}
+N 1160 -1630 1270 -1630 {
+lab=#net1}
+N 1160 -1720 1160 -1630 {
+lab=#net1}
+N 1160 -1850 1270 -1850 {
+lab=V_out_p}
+N 1160 -1850 1160 -1760 {
+lab=V_out_p}
+N 1350 -1730 1350 -1710 {
+lab=VDD}
+N 1280 -1730 1350 -1730 {
+lab=VDD}
+N 1350 -1550 1350 -1530 {
+lab=VSS}
+N 1280 -1530 1350 -1530 {
+lab=VSS}
+N 1350 -1530 1390 -1530 {
+lab=VSS}
+N 1390 -1550 1390 -1530 {
+lab=VSS}
+N 1350 -1730 1390 -1730 {
+lab=VDD}
+N 1390 -1730 1390 -1710 {
+lab=VDD}
+N 1270 -1850 1470 -1850 {
+lab=V_out_p}
 C {code.sym} 50 -190 0 0 {name=MODELS only_toplevel=true
 format="tcleval( @value )"
 value="
+.include $::PROJECT_ROOT/src/Chipathon2025_pads/xschem/gf180mcu_fd_io.spice
+.include $::PROJECT_ROOT/src/Chipathon2025_pads/xschem/gf180mcu_fd_io__asig_5p0_extracted.spice
 .include $::180MCU_MODELS/design.ngspice
 .lib $::180MCU_MODELS/sm141064.ngspice typical
 .lib $::180MCU_MODELS/sm141064.ngspice mimcap_typical
 .lib $::180MCU_MODELS/sm141064.ngspice cap_mim
 .lib $::180MCU_MODELS/sm141064.ngspice res_typical
-
+.lib $::180MCU_MODELS/sm141064.ngspice diode_typical
+.lib $::180MCU_MODELS/sm141064.ngspice bjt_typical
+.lib $::180MCU_MODELS/sm141064.ngspice moscap_typical
+.lib $::180MCU_MODELS/sm141064.ngspice mimcap_typical
 "
 }
 C {code.sym} 2710 -2400 0 0 {name=SPICE only_toplevel=true 
@@ -201,14 +236,14 @@ value="
     
     * operating point
     op
-    show
+    * show
 
     write Gilbert_cell_hierarchal_sim.raw
 
     set appendwrite
 
     * Transient analysis to observe mixing operation
-    tran 1p 0.5u
+    tran 3p 0.5u
     write Gilbert_cell_hierarchal_sim.raw
 
     * Calculate differential output for conversion gain measurement
@@ -335,8 +370,8 @@ C {ipin.sym} 640 -1490 2 1 {name=p2 lab=V_LO_b
 C {ipin.sym} 640 -1440 0 0 {name=p3 lab=V_RF}
 C {ipin.sym} 640 -1380 2 1 {name=p4 lab=V_RF_b
 }
-C {opin.sym} 1160 -1760 0 0 {name=p5 lab=V_out_p}
-C {opin.sym} 1160 -1720 0 0 {name=p7 lab=V_out_n}
+C {opin.sym} 1540 -1850 0 0 {name=p5 lab=V_out_p}
+C {opin.sym} 1530 -1630 0 0 {name=p7 lab=V_out_n}
 C {isource.sym} 120 -1840 0 0 {name=I0 value=50u}
 C {isource.sym} 220 -1840 0 0 {name=I1 value=50u}
 C {gnd.sym} 670 -1300 0 0 {name=l11 lab=GND}
@@ -356,3 +391,9 @@ model=pplus_u
 spiceprefix=X
 m=1
 hide_texts=true}
+C {/home/vasil/Downloads/SSCS_PICO_2025/src/Chipathon2025_pads/xschem/symbols/io_asig_5p0.sym} 1470 -1550 0 1 {name=IO2
+model=gf180mcu_fd_io__asig_5p0_extracted
+spiceprefix=X
+}
+C {lab_pin.sym} 1280 -1730 0 0 {name=p17 sig_type=std_logic lab=VDD}
+C {lab_pin.sym} 1280 -1530 0 0 {name=p18 sig_type=std_logic lab=VSS}
