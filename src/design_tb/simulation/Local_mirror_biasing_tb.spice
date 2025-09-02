@@ -1,16 +1,17 @@
 ** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_tb/Local_mirror_biasing_tb.sch
 **.subckt Local_mirror_biasing_tb
-I0 net8 net7 50u
+I0 GND net7 50u
 V1 VDD GND 3.3
+.save i(v1)
 Vmeas1 net2 net1 0
 .save i(vmeas1)
 Vmeas2 net4 net3 0
 .save i(vmeas2)
 Vmeas3 net6 net5 0
 .save i(vmeas3)
-R1 VDD net2 10K m=1
-R2 VDD net4 10K m=1
-R3 VDD net6 100K m=1
+R1 VDD net2 1K m=1
+R2 VDD net4 1K m=1
+R3 VDD net6 1K m=1
 x1 VDD net1 net3 net5 net7 GND Biasing_network_with_local_mirros
 **** begin user architecture code
 
@@ -26,7 +27,9 @@ x1 VDD net1 net3 net5 net7 GND Biasing_network_with_local_mirros
 
 
 
-* let sets vectors to a plot, while set sets a variable, globally accessible in .control
+* Add convergence aids
+.option method=gear
+
 .control
 
     * operating point
@@ -38,7 +41,7 @@ x1 VDD net1 net3 net5 net7 GND Biasing_network_with_local_mirros
     set appendwrite
 
     * Transient analysis to observe mixing operation
-    tran 2p 0.01u
+    tran 1n 0.01u
     write Local_mirror_biasing_tb.raw
 
 .endc
@@ -71,11 +74,11 @@ x_NMOS_mirror_3 I_out_3 net1 VSS Local_mirror_nmos
 *.iopin I_BIAS
 *.iopin VDD
 *.iopin I_out
-XM1 I_BIAS I_BIAS VDD VDD pfet_03v3 L=1u W=0.22u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
+XM1 I_BIAS I_BIAS VDD VDD pfet_03v3 L=1u W=1u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
 + ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
-XM5 I_out I_BIAS VDD VDD pfet_03v3 L=1u W=0.22u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
+XM5 I_out I_BIAS VDD VDD pfet_03v3 L=1u W=1u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
 + ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
-XC1 I_BIAS VDD cap_pmos_03v3 c_width=1e-6 c_length=1e-6 m=1
+XC1 VDD I_BIAS cap_mim_1f0fF c_width=1e-6 c_length=1e-6 m=1
 .ends
 
 
@@ -86,11 +89,11 @@ XC1 I_BIAS VDD cap_pmos_03v3 c_width=1e-6 c_length=1e-6 m=1
 *.iopin VSS
 *.opin I_out
 *.iopin I_BIAS
-XM2 I_out I_BIAS VSS VSS nfet_03v3 L=0.28u W=0.22u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
+XM2 I_out I_BIAS VSS VSS nfet_03v3 L=1u W=0.5u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
 + ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
-XM6 I_BIAS I_BIAS VSS VSS nfet_03v3 L=0.28u W=0.22u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
+XM6 I_BIAS I_BIAS VSS VSS nfet_03v3 L=1u W=0.5u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
 + ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
-XC1 I_BIAS VSS cap_nmos_03v3 c_width=1e-6 c_length=1e-6 m=1
+XC1 I_BIAS VSS cap_mim_1f0fF c_width=1e-6 c_length=1e-6 m=1
 .ends
 
 .GLOBAL GND

@@ -1,0 +1,60 @@
+** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_tb/Local_mirror_pmos_tb.sch
+**.subckt Local_mirror_pmos_tb
+I0 net1 GND 10u
+V1 VDD GND 3.3
+.save i(v1)
+Vmeas1 net2 net3 0
+.save i(vmeas1)
+R1 net3 GND 1K m=1
+x1 VDD net2 net1 Local_mirror_pmos l_ref=0.4 w_ref=2 l_mir=0.4 w_mir=6
+**** begin user architecture code
+
+.include /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/design.ngspice
+.lib /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/sm141064.ngspice typical
+.lib /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/sm141064.ngspice mimcap_typical
+.lib /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/sm141064.ngspice cap_mim
+.lib /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/sm141064.ngspice res_typical
+.lib /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/sm141064.ngspice diode_typical
+
+
+
+* Add convergence aids
+.option method=gear
+
+.control
+
+    * operating point
+    op
+    show
+
+    write Local_mirror_pmos_tb.raw
+
+    set appendwrite
+
+    * Transient analysis to observe mixing operation
+    tran 1n 0.01u
+    write Local_mirror_pmos_tb.raw
+
+.endc
+
+
+**** end user architecture code
+**.ends
+
+* expanding   symbol:  /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Local_mirror_pmos.sym # of pins=3
+** sym_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Local_mirror_pmos.sym
+** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Local_mirror_pmos.sch
+.subckt Local_mirror_pmos VDD I_out I_BIAS   l_ref=0.28u w_ref=0.22u   l_mir=0.28u w_mir=0.22u
+*.iopin I_BIAS
+*.iopin VDD
+*.iopin I_out
+XM1 I_BIAS I_BIAS VDD VDD pfet_03v3 L=l_ref W=w_ref nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
++ ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
+XM2 I_out I_BIAS VDD VDD pfet_03v3 L=l_mir W=w_mir nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
++ ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
+XC1 VDD I_BIAS cap_mim_1f0fF c_width=1e-6 c_length=1e-6 m=1
+.ends
+
+.GLOBAL GND
+.GLOBAL VDD
+.end

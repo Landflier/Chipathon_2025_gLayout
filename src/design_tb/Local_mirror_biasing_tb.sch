@@ -6,15 +6,15 @@ V {}
 S {}
 E {}
 B 2 1950 -1450 2750 -1050 {flags=graph,unlocked
-y1=2.2e-11
-y2=2.3e-11
+y1=4.5e-12
+y2=4.6e-12
 ypos1=0
 ypos2=2
 divy=5
 subdivy=1
 unity=1
 x1=0
-x2=2.3059121e-14
+x2=1e-08
 divx=5
 subdivx=1
 xlabmag=1.0
@@ -72,14 +72,16 @@ N 1330 -1250 1330 -1210 {
 lab=#net5}
 N 1330 -1380 1330 -1310 {
 lab=#net6}
-N 340 -1040 340 -1010 {
-lab=#net7}
 N 340 -1010 430 -1010 {
 lab=#net7}
 N 340 -1170 430 -1170 {
 lab=VDD}
 N 340 -1180 340 -1170 {
 lab=VDD}
+N 340 -1010 340 -1000 {
+lab=#net7}
+N 340 -940 340 -910 {
+lab=GND}
 C {code.sym} 50 -190 0 0 {name=MODELS only_toplevel=true
 format="tcleval( @value )"
 value="
@@ -96,7 +98,9 @@ value="
 }
 C {code.sym} 2705 -2395 0 0 {name=SPICE only_toplevel=true 
 value="
-* let sets vectors to a plot, while set sets a variable, globally accessible in .control
+* Add convergence aids
+.option method=gear
+
 .control
     
     * operating point
@@ -108,7 +112,7 @@ value="
     set appendwrite
 
     * Transient analysis to observe mixing operation
-    tran 2p 0.01u
+    tran 1n 0.01u
     write Local_mirror_biasing_tb.raw
 
 .endc
@@ -122,26 +126,26 @@ descr="Load ngSpice waveforms (ctrl+left-click)"
 tclcommand="xschem raw_read $netlist_dir/Local_mirror_biasing_tb.raw tran"
 }
 C {title-2.sym} 0 0 0 0 {name=l9 author="Time Transcenders" lock=true rev=1.0 page=1}
-C {isource.sym} 340 -1070 0 0 {name=I0 value=50u}
+C {isource.sym} 340 -970 2 1 {name=I0 value=50u}
 C {gnd.sym} 340 -900 0 0 {name=l5 lab=GND}
 C {vdd.sym} 160 -2170 0 0 {name=l1 lab=VDD}
-C {vsource.sym} 160 -2110 0 0 {name=V1 value=3.3 savecurrent=false}
+C {vsource.sym} 160 -2110 0 0 {name=V1 value=3.3 savecurrent=true}
 C {gnd.sym} 160 -2040 0 0 {name=l2 lab=GND}
 C {ammeter.sym} 850 -1280 0 1 {name=Vmeas1 savecurrent=true spice_ignore=0}
 C {ammeter.sym} 1090 -1280 0 0 {name=Vmeas2 savecurrent=true spice_ignore=0}
 C {ammeter.sym} 1330 -1280 0 0 {name=Vmeas3 savecurrent=true spice_ignore=0}
 C {res.sym} 850 -1420 0 0 {name=R1
-value=10K
+value=1K
 footprint=1206
 device=resistor
 m=1}
 C {res.sym} 1090 -1410 0 0 {name=R2
-value=10K
+value=1K
 footprint=1206
 device=resistor
 m=1}
 C {res.sym} 1330 -1410 0 0 {name=R3
-value=100K
+value=1K
 footprint=1206
 device=resistor
 m=1}
