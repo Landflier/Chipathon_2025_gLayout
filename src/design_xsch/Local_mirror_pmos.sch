@@ -83,7 +83,7 @@ value="
 "}
 C {iopin.sym} 370 -1100 3 1 {name=p2 lab=I_BIAS}
 C {symbols/pfet_03v3.sym} 350 -1230 0 0 {name=M1
-L=0.28u
+L=1u
 W=0.22u
 nf=1
 m=1
@@ -98,7 +98,7 @@ spiceprefix=X
 }
 C {iopin.sym} 170 -1340 0 1 {name=p3 lab=VDD}
 C {symbols/pfet_03v3.sym} 530 -1230 0 0 {name=M5
-L=0.28u
+L=1u
 W=0.22u
 nf=1
 m=1

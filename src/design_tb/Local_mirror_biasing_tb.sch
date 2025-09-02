@@ -6,15 +6,15 @@ V {}
 S {}
 E {}
 B 2 1950 -1450 2750 -1050 {flags=graph,unlocked
-y1=4.7e-05
-y2=4.8e-05
+y1=2.2e-11
+y2=2.3e-11
 ypos1=0
 ypos2=2
 divy=5
 subdivy=1
 unity=1
 x1=0
-x2=1e-08
+x2=2.3059121e-14
 divx=5
 subdivx=1
 xlabmag=1.0
@@ -30,7 +30,7 @@ color="4 4 4"
 node="i(vmeas3)
 i(vmeas2)
 i(vmeas1)"
-rawfile=$netlist_dir/Biasing_network_sim.raw
+rawfile=$netlist_dir/Local_mirror_biasing_tb.raw
 sim_type=tran
 autoload=1}
 T {Desription
@@ -88,7 +88,10 @@ value="
 .lib $::180MCU_MODELS/sm141064.ngspice mimcap_typical
 .lib $::180MCU_MODELS/sm141064.ngspice cap_mim
 .lib $::180MCU_MODELS/sm141064.ngspice res_typical
-
+.lib $::180MCU_MODELS/sm141064.ngspice diode_typical
+.lib $::180MCU_MODELS/sm141064.ngspice bjt_typical
+.lib $::180MCU_MODELS/sm141064.ngspice moscap_typical
+.lib $::180MCU_MODELS/sm141064.ngspice mimcap_typical
 "
 }
 C {code.sym} 2705 -2395 0 0 {name=SPICE only_toplevel=true 
@@ -105,7 +108,7 @@ value="
     set appendwrite
 
     * Transient analysis to observe mixing operation
-    tran 1p 0.01u
+    tran 2p 0.01u
     write Local_mirror_biasing_tb.raw
 
 .endc
@@ -116,7 +119,7 @@ tclcommand="xschem save; xschem netlist; xschem simulate"
 }
 C {devices/launcher.sym} 2000 -930 0 0 {name=h1
 descr="Load ngSpice waveforms (ctrl+left-click)" 
-tclcommand="xschem raw_read $netlist_dir/Biasing_network_sim.raw tran"
+tclcommand="xschem raw_read $netlist_dir/Local_mirror_biasing_tb.raw tran"
 }
 C {title-2.sym} 0 0 0 0 {name=l9 author="Time Transcenders" lock=true rev=1.0 page=1}
 C {isource.sym} 340 -1070 0 0 {name=I0 value=50u}

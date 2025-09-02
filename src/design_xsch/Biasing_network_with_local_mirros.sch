@@ -88,3 +88,4 @@ C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Local_mirror_nmos.sym} 1
 C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Local_mirror_nmos.sym} 1480 -1000 0 0 {name=x_NMOS_mirror_3}
 C {lab_pin.sym} 950 -960 0 0 {name=p5 sig_type=std_logic lab=VSS}
 C {lab_pin.sym} 1370 -960 0 0 {name=p6 sig_type=std_logic lab=VSS}
+C {ngspice_probe.sym} 720 -1140 0 0 {name=r1}

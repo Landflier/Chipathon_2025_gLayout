@@ -1,4 +1,5 @@
-v {xschem version=3.4.7 file_version=1.2}
+v {xschem version=3.4.5 file_version=1.2
+}
 G {}
 K {}
 V {}
@@ -48,7 +49,7 @@ C {devices/lab_wire.sym} 790 -200 0 1 {name=p5 sig_type=std_logic lab=ASIG}
 C {devices/code_shown.sym} 0 -540 0 0 {name=DUT only_toplevel=true
 format="tcleval( @value )"
 value="
-.include "/foss/designs/Chipathon2025_pads/xschem/gf180mcu_fd_io__asig_5p0_extracted.spice"
+.include "/home/vasil/Downloads/Chipathon2025_pads/xschem/gf180mcu_fd_io__asig_5p0_extracted.spice"
 XDUT DVSS DVDD VSS VDD PAD ASIG gf180mcu_fd_io__asig_5p0_extracted
 "}
 C {devices/code_shown.sym} 930 -410 0 0 {name=MODELS only_toplevel=true
@@ -74,7 +75,7 @@ C {lab_wire.sym} 770 -60 0 0 {name=p7 sig_type=std_logic lab=VSS}
 C {vsource.sym} 450 -170 0 0 {name=V5 value="PWL(0 0 500n 2.5 1u 5)" savecurrent=false}
 C {lab_wire.sym} 450 -240 0 0 {name=p8 sig_type=std_logic lab=Vin}
 C {lab_wire.sym} 660 -200 0 0 {name=p9 sig_type=std_logic lab=Vin}
-C {symbols/pfet_05v0.sym} 750 -260 0 0 {name=M1
+C {symbols/pfet_06v0.sym} 750 -260 0 0 {name=M1
 L=0.50u
 W=8.0u
 nf=1
