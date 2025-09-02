@@ -215,9 +215,9 @@ XM_rf_pos rf_diff_pair_pos_input V_RF I_bias_pos VSS nfet_03v3 L=0.28u W=10u nf=
 + pd='2*int((nf+1)/2) * (W/nf + 0.18u)' ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
 XM_rf_neg rf_diff_pair_neg_input V_RF_b I_bias_neg VSS nfet_03v3 L=0.28u W=10u nf=5 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u'
 + pd='2*int((nf+1)/2) * (W/nf + 0.18u)' ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
-XR_load_2 V_out_p VDD VDD pplus_u r_width=0.5e-6 r_length=30e-6 m=1
-XR_load_1 V_out_n VDD VDD pplus_u r_width=0.5e-6 r_length=30e-6 m=1
 XR_load_3 I_bias_neg I_bias_pos VDD pplus_u r_width=0.5e-6 r_length=5e-6 m=1
+XR_load_2 V_out_p VDD VDD ppolyf_u_1k r_width=1e-6 r_length=20e-6 m=1
+XR_load_1 V_out_n VDD VDD ppolyf_u_1k r_width=1e-6 r_length=20e-6 m=1
 .ends
 
 .GLOBAL VDD

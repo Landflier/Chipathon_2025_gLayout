@@ -1,0 +1,8 @@
+** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Gilbert_cell_hierarchal_degeneration_stage.sch
+**.subckt Gilbert_cell_hierarchal_degeneration_stage I_in_neg I_in_pos VDD
+*.iopin I_in_neg
+*.iopin I_in_pos
+*.iopin VDD
+XR_load_3 I_in_neg I_in_pos net1 pplus_u r_width=0.5e-6 r_length=5e-6 m=1
+**.ends
+.end

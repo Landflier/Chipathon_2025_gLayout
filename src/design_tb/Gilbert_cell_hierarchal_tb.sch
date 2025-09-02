@@ -13,8 +13,8 @@ ypos2=2
 divy=5
 subdivy=1
 unity=1
-x1=-1.5e-08
-x2=2.85e-07
+x1=-5.2133076e-09
+x2=1.995867e-07
 divx=5
 subdivx=1
 xlabmag=1.0
@@ -31,37 +31,36 @@ node="v_rf
 v_lo
 \\"diff_output; v_out_p v_out_n -\\"
 v_out_p"
-rawfile=$netlist_dir/Gilbert_cell_tb_sim.raw
+
 sim_type=tran
-autoload=1}
-B 2 1780 -1630 2580 -1230 {flags=graph,unlocked
-y1=6e-14
+autoload=1
+rawfile=$netlist_dir/Gilbert_cell_hierarchal_sim.raw}
+B 2 1780 -1650 2580 -1250 {flags=graph,unlocked
+y1=8.3e-14
 y2=0.8
 ypos1=0
 ypos2=2
 divy=5
 subdivy=1
 unity=1
-x1=-25782827
-x2=2.9112984e+08
+x1=-7260061.4
+x2=2.408058e+08
 divx=5
 subdivx=1
 xlabmag=1.0
 ylabmag=1.0
 node="v_rf_diff
 v_out_diff
-
 v_lo_diff"
 color="4 6 8"
 dataset=-1
 unitx=1
 logx=0
 logy=0
-rainbow=1
-rawfile=$netlist_dir/Gilbert_cell_tb_sim.raw
+rawfile=$netlist_dir/Gilbert_cell_hierarchal_sim.raw
 sim_type=sp
-sweep=frequency
 autoload=1}
+P 4 5 860 -1230 1000 -1230 1000 -1120 860 -1120 860 -1230 {}
 T {Desription
 
 Gilbert cell mixer for FM radio receiver, 
@@ -75,6 +74,7 @@ f_RF = 89.7 MHz
 
 f_IF = f_LO - f_RF 
        = 10.7 MHz} 2580 -1200 0 0 0.4 0.4 {}
+T {Degeneration} 880 -1220 0 0 0.3 0.3 {}
 N 120 -2270 120 -2250 {
 lab=GND}
 N 120 -2350 120 -2330 {lab=V_LO}
@@ -138,6 +138,26 @@ N 1030 -1720 1160 -1720 {
 lab=V_out_n}
 N 830 -1760 1160 -1760 {
 lab=V_out_p}
+N 910 -1260 910 -1230 {
+lab=I_bias_pos}
+N 950 -1260 950 -1230 {
+lab=I_bias_neg}
+N 930 -1160 930 -1140 {
+lab=VDD}
+N 900 -1180 900 -1120 {
+lab=I_bias_pos}
+N 960 -1180 960 -1130 {
+lab=I_bias_neg}
+N 900 -1230 900 -1180 {
+lab=I_bias_pos}
+N 900 -1230 910 -1230 {
+lab=I_bias_pos}
+N 960 -1230 960 -1180 {
+lab=I_bias_neg}
+N 950 -1230 960 -1230 {
+lab=I_bias_neg}
+N 960 -1130 960 -1120 {
+lab=I_bias_neg}
 C {code.sym} 50 -190 0 0 {name=MODELS only_toplevel=true
 format="tcleval( @value )"
 value="
@@ -188,7 +208,7 @@ value="
     set appendwrite
 
     * Transient analysis to observe mixing operation
-    tran 1p 0.3u
+    tran 1p 0.5u
     write Gilbert_cell_hierarchal_sim.raw
 
     * Calculate differential output for conversion gain measurement
@@ -321,10 +341,18 @@ C {isource.sym} 120 -1840 0 0 {name=I0 value=50u}
 C {isource.sym} 220 -1840 0 0 {name=I1 value=50u}
 C {gnd.sym} 670 -1300 0 0 {name=l11 lab=GND}
 C {gnd.sym} 170 -1740 0 0 {name=l6 lab=GND}
-C {lab_pin.sym} 910 -1260 3 0 {name=p6 sig_type=std_logic lab=I_bias_pos}
-C {lab_pin.sym} 950 -1260 3 0 {name=p12 sig_type=std_logic lab=I_bias_neg}
+C {lab_pin.sym} 900 -1120 3 0 {name=p6 sig_type=std_logic lab=I_bias_pos}
+C {lab_pin.sym} 960 -1120 3 0 {name=p12 sig_type=std_logic lab=I_bias_neg}
 C {lab_pin.sym} 120 -1910 3 1 {name=p13 sig_type=std_logic lab=I_bias_pos}
 C {lab_pin.sym} 220 -1910 3 1 {name=p14 sig_type=std_logic lab=I_bias_neg}
 C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Gilbert_cell_hierarchal_mixing_stage.sym} 930 -1490 0 0 {name=x1}
 C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Gilbert_cell_hierarchal_loading_stage.sym} 930 -1840 0 0 {name=x2}
 C {vdd.sym} 660 -1940 0 0 {name=l5 lab=VDD}
+C {lab_pin.sym} 930 -1140 3 0 {name=p15 sig_type=std_logic lab=VDD}
+C {symbols/pplus_u.sym} 930 -1180 1 1 {name=R_load_3
+W=0.5e-6
+L=5e-6
+model=pplus_u
+spiceprefix=X
+m=1
+hide_texts=true}
