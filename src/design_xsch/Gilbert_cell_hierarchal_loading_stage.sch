@@ -12,11 +12,11 @@ lab=I_in_neg}
 N 920 -1140 1080 -1140 {
 lab=VDD}
 N 900 -1230 900 -1170 {
-lab=#net1}
+lab=VDD}
 N 1100 -1230 1100 -1170 {
-lab=#net1}
+lab=VDD}
 N 810 -1230 1100 -1230 {
-lab=#net1}
+lab=VDD}
 C {iopin.sym} 1100 -1060 1 0 {name=p1 lab=I_in_neg}
 C {iopin.sym} 900 -1060 1 0 {name=p2 lab=I_in_pos
 }
