@@ -1,6 +1,7 @@
 .direnv/
 openfasoc/
 gLayout/
+open_pdks/
 sscs-chipathon-2024/
 *.svg
 !schematic.svg
