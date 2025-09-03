@@ -117,4 +117,4 @@ C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Local_mirror_nmos.sym} 7
 l_ref=1u
 w_ref=1.5u
 l_mir=1u
-w_mir=8u}
+w_mir=7.5u}

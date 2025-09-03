@@ -6,8 +6,8 @@ V {}
 S {}
 E {}
 B 2 1270 -1430 2070 -1030 {flags=graph,unlocked
-y1=4.3e-05
-y2=4.4e-05
+y1=3.3e-05
+y2=3.4e-05
 ypos1=0
 ypos2=2
 divy=5

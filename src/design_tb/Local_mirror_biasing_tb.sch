@@ -126,7 +126,7 @@ descr="Load ngSpice waveforms (ctrl+left-click)"
 tclcommand="xschem raw_read $netlist_dir/Local_mirror_biasing_tb.raw tran"
 }
 C {title-2.sym} 0 0 0 0 {name=l9 author="Time Transcenders" lock=true rev=1.0 page=1}
-C {isource.sym} 340 -970 2 1 {name=I0 value=50u}
+C {isource.sym} 340 -970 0 1 {name=I0 value=10u}
 C {gnd.sym} 340 -900 0 0 {name=l5 lab=GND}
 C {vdd.sym} 160 -2170 0 0 {name=l1 lab=VDD}
 C {vsource.sym} 160 -2110 0 0 {name=V1 value=3.3 savecurrent=true}
