@@ -35,7 +35,7 @@ lab=I_BIAS}
 N 390 -1160 470 -1160 {
 lab=I_BIAS}
 N 550 -1220 570 -1220 {
-lab=#net1}
+lab=VDD}
 C {title-2.sym} 0 0 0 0 {name=l9 author="Time Transcenders" lock=true rev=1.0 page=1}
 C {code.sym} 60 -190 0 0 {name=MODELS only_toplevel=true
 format="tcleval( @value )"
@@ -79,7 +79,7 @@ L=1e-6
 model=cap_mim_1f0fF
 spiceprefix=X
 m=1}
-C {symbols/pfet_03v3.sym} 410 -1220 0 1 {name=M1
+C {symbols/pfet_03v3.sym} 410 -1220 0 1 {name=M_ref
 L=l_ref
 W=w_ref
 nf=1
@@ -93,7 +93,7 @@ sa=0 sb=0 sd=0
 model=pfet_03v3
 spiceprefix=X
 }
-C {symbols/pfet_03v3.sym} 530 -1220 0 0 {name=M2
+C {symbols/pfet_03v3.sym} 530 -1220 0 0 {name=M_mir
 L=l_mir
 W=w_mir
 nf=1

@@ -10,10 +10,6 @@ T {Desription
 The biasing circuit for the Gilbert cell,
 providing constant 50uA current at both its
 outputs} 2880 -2390 0 0 0.4 0.4 {}
-N 370 -1200 370 -1160 {
-lab=I_BIAS}
-N 370 -1210 370 -1200 {
-lab=I_BIAS}
 N 180 -1370 240 -1370 {
 lab=VDD}
 N 840 -1190 840 -1020 {
@@ -52,6 +48,10 @@ N 980 -1110 980 -1050 {
 lab=#net1}
 N 1400 -1110 1400 -1050 {
 lab=#net1}
+N 360 -1210 360 -1160 {
+lab=I_BIAS}
+N 240 -1370 280 -1370 {
+lab=VDD}
 C {title-2.sym} 0 0 0 0 {name=l9 author="Time Transcenders" lock=true rev=1.0 page=1}
 C {code.sym} 50 -190 0 0 {name=MODELS only_toplevel=true
 format="tcleval( @value )"
@@ -88,7 +88,7 @@ value="
 .endc
 "}
 C {iopin.sym} 190 -860 0 1 {name=p1 lab=VSS}
-C {iopin.sym} 370 -1160 3 1 {name=p2 lab=I_BIAS}
+C {iopin.sym} 360 -1160 3 1 {name=p2 lab=I_BIAS}
 C {opin.sym} 840 -1190 3 0 {name=p7 lab=I_out_1}
 C {opin.sym} 1180 -1190 3 0 {name=p8 lab=I_out_2}
 C {opin.sym} 1600 -1190 3 0 {name=p9 lab=I_out_3}
