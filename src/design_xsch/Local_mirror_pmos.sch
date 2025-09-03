@@ -51,7 +51,7 @@ lab=I_BIAS}
 N 510 -1270 510 -1230 {
 lab=I_BIAS}
 C {title-2.sym} 0 0 0 0 {name=l9 author="Time Transcenders" lock=true rev=1.0 page=1}
-C {code.sym} 50 -190 0 0 {name=MODELS only_toplevel=true
+C {code.sym} 60 -190 0 0 {name=MODELS only_toplevel=true
 format="tcleval( @value )"
 value="
 .include $::180MCU_MODELS/design.ngspice
@@ -85,6 +85,14 @@ value="
 .endc
 "}
 C {iopin.sym} 370 -1100 3 1 {name=p2 lab=I_BIAS}
+C {iopin.sym} 170 -1340 0 1 {name=p3 lab=VDD}
+C {iopin.sym} 550 -1100 3 1 {name=p1 lab=I_out}
+C {symbols/cap_mim_1f0fF.sym} 240 -1290 0 0 {name=C1
+W=1e-6
+L=1e-6
+model=cap_mim_1f0fF
+spiceprefix=X
+m=1}
 C {symbols/pfet_03v3.sym} 350 -1230 0 0 {name=M1
 L=l_ref
 W=w_ref
@@ -99,7 +107,6 @@ sa=0 sb=0 sd=0
 model=pfet_03v3
 spiceprefix=X
 }
-C {iopin.sym} 170 -1340 0 1 {name=p3 lab=VDD}
 C {symbols/pfet_03v3.sym} 530 -1230 0 0 {name=M2
 L=l_mir
 W=w_mir
@@ -114,10 +121,3 @@ sa=0 sb=0 sd=0
 model=pfet_03v3
 spiceprefix=X
 }
-C {iopin.sym} 550 -1100 3 1 {name=p1 lab=I_out}
-C {symbols/cap_mim_1f0fF.sym} 240 -1290 0 0 {name=C1
-W=1e-6
-L=1e-6
-model=cap_mim_1f0fF
-spiceprefix=X
-m=1}

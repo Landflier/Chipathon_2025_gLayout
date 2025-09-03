@@ -45,6 +45,7 @@ x1 VDD net2 net1 Local_mirror_pmos l_ref=0.4 w_ref=2 l_mir=0.4 w_mir=6
 ** sym_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Local_mirror_pmos.sym
 ** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Local_mirror_pmos.sch
 .subckt Local_mirror_pmos VDD I_out I_BIAS   l_ref=0.28u w_ref=0.22u   l_mir=0.28u w_mir=0.22u
+
 *.iopin I_BIAS
 *.iopin VDD
 *.iopin I_out

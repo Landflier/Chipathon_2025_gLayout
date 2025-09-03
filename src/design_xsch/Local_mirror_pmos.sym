@@ -5,7 +5,8 @@ K {type=subcircuit
 format="@name @pinlist @symname l_ref=@l_ref w_ref=@w_ref l_mir=@l_mir w_mir=@w_mir"
 template="name=x1
 + l_ref=0.28u w_ref=0.22u 
-+ l_mir=0.28u w_mir=0.22u"
++ l_mir=0.28u w_mir=0.22u
+"
 }
 V {}
 S {}

@@ -71,7 +71,6 @@ value="
 .lib $::180MCU_MODELS/sm141064.ngspice mimcap_typical
 .lib $::180MCU_MODELS/sm141064.ngspice cap_mim
 .lib $::180MCU_MODELS/sm141064.ngspice res_typical
-.lib $::180MCU_MODELS/sm141064.ngspice diode_typical
 "
 }
 C {code.sym} 2705 -2395 0 0 {name=SPICE only_toplevel=true 

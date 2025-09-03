@@ -67,12 +67,8 @@ value="
 .include $::180MCU_MODELS/design.ngspice
 .lib $::180MCU_MODELS/sm141064.ngspice typical
 .lib $::180MCU_MODELS/sm141064.ngspice mimcap_typical
-.lib $::180MCU_MODELS/sm141064.ngspice cap_mim
 .lib $::180MCU_MODELS/sm141064.ngspice res_typical
-.lib $::180MCU_MODELS/sm141064.ngspice diode_typical
-.lib $::180MCU_MODELS/sm141064.ngspice bjt_typical
-.lib $::180MCU_MODELS/sm141064.ngspice moscap_typical
-.lib $::180MCU_MODELS/sm141064.ngspice mimcap_typical
+.lib $::180MCU_MODELS/sm141064.ngspice cap_mim
 "
 }
 C {code.sym} 2705 -2395 0 0 {name=SPICE only_toplevel=true 
