@@ -22,28 +22,24 @@ N 780 -1040 800 -1040 {
 lab=I_BIAS}
 N 840 -1190 840 -1070 {
 lab=I_out}
-N 720 -1010 720 -980 {
-lab=VSS}
-N 720 -1040 750 -1040 {
-lab=VSS}
-N 750 -1040 750 -980 {
-lab=VSS}
-N 650 -1040 680 -1040 {
-lab=I_BIAS}
-N 650 -1110 650 -1040 {
-lab=I_BIAS}
-N 650 -1110 720 -1110 {
-lab=I_BIAS}
-N 720 -1110 720 -1070 {
-lab=I_BIAS}
-N 720 -1110 780 -1110 {
-lab=I_BIAS}
-N 780 -1110 780 -1040 {
-lab=I_BIAS}
 N 780 -980 860 -980 {
 lab=VSS}
 N 600 -1110 650 -1110 {
 lab=I_BIAS}
+N 650 -1110 650 -1070 {
+lab=I_BIAS}
+N 650 -1010 650 -980 {
+lab=VSS}
+N 690 -1040 780 -1040 {
+lab=I_BIAS}
+N 710 -1110 710 -1040 {
+lab=I_BIAS}
+N 650 -1110 710 -1110 {
+lab=I_BIAS}
+N 620 -1040 650 -1040 {
+lab=VSS}
+N 620 -1040 620 -980 {
+lab=VSS}
 C {title-2.sym} 0 0 0 0 {name=l9 author="Time Transcenders" lock=true rev=1.0 page=1}
 C {code.sym} 50 -190 0 0 {name=MODELS only_toplevel=true
 format="tcleval( @value )"
@@ -95,7 +91,7 @@ spiceprefix=X
 }
 C {iopin.sym} 600 -980 0 1 {name=p1 lab=VSS}
 C {opin.sym} 840 -1190 3 0 {name=p7 lab=I_out}
-C {symbols/nfet_03v3.sym} 700 -1040 0 0 {name=M6
+C {symbols/nfet_03v3.sym} 670 -1040 0 1 {name=M6
 L=l_ref
 W=w_ref
 nf=1
@@ -110,7 +106,7 @@ model=nfet_03v3
 spiceprefix=X
 }
 C {iopin.sym} 600 -1110 0 1 {name=p2 lab=I_BIAS}
-C {symbols/cap_mim_1f0fF.sym} 650 -1010 0 1 {name=C1
+C {symbols/cap_mim_1f0fF.sym} 730 -1010 0 0 {name=C1
 W=1e-6
 L=1e-6
 model=cap_mim_1f0fF

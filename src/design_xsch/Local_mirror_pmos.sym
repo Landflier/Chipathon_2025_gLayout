@@ -2,10 +2,10 @@ v {xschem version=3.4.5 file_version=1.2
 }
 G {}
 K {type=subcircuit
-format="@name @pinlist @symname l_ref=@l_ref w_ref=@w_ref l_mir=@l_mir w_mir=@w_mir"
+format="@name @pinlist @symname w_ref=@w_ref l_ref=@l_ref w_mir=@w_mir l_mir=@l_mir"
 template="name=x1
-+ l_ref=0.28u w_ref=0.22u 
-+ l_mir=0.28u w_mir=0.22u
++ w_ref=0.22u l_ref=0.28u
++ w_mir=0.22u l_mir=0.28u
 "
 }
 V {}

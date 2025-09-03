@@ -6,8 +6,8 @@ V {}
 S {}
 E {}
 B 2 1270 -1430 2070 -1030 {flags=graph,unlocked
-y1=1e-05
-y2=1.1e-05
+y1=4.3e-05
+y2=4.4e-05
 ypos1=0
 ypos2=2
 divy=5
@@ -71,6 +71,7 @@ value="
 .lib $::180MCU_MODELS/sm141064.ngspice mimcap_typical
 .lib $::180MCU_MODELS/sm141064.ngspice cap_mim
 .lib $::180MCU_MODELS/sm141064.ngspice res_typical
+.lib $::180MCU_MODELS/sm141064.ngspice diode_typical
 "
 }
 C {code.sym} 2705 -2395 0 0 {name=SPICE only_toplevel=true 
@@ -116,8 +117,8 @@ device=resistor
 m=1}
 C {vdd.sym} 630 -1170 0 0 {name=l3 lab=VDD}
 C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Local_mirror_pmos.sym} 800 -1020 0 0 {name=x1
-l_ref=0.4
-w_ref=2
-l_mir=0.4
-w_mir=6}
+l_ref=0.4u
+w_ref=2u
+l_mir=0.4u
+w_mir=6u}
 C {gnd.sym} 920 -690 0 0 {name=l4 lab=GND}
