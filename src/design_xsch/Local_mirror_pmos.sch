@@ -10,46 +10,32 @@ T {Desription
 PMOS mirror used in the input of the 
 I_bias. This component is used in
 Biasing_network_with_local_mirrors } 2880 -2390 0 0 0.4 0.4 {}
-N 370 -1200 370 -1100 {
+N 390 -1190 390 -1130 {
 lab=I_BIAS}
-N 370 -1340 370 -1260 {
+N 550 -1320 550 -1250 {
 lab=VDD}
-N 550 -1330 550 -1260 {
+N 350 -1340 550 -1340 {
 lab=VDD}
-N 170 -1340 550 -1340 {
+N 550 -1340 550 -1320 {
 lab=VDD}
-N 550 -1340 550 -1330 {
+N 470 -1340 470 -1310 {
 lab=VDD}
-N 370 -1230 400 -1230 {
-lab=VDD}
-N 400 -1340 400 -1230 {
-lab=VDD}
-N 240 -1230 270 -1230 {
-lab=I_BIAS}
-N 240 -1260 240 -1230 {
-lab=I_BIAS}
-N 270 -1230 330 -1230 {
-lab=I_BIAS}
-N 240 -1340 240 -1320 {
-lab=VDD}
-N 550 -1200 550 -1100 {
+N 550 -1190 550 -1130 {
 lab=I_out}
-N 300 -1170 370 -1170 {
+N 430 -1220 510 -1220 {
 lab=I_BIAS}
-N 300 -1230 300 -1170 {
-lab=I_BIAS}
-N 550 -1230 580 -1230 {
+N 390 -1340 390 -1250 {
 lab=VDD}
-N 580 -1340 580 -1230 {
+N 370 -1220 390 -1220 {
 lab=VDD}
-N 550 -1340 580 -1340 {
-lab=VDD}
-N 300 -1270 300 -1230 {
+N 470 -1250 470 -1220 {
 lab=I_BIAS}
-N 300 -1270 510 -1270 {
+N 470 -1220 470 -1160 {
 lab=I_BIAS}
-N 510 -1270 510 -1230 {
+N 390 -1160 470 -1160 {
 lab=I_BIAS}
+N 550 -1220 570 -1220 {
+lab=#net1}
 C {title-2.sym} 0 0 0 0 {name=l9 author="Time Transcenders" lock=true rev=1.0 page=1}
 C {code.sym} 60 -190 0 0 {name=MODELS only_toplevel=true
 format="tcleval( @value )"
@@ -84,16 +70,16 @@ value="
 
 .endc
 "}
-C {iopin.sym} 370 -1100 3 1 {name=p2 lab=I_BIAS}
-C {iopin.sym} 170 -1340 0 1 {name=p3 lab=VDD}
-C {iopin.sym} 550 -1100 3 1 {name=p1 lab=I_out}
-C {symbols/cap_mim_1f0fF.sym} 240 -1290 0 0 {name=C1
+C {iopin.sym} 390 -1130 3 1 {name=p2 lab=I_BIAS}
+C {iopin.sym} 350 -1340 0 1 {name=p3 lab=VDD}
+C {iopin.sym} 550 -1130 3 1 {name=p1 lab=I_out}
+C {symbols/cap_mim_1f0fF.sym} 470 -1280 0 0 {name=C1
 W=1e-6
 L=1e-6
 model=cap_mim_1f0fF
 spiceprefix=X
 m=1}
-C {symbols/pfet_03v3.sym} 350 -1230 0 0 {name=M1
+C {symbols/pfet_03v3.sym} 410 -1220 0 1 {name=M1
 L=l_ref
 W=w_ref
 nf=1
@@ -107,7 +93,7 @@ sa=0 sb=0 sd=0
 model=pfet_03v3
 spiceprefix=X
 }
-C {symbols/pfet_03v3.sym} 530 -1230 0 0 {name=M2
+C {symbols/pfet_03v3.sym} 530 -1220 0 0 {name=M2
 L=l_mir
 W=w_mir
 nf=1
@@ -121,3 +107,5 @@ sa=0 sb=0 sd=0
 model=pfet_03v3
 spiceprefix=X
 }
+C {lab_pin.sym} 370 -1220 0 0 {name=p4 sig_type=std_logic lab=VDD}
+C {lab_pin.sym} 570 -1220 0 1 {name=p5 sig_type=std_logic lab=VDD}

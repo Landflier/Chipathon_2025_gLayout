@@ -6,7 +6,7 @@ V1 VDD GND 3.3
 Vmeas1 net2 net1 0
 .save i(vmeas1)
 R1 VDD net2 1K m=1
-x1 net1 net3 GND Local_mirror_nmos l_ref=1u w_ref=1.5u l_mir=1u w_mir=8u
+x1 net1 net3 GND Local_mirror_nmos l_ref=1u w_ref=1.5u l_mir=1u w_mir=7.5u
 **** begin user architecture code
 
 .include /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/design.ngspice
@@ -45,7 +45,7 @@ x1 net1 net3 GND Local_mirror_nmos l_ref=1u w_ref=1.5u l_mir=1u w_mir=8u
 ** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Local_mirror_nmos.sch
 .subckt Local_mirror_nmos I_out I_BIAS VSS    l_ref=1u w_ref=1u l_mir=1u w_mir=1u
 *.iopin VSS
-*.opin I_out
+*.iopin I_out
 *.iopin I_BIAS
 XM2 I_out I_BIAS VSS VSS nfet_03v3 L=l_mir W=w_mir nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
 + ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1

@@ -12,33 +12,35 @@ providing constant 50uA current at both its
 outputs} 2880 -2390 0 0 0.4 0.4 {}
 N 600 -980 780 -980 {
 lab=VSS}
-N 840 -1010 840 -980 {
+N 800 -1070 800 -980 {
 lab=VSS}
-N 840 -1040 860 -1040 {
-lab=VSS}
-N 860 -1040 860 -980 {
-lab=VSS}
-N 780 -1040 800 -1040 {
+N 760 -1100 780 -1100 {
 lab=I_BIAS}
-N 840 -1190 840 -1070 {
+N 800 -1190 800 -1130 {
 lab=I_out}
-N 780 -980 860 -980 {
+N 660 -1160 660 -1130 {
+lab=I_BIAS}
+N 660 -1070 660 -980 {
 lab=VSS}
-N 600 -1110 650 -1110 {
+N 700 -1100 780 -1100 {
 lab=I_BIAS}
-N 650 -1110 650 -1070 {
+N 660 -1160 710 -1160 {
 lab=I_BIAS}
-N 650 -1010 650 -980 {
+N 660 -1190 660 -1160 {
+lab=I_BIAS}
+N 730 -1010 730 -980 {
 lab=VSS}
-N 690 -1040 780 -1040 {
+N 730 -1100 730 -1070 {
 lab=I_BIAS}
-N 710 -1110 710 -1040 {
+N 730 -1160 730 -1100 {
 lab=I_BIAS}
-N 650 -1110 710 -1110 {
+N 710 -1160 730 -1160 {
 lab=I_BIAS}
-N 620 -1040 650 -1040 {
+N 780 -980 800 -980 {
 lab=VSS}
-N 620 -1040 620 -980 {
+N 800 -1100 820 -1100 {
+lab=VSS}
+N 640 -1100 660 -1100 {
 lab=VSS}
 C {title-2.sym} 0 0 0 0 {name=l9 author="Time Transcenders" lock=true rev=1.0 page=1}
 C {code.sym} 50 -190 0 0 {name=MODELS only_toplevel=true
@@ -75,7 +77,7 @@ value="
 
 .endc
 "}
-C {symbols/nfet_03v3.sym} 820 -1040 0 0 {name=M2
+C {symbols/nfet_03v3.sym} 780 -1100 0 0 {name=M2
 L=l_mir
 W=w_mir
 nf=1
@@ -90,8 +92,8 @@ model=nfet_03v3
 spiceprefix=X
 }
 C {iopin.sym} 600 -980 0 1 {name=p1 lab=VSS}
-C {opin.sym} 840 -1190 3 0 {name=p7 lab=I_out}
-C {symbols/nfet_03v3.sym} 670 -1040 0 1 {name=M6
+C {iopin.sym} 800 -1190 3 0 {name=p7 lab=I_out}
+C {symbols/nfet_03v3.sym} 680 -1100 0 1 {name=M6
 L=l_ref
 W=w_ref
 nf=1
@@ -105,10 +107,12 @@ sa=0 sb=0 sd=0
 model=nfet_03v3
 spiceprefix=X
 }
-C {iopin.sym} 600 -1110 0 1 {name=p2 lab=I_BIAS}
-C {symbols/cap_mim_1f0fF.sym} 730 -1010 0 0 {name=C1
+C {iopin.sym} 660 -1190 1 1 {name=p2 lab=I_BIAS}
+C {symbols/cap_mim_1f0fF.sym} 730 -1040 0 0 {name=C1
 W=1e-6
 L=1e-6
 model=cap_mim_1f0fF
 spiceprefix=X
 m=1}
+C {lab_pin.sym} 820 -1100 0 1 {name=p3 sig_type=std_logic lab=VSS}
+C {lab_pin.sym} 640 -1100 0 0 {name=p4 sig_type=std_logic lab=VSS}
