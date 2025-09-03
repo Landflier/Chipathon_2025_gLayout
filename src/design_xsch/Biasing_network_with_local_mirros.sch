@@ -87,7 +87,7 @@ value="
 
 .endc
 "}
-C {iopin.sym} 180 -960 0 1 {name=p1 lab=VSS}
+C {iopin.sym} 190 -860 0 1 {name=p1 lab=VSS}
 C {iopin.sym} 370 -1160 3 1 {name=p2 lab=I_BIAS}
 C {opin.sym} 840 -1190 3 0 {name=p7 lab=I_out_1}
 C {opin.sym} 1180 -1190 3 0 {name=p8 lab=I_out_2}

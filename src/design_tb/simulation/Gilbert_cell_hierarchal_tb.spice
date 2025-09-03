@@ -16,15 +16,29 @@ V_RF V_RF GND sin( 1 1 1 0 )
 .save i(v_rf)
 V_RF_b V_RF_b GND sin( 1 1 1 0 0 180 )
 .save i(v_rf_b)
-I0 I_bias_pos GND 50u
-I1 I_bias_neg GND 50u
-x1 net2 net1 V_LO V_LO_b V_RF V_RF_b I_bias_pos I_bias_neg GND Gilbert_cell_hierarchal_mixing_stage
-x2 net1 net2 VDD Gilbert_cell_hierarchal_loading_stage
-XR_load_3 I_bias_pos I_bias_neg VDD pplus_u r_width=0.5e-6 r_length=5e-6 m=1
-XIO1 VSS VDD VSS VDD V_out_p net1 gf180mcu_fd_io__asig_5p0_extracted
-XIO2 VSS VDD VSS VDD V_out_n net2 gf180mcu_fd_io__asig_5p0_extracted
+I0 net5 GND 10u
+x1 V_out_n V_out_p V_LO V_LO_b V_RF V_RF_b net1 net2 GND Gilbert_cell_hierarchal_mixing_stage
+x2 V_out_p V_out_n VDD Gilbert_cell_hierarchal_loading_stage
+XR_load_3 net1 net2 VDD pplus_u r_width=0.5e-6 r_length=5e-6 m=1
+x3 VDD net3 net4 GND net5 GND Biasing_network_with_local_mirros
+Vmeas net1 net3 0
+.save i(vmeas)
+Vmeas1 net2 net4 0
+.save i(vmeas1)
 **** begin user architecture code
-?
+
+.include /home/vasil/Downloads/SSCS_PICO_2025/src/Chipathon2025_pads/xschem/gf180mcu_fd_io.spice
+.include /home/vasil/Downloads/SSCS_PICO_2025/src/Chipathon2025_pads/xschem/gf180mcu_fd_io__asig_5p0_extracted.spice
+.include /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/design.ngspice
+.lib /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/sm141064.ngspice typical
+.lib /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/sm141064.ngspice mimcap_typical
+.lib /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/sm141064.ngspice cap_mim
+.lib /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/sm141064.ngspice res_typical
+.lib /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/sm141064.ngspice diode_typical
+.lib /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/sm141064.ngspice bjt_typical
+.lib /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/sm141064.ngspice moscap_typical
+.lib /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/sm141064.ngspice mimcap_typical
+
 
 
 * let sets vectors to a plot, while set sets a variable, globally accessible in .control
@@ -57,14 +71,14 @@ XIO2 VSS VDD VSS VDD V_out_n net2 gf180mcu_fd_io__asig_5p0_extracted
 
     * operating point
     op
-    show
+    * show
 
     write Gilbert_cell_hierarchal_sim.raw
 
     set appendwrite
 
     * Transient analysis to observe mixing operation
-    tran 1p 0.5u
+    tran 3p 0.5u
     write Gilbert_cell_hierarchal_sim.raw
 
     * Calculate differential output for conversion gain measurement
@@ -187,6 +201,54 @@ XM_rf_neg rf_diff_pair_neg_input V_RF_b I_bias_neg VSS nfet_03v3 L=0.28u W=10u n
 *.iopin VDD
 XR_load_2 I_in_pos VDD VDD ppolyf_u_1k r_width=1e-6 r_length=20e-6 m=1
 XR_load_1 I_in_neg VDD VDD ppolyf_u_1k r_width=1e-6 r_length=20e-6 m=1
+.ends
+
+
+* expanding   symbol:  /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Biasing_network_with_local_mirros.sym # of pins=6
+** sym_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Biasing_network_with_local_mirros.sym
+** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Biasing_network_with_local_mirros.sch
+.subckt Biasing_network_with_local_mirros VDD I_out_1 I_out_2 I_out_3 I_BIAS VSS
+*.iopin VSS
+*.iopin I_BIAS
+*.opin I_out_1
+*.opin I_out_2
+*.opin I_out_3
+*.iopin VDD
+x_PMOS_mirror VDD net1 I_BIAS Local_mirror_pmos w_ref=2u l_ref=0.4u w_mir=6u l_mir=0.4u
+x_NMOS_mirror_1 I_out_1 net1 VSS Local_mirror_nmos l_ref=1u w_ref=1.5u l_mir=1u w_mir=7.5u
+x_NMOS_mirror_2 I_out_2 net1 VSS Local_mirror_nmos l_ref=1u w_ref=1.5u l_mir=1u w_mir=7.5u
+x_NMOS_mirror_3 I_out_3 net1 VSS Local_mirror_nmos l_ref=1u w_ref=1.5u l_mir=1u w_mir=1.5u
+.ends
+
+
+* expanding   symbol:  /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Local_mirror_pmos.sym # of pins=3
+** sym_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Local_mirror_pmos.sym
+** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Local_mirror_pmos.sch
+.subckt Local_mirror_pmos VDD I_out I_BIAS   w_ref=0.22u l_ref=0.28u  w_mir=0.22u l_mir=0.28u
+
+*.iopin I_BIAS
+*.iopin VDD
+*.iopin I_out
+XC1 VDD I_BIAS cap_mim_1f0fF c_width=1e-6 c_length=1e-6 m=1
+XM1 I_BIAS I_BIAS VDD VDD pfet_03v3 L=l_ref W=w_ref nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
++ ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
+XM2 I_out I_BIAS VDD VDD pfet_03v3 L=l_mir W=w_mir nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
++ ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
+.ends
+
+
+* expanding   symbol:  /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Local_mirror_nmos.sym # of pins=3
+** sym_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Local_mirror_nmos.sym
+** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Local_mirror_nmos.sch
+.subckt Local_mirror_nmos I_out I_BIAS VSS    l_ref=1u w_ref=1u l_mir=1u w_mir=1u
+*.iopin VSS
+*.opin I_out
+*.iopin I_BIAS
+XM2 I_out I_BIAS VSS VSS nfet_03v3 L=l_mir W=w_mir nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
++ ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
+XM6 I_BIAS I_BIAS VSS VSS nfet_03v3 L=l_ref W=w_ref nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
++ ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
+XC1 I_BIAS VSS cap_mim_1f0fF c_width=1e-6 c_length=1e-6 m=1
 .ends
 
 .GLOBAL VDD
