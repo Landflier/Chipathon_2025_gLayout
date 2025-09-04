@@ -5,13 +5,21 @@ import sys
 from gdsfactory import Component
 from gdsfactory.components import rectangle
 from glayout import MappedPDK
-from diff_pair import get_pin_layers
 from glayout import gf180
-from glayout.util.comp_utils import evaluate_bbox, move, movex, movey
 from glayout.routing.straight_route import straight_route
 from glayout.routing.c_route import c_route
 from glayout.routing.L_route import L_route
 from glayout import via_stack, via_array
+from gdsfactory.grid import grid
+from gdsfactory.cell import cell
+from gdsfactory.component import Component, copy
+from glayout.primitives.via_gen import via_array, via_stack
+from glayout.primitives.guardring import tapring
+# from pydantic import validate_arguments
+from glayout.util.comp_utils import evaluate_bbox, to_float, to_decimal, prec_array, prec_center, prec_ref_center, movey, align_comp_to_port
+from glayout.util.port_utils import rename_ports_by_orientation, rename_ports_by_list, add_ports_perimeter, print_ports
+from glayout.util.snap_to_grid import component_snap_to_grid
+from glayout.spice import Netlist
     
 # Add the diff_pair module to the path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../diff_pair'))
@@ -253,7 +261,7 @@ def create_LO_diff_pairs(
         length = pdk.get_grule('poly')['min_width']
     
     # Calculate poly height for transistor
-    poly_height = finger_width + 2 * pdk.get_grule("poly", "active_diff")["min_enclosure"]
+    poly_height = finger_width + 2 * pdk.get_grule("poly", "active_diff")["overhang"]
     
     # Interdigitized finger generation logic (based on __gen_fingers_macro)
     # Snap dimensions to grid
@@ -297,11 +305,12 @@ def create_LO_diff_pairs(
     diff_extra_enc = 2 * pdk.get_grule("mcon", "active_diff")["min_enclosure"]
     diff_dims = (diff_extra_enc + evaluate_bbox(multiplier)[0], finger_width)
     diff = multiplier << rectangle(size=diff_dims, layer=pdk.get_glayer("active_diff"), centered=True)
-    sd_diff_ovhg = pdk.get_grule("nplus", "active_diff")["min_enclosure"]  # Using nplus for NMOS
+    sd_diff_ovhg = pdk.get_grule("n+s/d", "active_diff")["min_enclosure"]  # Using n+s/d for NMOS
     sdlayer_dims = [dim + 2 * sd_diff_ovhg for dim in diff_dims]
-    sdlayer_ref = multiplier << rectangle(size=sdlayer_dims, layer=pdk.get_glayer("nplus"), centered=True)
+    sdlayer_ref = multiplier << rectangle(size=sdlayer_dims, layer=pdk.get_glayer("n+s/d"), centered=True)
     multiplier.add_ports(sdlayer_ref.get_ports_list(), prefix="plusdoped_")
     multiplier.add_ports(diff.get_ports_list(), prefix="diff_")
+
     
     # Create final interdigitized component
     lo_diff_pairs = component_snap_to_grid(rename_ports_by_orientation(multiplier))
