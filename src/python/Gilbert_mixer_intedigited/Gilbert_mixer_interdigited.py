@@ -271,7 +271,7 @@ def create_LO_diff_pairs(
     sizing_ref_viastack = via_stack(pdk, "active_diff", "met1")
     
     # figure out poly (gate) spacing: s/d metal doesnt overlap transistor, s/d min seperation criteria is met
-    sd_viaxdim = sd_rmult * evaluate_bbox(via_stack(pdk, "active_diff", "met1"))[0]
+    sd_viaxdim = evaluate_bbox(via_stack(pdk, "active_diff", "met1"))[0]
     poly_spacing = 2 * pdk.get_grule("poly", "mcon")["min_separation"] + pdk.get_grule("mcon")["width"]
     poly_spacing = max(sd_viaxdim, poly_spacing)
     met1_minsep = pdk.get_grule("met1")["min_separation"]
@@ -289,7 +289,7 @@ def create_LO_diff_pairs(
     finger.add_ports(sd_viaarr_ref.get_ports_list(), prefix="rightsd_")
     
     # create finger array
-    fingerarray = prec_array(finger, columns=fingers, rows=1, spacing=(poly_spacing + length, 1), absolute_spacing=True)
+    fingerarray = prec_array(finger, columns=4*fingers, rows=1, spacing=(poly_spacing + length, 1), absolute_spacing=True)
     sd_via_ref_left = fingerarray << sd_viaarr
     sd_via_ref_left.movex(0 - (poly_spacing + length) / 2)
     fingerarray.add_ports(sd_via_ref_left.get_ports_list(), prefix="leftsd_")
@@ -327,7 +327,7 @@ if __name__ == "__main__":
         "with_dnwell": False,
         "sd_route_topmet": "met2",
         "gate_route_topmet": "met2",
-        "sd_rmult" : 4,
+        "sd_rmult" : 1,
         "rmult": None,
         "gate_rmult": 2,
         "interfinger_rmult": 2,
