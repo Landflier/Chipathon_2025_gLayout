@@ -249,26 +249,34 @@ def create_LO_diff_pairs(
     if width % fingers != 0:
         raise ValueError(f"Width ({width}) must be a multiple of number of fingers ({fingers})")
     
-    # Calculate finger width
-    finger_width = width / fingers
-    
-    # Get parameters from LO_FET_kwargs
-    sd_rmult = LO_FET_kwargs.get("sd_rmult", 1)
-    sd_route_topmet = LO_FET_kwargs.get("sd_route_topmet", "met2")
-    
     # Use PDK minimum length if not specified
     if length is None:
         length = pdk.get_grule('poly')['min_width']
+
+    # Get parameters from LO_FET_kwargs
+    sd_rmult = LO_FET_kwargs.get("sd_rmult", 1)
+    sd_route_topmet = LO_FET_kwargs.get("sd_route_topmet", "met2")
+    sdlayer = LO_FET_kwargs.get("sdlayer", "n+s/d")
+    routing = LO_FET_kwargs.get("routing", True)
+    inter_finger_topmet = LO_FET_kwargs.get("inter_finger_topmet", "met2")
+    gate_route_topmet = LO_FET_kwargs.get("gate_route_topmet", "met2")
+    rmult = LO_FET_kwargs.get("rmult", None)
+    gate_rmult = LO_FET_kwargs.get("gate_rmult", 1)
+    interfinger_rmult = LO_FET_kwargs.get("interfinger_rmult", 1)
+    sd_route_extension = LO_FET_kwargs.get("sd_route_extension", 0)
+    gate_route_extension = LO_FET_kwargs.get("gate_route_extension", 0)
+
+    # Calculate finger width
+    finger_width = width / fingers
     
-    # Calculate poly height for transistor
+    # Calculate poly height for transistor finger
     poly_height = finger_width + 2 * pdk.get_grule("poly", "active_diff")["overhang"]
     
-    # Interdigitized finger generation logic (based on __gen_fingers_macro)
     # Snap dimensions to grid
     length = pdk.snap_to_2xgrid(length)
     finger_width = pdk.snap_to_2xgrid(finger_width)
     poly_height = pdk.snap_to_2xgrid(poly_height)
-    sizing_ref_viastack = via_stack(pdk, "active_diff", "met1")
+    # sizing_ref_viastack = via_stack(pdk, "active_diff", "met1")
     
     # figure out poly (gate) spacing: s/d metal doesnt overlap transistor, s/d min seperation criteria is met
     sd_viaxdim = evaluate_bbox(via_stack(pdk, "active_diff", "met1"))[0]
@@ -312,6 +320,112 @@ def create_LO_diff_pairs(
     multiplier.add_ports(diff.get_ports_list(), prefix="diff_")
 
     
+    """Generic poly/sd vias generator
+    args:
+    pdk = pdk to use
+    sdlayer = either p+s/d for pmos or n+s/d for nmos
+    width = expands the transistor in the y direction
+    length = transitor length (if left None defaults to min length)
+    routing = true or false, specfies if sd should be connected
+    inter_finger_topmet = top metal of the via array laid on the source/drain regions
+    ****NOTE: routing metal is layed over the source drain regions regardless of routing option
+    sd_rmult = multiplies thickness of sd metal (int only)
+    gate_rmult = multiplies gate by adding rows to the gate via array (int only)
+    interfinger_rmult = multiplies thickness of source/drain routes between the gates (int only)
+    sd_route_extension = float, how far extra to extend the source/drain connections (default=0)
+    gate_route_extension = float, how far extra to extend the gate connection (default=0)
+    dummy_routes: bool default=True, if true add add vias and short dummy poly,source,drain
+
+    ports (one port for each edge),
+    ****NOTE: LO_sources have one track above and below the
+    ****NOTE: finger_array, next above them are LO_drains, and then are
+    ****NOTE: the gate extensions
+    --- LO2_gate_Lo_b ---
+    --- LO2_source    --- * extends to the right 
+    --- LO2_drain     --- * extends to the left
+    --- finger array  ---
+    --- LO_1_drain    --- * extends to the left
+    --- LO_1_source   --- * extends to the right
+    --- LO_1_gate_Lo  ---
+
+   The connections are, if the transistors from left to right
+   in the LO pair are A B C D, and d and s denote source/drain area;
+   (dAsBdCsDdDsCdBsA)*4_d
+
+    gate_... all edges (top met route of gate connection)
+    source_...all edges (top met route of source connections)
+    drain_...all edges (top met route of drain connections)
+    plusdoped_...all edges (area of p+s/d or n+s/d layer)
+    diff_...all edges (diffusion region)
+    rowx_coly_...all ports associated with finger array include gate_... and array_ (array includes all ports of the viastacks in the array)
+    leftsd_...all ports associated with the left most via array
+    dummy_L,R_N,E,S,W ports if dummy_routes=True
+    """
+    # error checking
+    if "+s/d" not in sdlayer:
+        raise ValueError("specify + doped region for multiplier")
+    if rmult:
+        interfinger_rmult = ((rmult-1) or 1)
+
+    if sd_rmult<1 or interfinger_rmult<1 or gate_rmult<1:
+        raise ValueError("routing multipliers must be positive int")
+
+    # argument parsing and rule setup
+    min_length = pdk.get_grule("poly")["min_width"]
+    length = min_length if (length or min_length) <= min_length else length
+    length = pdk.snap_to_2xgrid(length)
+    min_width = max(min_length, pdk.get_grule("active_diff")["min_width"])
+    width = min_width if (width or min_width) <= min_width else width
+    width = pdk.snap_to_2xgrid(width)
+
+    # get finger array
+    multiplier = component_snap_to_grid(rename_ports_by_orientation(multiplier))
+
+    # route all drains/ gates/ sources
+    if routing:
+        # place vias, then straight route from top port to via-botmet_N
+        sd_N_port = multiplier.ports["leftsd_top_met_N"]
+        sdvia = via_stack(pdk, "met1", sd_route_topmet)
+        sdmet_hieght = sd_rmult*evaluate_bbox(sdvia)[1]
+        sdroute_minsep = pdk.get_grule(sd_route_topmet)["min_separation"]
+        sdvia_ports = list()
+        for finger in range(4*fingers+1):
+            diff_top_port = movey(sd_N_port,destination=width/2)
+            # place sdvia such that metal does not overlap diffusion
+            extension_sources = sdroute_minsep + sdroute_minsep + sdmet_hieght/2 + sdmet_hieght
+            sdvia_extension = extension_sources if finger % 2 else sdroute_minsep + (sdmet_hieght)/2
+            sdvia_ref = align_comp_to_port(sdvia,diff_top_port,alignment=('c','t'))
+            multiplier.add(sdvia_ref.movey(sdvia_extension + pdk.snap_to_2xgrid(sd_route_extension)))
+            multiplier << straight_route(pdk, diff_top_port, sdvia_ref.ports["bottom_met_N"])
+            sdvia_ports += [sdvia_ref.ports["top_met_W"], sdvia_ref.ports["top_met_E"]]
+            # get the next port (break before this if last iteration because port D.N.E. and num gates=fingers)
+            if finger==4*fingers:
+                break
+            sd_N_port = multiplier.ports[f"row0_col{finger}_rightsd_top_met_N"]
+            # route gates
+            gate_S_port = multiplier.ports[f"row0_col{finger}_gate_S"]
+            metal_seperation = pdk.util_max_metal_seperation()
+            psuedo_Ngateroute = movey(gate_S_port.copy(),0-metal_seperation-gate_route_extension)
+            psuedo_Ngateroute.y = pdk.snap_to_2xgrid(psuedo_Ngateroute.y)
+            multiplier << straight_route(pdk,gate_S_port,psuedo_Ngateroute)
+        # place route met: gate
+        gate_width = gate_S_port.center[0] - multiplier.ports["row0_col0_gate_S"].center[0] + gate_S_port.width
+        gate = rename_ports_by_list(via_array(pdk,"poly",gate_route_topmet, size=(gate_width,None),num_vias=(None,gate_rmult), no_exception=True, fullbottom=True),[("top_met_","gate_")])
+        gate_ref = align_comp_to_port(gate.copy(), psuedo_Ngateroute, alignment=(None,'b'),layer=pdk.get_glayer("poly"))
+        multiplier.add(gate_ref)
+        # place route met: source, drain
+        sd_width = sdvia_ports[-1].center[0] - sdvia_ports[0].center[0]
+        sd_route = rectangle(size=(sd_width,sdmet_hieght),layer=pdk.get_glayer(sd_route_topmet),centered=True)
+        source = align_comp_to_port(sd_route.copy(), sdvia_ports[0], alignment=(None,'c'))
+        drain = align_comp_to_port(sd_route.copy(), sdvia_ports[2], alignment=(None,'c'))
+        multiplier.add(source)
+        multiplier.add(drain)
+        # add ports
+        multiplier.add_ports(drain.get_ports_list(), prefix="drain_")
+        multiplier.add_ports(source.get_ports_list(), prefix="source_")
+        multiplier.add_ports(gate_ref.get_ports_list(prefix="gate_"))
+    # ensure correct port names and return
+
     # Create final interdigitized component
     lo_diff_pairs = component_snap_to_grid(rename_ports_by_orientation(multiplier))
     lo_diff_pairs.name = "LO_diff_pairs_interdigitized"
@@ -332,6 +446,11 @@ if __name__ == "__main__":
         "gate_rmult": 2,
         "interfinger_rmult": 2,
         "substrate_tap_layers": ("met2","met1"),
+        "routing": True,
+        "inter_finger_topmet": "met1",
+        "sdlayer": "n+s/d",
+        "sd_route_extension": 0,
+        "gate_route_extension": 0,
     }
 
     # Generate differential pair with explicit parameters
