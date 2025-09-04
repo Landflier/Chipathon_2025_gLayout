@@ -5,7 +5,14 @@ import sys
 from gdsfactory import Component
 from gdsfactory.components import rectangle
 from glayout import MappedPDK
-
+from diff_pair import get_pin_layers
+from glayout import gf180
+from glayout.util.comp_utils import evaluate_bbox, move, movex, movey
+from glayout.routing.straight_route import straight_route
+from glayout.routing.c_route import c_route
+from glayout.routing.L_route import L_route
+from glayout import via_stack, via_array
+    
 # Add the diff_pair module to the path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../diff_pair'))
 
@@ -90,6 +97,7 @@ def add_via_pins_and_labels(
     )
     
     return top_level
+
 # Routing the LO drains towards VDD and outside pins
 def create_vias_and_route(comp, pin1, pin2, pin3, pin4, pdk_choice, lo_bbox, offset=1.0, route_hlayer="met2", route_vlayer="met3", via_top_layer="met4", via_bottom_layer="met3"):
     """
@@ -179,120 +187,162 @@ def create_vias_and_route(comp, pin1, pin2, pin3, pin4, pdk_choice, lo_bbox, off
     comp << route4
     
     return via1_ref, via2_ref
+
+
+def create_labels_and_ports(
+    top_level: Component,
+    pdk: MappedPDK,
+    debug_mode: bool = True
+) -> Component:
+    """
+    Add electrical ports and labels to a top-level design component.
+    Similar to add_via_pins_and_labels() but for complete design labeling.
     
+    Args:
+        top_level: Component to add ports and labels to
+        pdk: PDK for layer information and design rules
+        debug_mode: If True, add visual pin rectangles for debugging
     
+    Returns:
+        Component: The modified top_level component with added ports and labels
+    """
+    # TODO: Implementation needed
+    pass
+
+
+def create_LO_diff_pairs(
+    pdk: MappedPDK,
+    length: float,
+    width: float,
+    fingers: int,
+    LO_FET_kwargs: dict
+) -> Component:
+    """
+    Create interdigitized LO differential pairs for Gilbert cell mixer.
+    This is the main function for implementing interdigitized layout.
+    
+    Args:
+        pdk: PDK for design rules and layer information
+        length: float of length of the transistors in the LO_diff_pairs
+        width: float of width of the transistors in the LO_diff_pairs
+        fingers: int of number of fingers in the LO_diff_pairs
+        LO_FET_kwargs: Dictionary of additional FET parameters (similar to current __main__ kwargs)
+                      Should include parameters like:
+                      - with_dnwell
+                      - sd_route_topmet, gate_route_topmet
+                      - sd_rmult, rmult
+                      - gate_rmult
+                      - substrate_tap_layers
+    
+    Returns:
+        Component: Single interdigitized component containing both LO differential pairs
+    """
+    
+    if width % fingers != 0:
+        raise ValueError(f"Width ({width}) must be a multiple of number of fingers ({fingers})")
+    
+    # Calculate finger width
+    finger_width = width / fingers
+    
+    # Get parameters from LO_FET_kwargs
+    sd_rmult = LO_FET_kwargs.get("sd_rmult", 1)
+    sd_route_topmet = LO_FET_kwargs.get("sd_route_topmet", "met2")
+    
+    # Use PDK minimum length if not specified
+    if length is None:
+        length = pdk.get_grule('poly')['min_width']
+    
+    # Calculate poly height for transistor
+    poly_height = finger_width + 2 * pdk.get_grule("poly", "active_diff")["min_enclosure"]
+    
+    # Interdigitized finger generation logic (based on __gen_fingers_macro)
+    # Snap dimensions to grid
+    length = pdk.snap_to_2xgrid(length)
+    finger_width = pdk.snap_to_2xgrid(finger_width)
+    poly_height = pdk.snap_to_2xgrid(poly_height)
+    sizing_ref_viastack = via_stack(pdk, "active_diff", "met1")
+    
+    # figure out poly (gate) spacing: s/d metal doesnt overlap transistor, s/d min seperation criteria is met
+    sd_viaxdim = sd_rmult * evaluate_bbox(via_stack(pdk, "active_diff", "met1"))[0]
+    poly_spacing = 2 * pdk.get_grule("poly", "mcon")["min_separation"] + pdk.get_grule("mcon")["width"]
+    poly_spacing = max(sd_viaxdim, poly_spacing)
+    met1_minsep = pdk.get_grule("met1")["min_separation"]
+    poly_spacing += met1_minsep if length < met1_minsep else 0
+    
+    # create a single finger
+    finger = Component("finger")
+    gate = finger << rectangle(size=(length, poly_height), layer=pdk.get_glayer("poly"), centered=True)
+    sd_viaarr = via_array(pdk, "active_diff", "met1", size=(sd_viaxdim, finger_width), minus1=True, lay_bottom=False).copy()
+    interfinger_correction = via_array(pdk, "met1", sd_route_topmet, size=(None, finger_width), lay_every_layer=True, num_vias=(1, None))
+    sd_viaarr << interfinger_correction
+    sd_viaarr_ref = finger << sd_viaarr
+    sd_viaarr_ref.movex((poly_spacing + length) / 2)
+    finger.add_ports(gate.get_ports_list(), prefix="gate_")
+    finger.add_ports(sd_viaarr_ref.get_ports_list(), prefix="rightsd_")
+    
+    # create finger array
+    fingerarray = prec_array(finger, columns=fingers, rows=1, spacing=(poly_spacing + length, 1), absolute_spacing=True)
+    sd_via_ref_left = fingerarray << sd_viaarr
+    sd_via_ref_left.movex(0 - (poly_spacing + length) / 2)
+    fingerarray.add_ports(sd_via_ref_left.get_ports_list(), prefix="leftsd_")
+    
+    # center finger array and add ports
+    centered_farray = Component()
+    fingerarray_ref_center = prec_ref_center(fingerarray)
+    centered_farray.add(fingerarray_ref_center)
+    centered_farray.add_ports(fingerarray_ref_center.get_ports_list())
+    
+    # create diffusion and +doped region
+    multiplier = rename_ports_by_orientation(centered_farray)
+    diff_extra_enc = 2 * pdk.get_grule("mcon", "active_diff")["min_enclosure"]
+    diff_dims = (diff_extra_enc + evaluate_bbox(multiplier)[0], finger_width)
+    diff = multiplier << rectangle(size=diff_dims, layer=pdk.get_glayer("active_diff"), centered=True)
+    sd_diff_ovhg = pdk.get_grule("nplus", "active_diff")["min_enclosure"]  # Using nplus for NMOS
+    sdlayer_dims = [dim + 2 * sd_diff_ovhg for dim in diff_dims]
+    sdlayer_ref = multiplier << rectangle(size=sdlayer_dims, layer=pdk.get_glayer("nplus"), centered=True)
+    multiplier.add_ports(sdlayer_ref.get_ports_list(), prefix="plusdoped_")
+    multiplier.add_ports(diff.get_ports_list(), prefix="diff_")
+    
+    # Create final interdigitized component
+    lo_diff_pairs = component_snap_to_grid(rename_ports_by_orientation(multiplier))
+    lo_diff_pairs.name = "LO_diff_pairs_interdigitized"
+    
+    return lo_diff_pairs
+    
+
 if __name__ == "__main__":
-    from diff_pair import diff_pair, get_pin_layers
-    from glayout import gf180, sky130
-    from glayout.util.comp_utils import evaluate_bbox, move, movex, movey
-    from glayout.routing.straight_route import straight_route
-    from glayout.routing.c_route import c_route
-    from glayout.routing.L_route import L_route
-    from glayout import via_stack, via_array
     
     pdk_choice = gf180
-    RF_FET_kwargs = {
-        "with_tie": False,
-        "with_dnwell": False,
-        "sd_route_topmet": "met2",
-        "gate_route_topmet": "met2",
-        "sd_route_left": True,
-        "sd_rmult" : 2,
-        "rmult": None,
-        "gate_rmult": 2,
-        "interfinger_rmult": 2,
-        "substrate_tap_layers": ("met2","met1"),
-        "dummy_routes": False
-    }
-
-    # Generate differential pair with explicit parameters
-    RF_diff_pair = diff_pair(
-        pdk=pdk_choice,
-        placement="vertical",
-        width=(10.0, 10.0),          # Width in micrometers
-        # length parameter omitted to use PDK minimum length
-        fingers=(5, 5),            # Number of fingers
-        multipliers=(1, 1),        # Multipliers
-        dummy_1=(True, True),      # Dummy devices for M1
-        dummy_2=(True, True),      # Dummy devices for M2
-        tie_layers1=("met2", "met1"),  # Tie layers for M1
-        tie_layers2=("met2", "met1"),  # Tie layers for M2
-        connected_sources=False,    # Connect sources together
-        debug_mode = False,                  # dont add terminal labels and visual pins
-        vss_port_placement = "E",            # VSS tapring port placement 
-        component_name = "RF_diff_pair",     # Component's name
-        gate_pin_offset_x = 2,               # offset of the gate pins in the x direction
-        M1_kwargs=RF_FET_kwargs,             # Additional M1 parameters
-        M2_kwargs=RF_FET_kwargs              # Additional M2 parameters
-    )
 
     LO_FET_kwargs = {
-        "with_tie": False,
         "with_dnwell": False,
         "sd_route_topmet": "met2",
         "gate_route_topmet": "met2",
-        "sd_route_left": True,
         "sd_rmult" : 4,
         "rmult": None,
         "gate_rmult": 2,
         "interfinger_rmult": 2,
         "substrate_tap_layers": ("met2","met1"),
-        "dummy_routes": False
     }
 
     # Generate differential pair with explicit parameters
-    LO_diff_pair_top = diff_pair(
+    LO_diff_pairs = create_LO_diff_pairs(
         pdk=pdk_choice,
-        placement="vertical",
-        width=(20.0, 20.0),          # Width in micrometers
-        fingers=(5, 5),            # Number of fingers
-        multipliers=(1, 1),        # Multipliers
-        dummy_1=(True, True),      # Dummy devices for M1
-        dummy_2=(True, True),      # Dummy devices for M2
-        tie_layers1=("met2", "met1"),  # Tie layers for M1
-        tie_layers2=("met2", "met1"),  # Tie layers for M2
-        connected_sources=True,    # Connect sources together
-        debug_mode = False,                  # dont add terminal labels and visual pins
-        component_name = "LO_diff_pair_1",   # Component's name
-        vss_port_placement = "S",            # VSS tapring port placement 
-        M1_kwargs=LO_FET_kwargs,             # Additional M1 parameters
-        M2_kwargs=LO_FET_kwargs              # Additional M2 parameters
+        length=0.28,          # [um], length of channel
+        width=20.0,           # [um],  width of channel
+        fingers=5,            # Number of fingers
+        LO_FET_kwargs=LO_FET_kwargs
     )
 
-    LO_diff_pair_bot = diff_pair(
-        pdk=pdk_choice,
-        placement="vertical",
-        width=(20.0, 20.0),          # Width in micrometers
-        fingers=(5, 5),            # Number of fingers
-        multipliers=(1, 1),        # Multipliers
-        dummy_1=(True, True),      # Dummy devices for M1
-        dummy_2=(True, True),      # Dummy devices for M2
-        tie_layers1=("met2", "met1"),  # Tie layers for M1
-        tie_layers2=("met2", "met1"),  # Tie layers for M2
-        connected_sources=True,    # Connect sources together
-        debug_mode = False,                  # dont add terminal labels and visual pins
-        component_name = "LO_diff_pair_2",   # Component's name
-        vss_port_placement = "N",            # VSS tapring port placement 
-        M1_kwargs=LO_FET_kwargs,             # Additional M1 parameters
-        M2_kwargs=LO_FET_kwargs              # Additional M2 parameters
-    )
 
-    comp = Component( name = "Gilbert_cell" )
+    comp = Component( name = "Gilbert_mixer_interdigitized" )
 
-    RF_diff_pair_ref = comp << RF_diff_pair
-    LO_diff_pair_top_ref = comp << LO_diff_pair_top
-    LO_diff_pair_bot_ref = comp << LO_diff_pair_bot
+    LO_diff_pairs_ref = comp << LO_diff_pairs
 
     # Print available ports for debugging
     # print(f"DEBUG: RF ports: {list(RF_diff_pair_ref.ports.keys())}")
     # print(f"DEBUG: LO_left ports: {list(LO_diff_pair_top_ref.ports.keys())}")
     # print(f"DEBUG: LO_right ports: {list(LO_diff_pair_bot_ref.ports.keys())}")
-    
-    bbox_RF = evaluate_bbox(RF_diff_pair)
-    bbox_LO = evaluate_bbox(LO_diff_pair_top)
-
-    RF_current_x, RF_current_y = RF_diff_pair_ref.center
-    LO_current_x, LO_current_y = LO_diff_pair_bot_ref.center
 
     # get minimal separtion needed for tapring separations
     sep_met1 = pdk_choice.get_grule('met1', 'met1')['min_separation']
@@ -301,222 +351,22 @@ if __name__ == "__main__":
     # sep_pplus = pdk_choice.get_grule('pplus', 'pplus')['min_separation']
 
     sep = max(sep_met1, sep_met2)
-
-    # Calculate total height of both LO pairs plus separation between them
-    total_LO_height = 2 * bbox_LO[1] + sep
     
-    # Calculate new positions - move() expects absolute positions
-    # First, position them to the right of RF with proper separation
-    new_x = bbox_RF[0] + sep
-    
-    # For Y positioning: center the combined LO pairs with RF center
-    # The combined center should be at RF_current_y
-    # So position them symmetrically around RF_current_y
-    right_new_y = RF_current_y - (bbox_LO[1] + sep)/2
-    left_new_y = RF_current_y + (bbox_LO[1] + sep)/2
-    
-    # Position LO pairs so their combined center aligns with RF center
-    # Calculate relative movements from current positions
-    right_current_x, right_current_y = LO_diff_pair_bot_ref.center
-    left_current_x, left_current_y = LO_diff_pair_top_ref.center
-    
-    # Calculate relative movements needed
-    right_dx = new_x - right_current_x
-    right_dy = right_new_y - right_current_y
-    left_dx = new_x - left_current_x
-    left_dy = left_new_y - left_current_y
-    
-    # Apply relative movements
-    LO_diff_pair_bot_ref = move(LO_diff_pair_bot_ref, (right_dx, right_dy))
-    LO_diff_pair_top_ref = move(LO_diff_pair_top_ref, (left_dx, left_dy))
-    
-    # Route the LO pairs' (left and right) sources to the drains of the RF_diff_pair
-
     ## choose ports to route
-    lo_1_M2_source_port_name = "LO_diff_pair_1_M2_SOURCE_W"
-    lo_2_M1_source_port_name = "LO_diff_pair_2_M1_SOURCE_W"
-    rf_M1_drain_port_name = "RF_diff_pair_M1_DRAIN_N"
-    rf_M2_drain_port_name = "RF_diff_pair_M2_DRAIN_S"
-
-    rf_sd_layer = RF_FET_kwargs["sd_route_topmet"]
-    
-    try:
-        route_lo1 = L_route(
-            pdk_choice, 
-            LO_diff_pair_top_ref.ports[lo_1_M2_source_port_name], 
-            RF_diff_pair_ref.ports[rf_M1_drain_port_name],
-            hglayer="met2",
-            vglayer="met3"
-       )
-        route_lo2 = L_route(
-            pdk_choice, 
-            LO_diff_pair_bot_ref.ports[lo_2_M1_source_port_name], 
-            RF_diff_pair_ref.ports[rf_M2_drain_port_name],
-            hglayer="met2",
-            vglayer="met3"
-       )
-
-        # Vias at the end of the L routings, i.e on the drains of the RF FETs
-        sd_width = RF_diff_pair_ref.ports[rf_M1_drain_port_name].width
-        via_rf_m1 = via_array(pdk_choice, "met3", rf_sd_layer, 
-                size=(sd_width, sd_width),
-                fullbottom=True,
-                lay_every_layer=True)
-        via_rf_m2 = via_array(pdk_choice, "met3", rf_sd_layer, 
-                size=(sd_width, sd_width),
-                fullbottom=True,
-                lay_every_layer=True)
-
-        via_rf_m1_ref = comp << via_rf_m1
-        via_rf_m2_ref = comp << via_rf_m2
-        
-        via_rf_m1_ref.move(RF_diff_pair_ref.ports[rf_M1_drain_port_name].center)
-        via_rf_m2_ref.move(RF_diff_pair_ref.ports[rf_M2_drain_port_name].center)
-        
-        # Add pins and labels to RF vias
-        # add_via_pins_and_labels(comp, via_rf_m1_ref, "RF_M1_drain", pdk_choice, pin_layer="met3", debug_mode=False)
-        # add_via_pins_and_labels(comp, via_rf_m2_ref, "RF_M2_drain", pdk_choice, pin_layer="met3", debug_mode=False)
-        
-        comp << route_lo2
-        comp << route_lo1
-    except Exception as e:
-        print(f"DEBUG: L_route route failed: {e}")
-
+    lo_1_M2_source_port_name = "LO_diff_pairs_interdigitized_LO1_M2_SOURCE_W"
+    lo_2_M1_source_port_name = "LO_diff_pairs_interdigitized_LO1_M1_SOURCE_W"
 
     ## Get the LO drain port names (using the updated naming scheme)
-    lo_top_m1_drain = "LO_diff_pair_1_M1_DRAIN_E"  
-    lo_bot_m1_drain = "LO_diff_pair_2_M1_DRAIN_E"
-    lo_top_m2_drain = "LO_diff_pair_1_M2_DRAIN_E"  
-    lo_bot_m2_drain = "LO_diff_pair_2_M2_DRAIN_E"
-
-    ## get the ports
-    lo_top_M1_drain = LO_diff_pair_top_ref.ports[lo_top_m1_drain]
-    lo_bot_M1_drain = LO_diff_pair_bot_ref.ports[lo_bot_m1_drain]
-    lo_top_M2_drain = LO_diff_pair_top_ref.ports[lo_top_m2_drain]
-    lo_bot_M2_drain = LO_diff_pair_bot_ref.ports[lo_bot_m2_drain]
-    
-    # Use the new function to create vias and routing
-    lo_sd_layer = LO_FET_kwargs["sd_route_topmet"]  # Should be "met2"
-    lo_top_bbox = evaluate_bbox(LO_diff_pair_top_ref)
-    # print(f"DEBUG: lo_top_bbox coordinates before via_IFs: {lo_top_bbox}")
-    via_IF_pos_ref, via_IF_neg_ref = create_vias_and_route(
-        comp, 
-        lo_top_M1_drain, lo_bot_M1_drain,  # First pair (M1 drains)
-        lo_top_M2_drain, lo_bot_M2_drain,  # Second pair (M2 drains)
-        pdk_choice,
-        offset = lo_top_M1_drain.width,
-        lo_bbox=lo_top_bbox[0],  # Use actual bbox width
-        route_hlayer=lo_sd_layer,
-        route_vlayer="met3",
-    )
-    
-    # Add pins and labels to IF output vias
-    add_via_pins_and_labels(comp, via_IF_pos_ref, "V_out_p", pdk_choice, pin_layer="met4", debug_mode=False)
-    add_via_pins_and_labels(comp, via_IF_neg_ref, "V_out_n", pdk_choice, pin_layer="met4", debug_mode=False)
-
-
-    ## Get the LO drain port names (using the updated naming scheme)
-    lo_top_m1_gate = "LO_diff_pair_1_M1_GATE_E"  
-    lo_bot_m1_gate = "LO_diff_pair_2_M1_GATE_E"
-    lo_top_m2_gate = "LO_diff_pair_1_M2_GATE_E"  
-    lo_bot_m2_gate = "LO_diff_pair_2_M2_GATE_E"
-
-    ## get the ports
-    lo_top_M1_gate = LO_diff_pair_top_ref.ports[lo_top_m1_gate]
-    lo_bot_M1_gate = LO_diff_pair_bot_ref.ports[lo_bot_m1_gate]
-    lo_top_M2_gate = LO_diff_pair_top_ref.ports[lo_top_m2_gate]
-    lo_bot_M2_gate = LO_diff_pair_bot_ref.ports[lo_bot_m2_gate]
-    
-    # Use the new function to create vias and routing
-    lo_sd_layer = LO_FET_kwargs["gate_route_topmet"]  # Should be "met2"
-    lo_top_bbox = evaluate_bbox(LO_diff_pair_top_ref)
-
-    offset = 2*(via_IF_neg_ref.center[0] - via_IF_pos_ref.center[0]) + lo_top_M1_gate.width/2 + lo_top_M1_drain.width/2
-    via_LO_ref, via_LO_b_ref = create_vias_and_route(
-        comp, 
-        lo_top_M1_gate, lo_bot_M2_gate,  # First pair, V_LO
-        lo_top_M2_gate, lo_bot_M1_gate,  # Second pair, V_LO_b 
-        pdk_choice,
-        lo_bbox=lo_top_bbox[0],  # Use actual bbox width
-        offset = offset, 
-        route_hlayer=lo_sd_layer,
-        route_vlayer="met3",
-    )
-    
-    # Add pins and labels to LO input vias
-    add_via_pins_and_labels(comp, via_LO_ref, "V_LO", pdk_choice, pin_layer="met4", debug_mode=False)
-    add_via_pins_and_labels(comp, via_LO_b_ref, "V_LO_b", pdk_choice, pin_layer="met4", debug_mode=False)
-
- 
-    # Add labels directly to RF gate ports
-    rf_m1_gate_port = RF_diff_pair_ref.ports["RF_diff_pair_M1_GATE_E"]
-    rf_m2_gate_port = RF_diff_pair_ref.ports["RF_diff_pair_M2_GATE_E"]
-    
-    # Get label layer
-    pin_layer_gds, gate_label_gds = get_pin_layers(rf_m1_gate_port.layer, pdk_choice)
-    
-    # Add labels to RF gates
-    comp.add_label(text="V_RF", position=rf_m1_gate_port.center, layer=gate_label_gds)
-    comp.add_label(text="V_RF_b", position=rf_m2_gate_port.center, layer=gate_label_gds)
-
-    # Add labels directly to RF gate ports
-    rf_m1_source_port = RF_diff_pair_ref.ports["RF_diff_pair_M1_SOURCE_N"]
-    rf_m2_source_port = RF_diff_pair_ref.ports["RF_diff_pair_M2_SOURCE_N"]
-    
-    # Get label layer
-    pin_layer_gds, source_label_gds = get_pin_layers(rf_m1_source_port.layer, pdk_choice)
-    # Add labels to RF sources
-    comp.add_label(text="I_bias_pos", position=rf_m1_source_port.center, layer=source_label_gds)
-    comp.add_label(text="I_bias_neg", position=rf_m2_source_port.center, layer=source_label_gds)
-
-    ## Adding VSS ports to the taprings
-    vss_rf_port =  RF_diff_pair_ref.ports["RF_diff_pair_VSS_E"]
-    vss_pin_layer, vss_label_layer = get_pin_layers(vss_rf_port.layer, pdk_choice)
-    comp.add_label(text="VSS", position = vss_rf_port.center, layer = vss_label_layer)
-
-    vss_lo_1_port =  LO_diff_pair_top_ref.ports["LO_diff_pair_1_VSS_S"]
-    vss_pin_layer, vss_label_layer = get_pin_layers(vss_lo_1_port.layer, pdk_choice)
-    comp.add_label(text="VSS", position = vss_lo_1_port.center, layer = vss_label_layer)
-
-    vss_lo_2_port =  LO_diff_pair_bot_ref.ports["LO_diff_pair_2_VSS_N"]
-    vss_pin_layer, vss_label_layer = get_pin_layers(vss_lo_2_port.layer, pdk_choice)
-    comp.add_label(text="VSS", position = vss_lo_2_port.center, layer = vss_label_layer)
-
-    ## Route the vss pins
-    route_vss_rf_to_lo1 = L_route(
-        pdk_choice, 
-        vss_rf_port,
-        vss_lo_1_port,
-        hglayer="met1",
-        vglayer="met1",
-        hwidth = 2*vss_rf_port.width
-    )
-
-    route_vss_rf_to_lo2 = L_route(
-        pdk_choice, 
-        vss_rf_port,
-        vss_lo_2_port,
-        hglayer="met1",
-        vglayer="met1",
-        hwidth = 2*vss_rf_port.width,
-        vwidth = 2*vss_rf_port.width + 0.05
-    )
-
-    comp << route_vss_rf_to_lo1
-    comp << route_vss_rf_to_lo2
-    # Flattened hierarchy 
-    # flat_comp = comp.flatten()
-    # flat_comp.name = "Gilbert_cell"
-    # flat_comp.write_gds('lvs/Gilbert_cell_flat.gds', cellname="Gilbert_cell")
+    lo_top_m1_drain = "LO_diff_pairs_interdigitized_LO1_M1_DRAIN_E"  
+    lo_bot_m1_drain = "LO_diff_pairs_interdigitized_LO1_M1_DRAIN_E"
+    lo_top_m2_drain = "LO_diff_pairs_interdigitized_LO1_M2_DRAIN_E"  
+    lo_bot_m2_drain = "LO_diff_pairs_interdigitized_LO1_M2_DRAIN_E"
 
     # Write both hierarchical and flattened GDS files
     print("✓ Writing GDS files...")
-    comp.write_gds('lvs/gds/Gilbert_cell_hierarchical.gds', cellname="Gilbert_cell")
-    print("  - Hierarchical GDS: Gilbert_cell_hierarchical.gds")
-    print("  - Flattened GDS: Gilbert_cell.gds (recommended for extraction)")
+    comp.write_gds('lvs/gds/Gilbert_cell_interdigitized.gds', cellname="Gilbert_cell_interdigitized")
+    print("  - Hierarchical GDS: Gilbert_cell_interdigitized.gds")
     
-    # Simple DRC checks (skip if they fail due to Nix paths)
-
     print("\n...Running DRC...")
     
     try:
