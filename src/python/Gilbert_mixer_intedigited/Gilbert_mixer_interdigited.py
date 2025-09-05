@@ -375,7 +375,7 @@ def create_LO_diff_pairs(
     length = min_length if (length or min_length) <= min_length else length
     length = pdk.snap_to_2xgrid(length)
     min_width = max(min_length, pdk.get_grule("active_diff")["min_width"])
-    width = min_width if (width or min_width) <= min_width else width
+    width = min_width if (width or min_width) <= min_width else finger_width
     width = pdk.snap_to_2xgrid(width)
 
     # get finger array
@@ -383,14 +383,62 @@ def create_LO_diff_pairs(
 
     # route all drains/ gates/ sources
     if routing:
+        number_sd_rows = 0
+        print(f"DEBUG: multiplier ports, just before adding sd vias: {multiplier.ports}")
+        for port_name in multiplier.ports.keys():
+            if port_name.startswith("leftsd_array") and "_col" in port_name:
+                # Extract row number from port name like "row0_col1_..."
+                row_part = port_name.split("_")[2]
+                row_num = int(row_part.replace("row", ""))
+                number_sd_rows = max(number_sd_rows, row_num)
         # place vias, then straight route from top port to via-botmet_N
-        sd_N_port = multiplier.ports["leftsd_top_met_N"]
+        print(f"DEBUG: number_sd_rows : {number_sd_rows}")
+        rel_align_port = multiplier.ports["leftsd_top_met_N"]
         sdvia = via_stack(pdk, "met1", sd_route_topmet)
         sdmet_hieght = sd_rmult*evaluate_bbox(sdvia)[1]
         sdroute_minsep = pdk.get_grule(sd_route_topmet)["min_separation"]
         sdvia_ports = list()
+        """
+        A-s-B C-s-D
+
+       (dA sB dC sD dD sC dB sA)*4_d
+        --- LO2_gate_Lo_b         ---
+        --- LO2_source  (port2)   --- * extends to the right 
+        --- LO2_drain   (port4)   --- * extends to the left
+        --- finger array          ---
+        --- LO_1_drain  (port1)   --- * extends to the left
+        --- LO_1_source (port3)   --- * extends to the right
+        --- LO_1_gate_Lo          ---
+        """
         for finger in range(4*fingers+1):
-            diff_top_port = movey(sd_N_port,destination=width/2)
+
+            #special case for 0-th finger
+            if finger == 0:
+                rel_align_port = multiplier.ports[f"row0_col0_rightsd_array_row{number_sd_rows-1}_col0_top_met_S"]
+                dest = -width/2 -4
+
+            # port 3 (drain A/drain C)
+            elif finger % 4 == 0 :
+                rel_align_port = multiplier.ports[f"row0_col{finger-1}_rightsd_array_row{number_sd_rows-1}_col0_top_met_S"]
+                dest = -width/2
+
+            # port 1 (source B/source A)
+            elif finger % 4 == 1:
+                rel_align_port = multiplier.ports[f"row0_col{finger-1}_rightsd_top_met_N"]
+                dest = width/2
+   
+            # port 4 (drain D/drain B)
+            elif finger % 4 == 2:
+                rel_align_port = multiplier.ports[f"row0_col{finger-1}_rightsd_array_row{number_sd_rows-1}_col0_top_met_S"]
+                dest = -width/2-4
+
+            # port 2 (source C/source D)
+            elif finger % 4 == 3:
+                rel_align_port = multiplier.ports[f"row0_col{finger-1}_rightsd_top_met_N"]
+                dest = width/2
+
+            diff_top_port = movey(rel_align_port,destination=dest)
+
             # place sdvia such that metal does not overlap diffusion
             extension_sources = sdroute_minsep + sdroute_minsep + sdmet_hieght/2 + sdmet_hieght
             sdvia_extension = extension_sources if finger % 2 else sdroute_minsep + (sdmet_hieght)/2
@@ -401,7 +449,7 @@ def create_LO_diff_pairs(
             # get the next port (break before this if last iteration because port D.N.E. and num gates=fingers)
             if finger==4*fingers:
                 break
-            sd_N_port = multiplier.ports[f"row0_col{finger}_rightsd_top_met_N"]
+            rel_align_port = multiplier.ports[f"row0_col{finger}_rightsd_top_met_N"]
             # route gates
             gate_S_port = multiplier.ports[f"row0_col{finger}_gate_S"]
             metal_seperation = pdk.util_max_metal_seperation()
