@@ -259,7 +259,7 @@ def create_LO_diff_pairs(
     sd_route_topmet = LO_FET_kwargs.get("sd_route_topmet", "met2")
     sdlayer = LO_FET_kwargs.get("sdlayer", "n+s/d")
     routing = LO_FET_kwargs.get("routing", True)
-    inter_finger_topmet = LO_FET_kwargs.get("inter_finger_topmet", "met2")
+    inter_finger_topmet = LO_FET_kwargs.get("inter_finger_topmet", "met1")
     gate_route_topmet = LO_FET_kwargs.get("gate_route_topmet", "met2")
     gate_rmult = LO_FET_kwargs.get("gate_rmult", 1)
     interfinger_rmult = LO_FET_kwargs.get("interfinger_rmult", 1)
@@ -345,9 +345,6 @@ def create_LO_diff_pairs(
     dummy_routes: bool default=True, if true add add vias and short dummy poly,source,drain
 
     ports (one port for each edge),
-    ****NOTE: LO_sources have one track above and below the
-    ****NOTE: finger_array, next above them are LO_drains, and then are
-    ****NOTE: the gate extensions
     --- LO2_gate_Lo_b ---
     --- LO2_source    --- * extends to the right 
     --- LO2_drain     --- * extends to the left
@@ -450,7 +447,7 @@ def create_LO_diff_pairs(
 
                 #sdvia_extension = sdroute_minsep + (sdmet_height)/2
                 sdvia_extension = -(sdroute_minsep + sdroute_minsep + (sdmet_height/2 + sdmet_height))
-                sd_route_extension =  -pdk.snap_to_2xgrid(sd_route_extension)
+                sd_route_extension_temp =  -pdk.snap_to_2xgrid(sd_route_extension)
 
             # port 1 (source B/source A)
             elif check_port_1:
@@ -460,7 +457,7 @@ def create_LO_diff_pairs(
                 alignment_port=('c', 'b')
 
                 sdvia_extension = -(sdroute_minsep + (sdmet_height)/2)
-                sd_route_extension =  -pdk.snap_to_2xgrid(sd_route_extension)
+                sd_route_extension_temp = -pdk.snap_to_2xgrid(sd_route_extension)
    
             # port 4 (drain D/drain B)
             elif check_port_4:
@@ -470,7 +467,7 @@ def create_LO_diff_pairs(
                 alignment_port=('c', 't')
 
                 sdvia_extension = sdroute_minsep + sdroute_minsep + (sdmet_height/2 + sdmet_height)
-                sd_route_extension = pdk.snap_to_2xgrid(sd_route_extension)
+                sd_route_extension_temp = pdk.snap_to_2xgrid(sd_route_extension)
 
             # port 2 (source C/source D)
             elif check_port_2:
@@ -480,7 +477,7 @@ def create_LO_diff_pairs(
                 alignment_port=('c', 't')
 
                 sdvia_extension = sdroute_minsep + (sdmet_height)/2
-                sd_route_extension =  pdk.snap_to_2xgrid(sd_route_extension)
+                sd_route_extension_temp =  pdk.snap_to_2xgrid(sd_route_extension)
 
             # diff_top_port = movey(rel_align_port,y_align_viaination=dest)
             # print(f"DEBUG: y_align_via: {y_align_via} ")
@@ -507,7 +504,7 @@ def create_LO_diff_pairs(
             # place sdvia such that metal does not overlap diffusion
             # sdvia_ref = align_comp_to_port(sdvia,diff_top_port,alignment=('c','c'))
 
-            sd_track_y_displacement = sdvia_extension + sd_route_extension
+            sd_track_y_displacement = sdvia_extension + sd_route_extension_temp
             sdvia_ref = align_comp_to_port(sdvia,diff_top_port,alignment=(alignment_port))
             multiplier.add(sdvia_ref.movey(sd_track_y_displacement))
             multiplier << straight_route(pdk, diff_top_port, sdvia_ref.ports["bottom_met_N"])
@@ -547,14 +544,14 @@ def create_LO_diff_pairs(
                 aligning_gate_port_name = f"row0_col{finger}_gate_S"
                 rel_gate_aligning_port = multiplier.ports[aligning_gate_port_name]
                 # gate_yshift = 0 - metal_seperation - gate_route_extension 
-                gate_extension = -(3 * sdroute_minsep + 5/2 * sdmet_height)
+                gate_extension = -(3 * sdroute_minsep + 5/2 * sdmet_height + sd_route_extension + gate_route_extension)
                 y_align_via = - width/2 + gate_extension
             # LO_b_gate, transistors B and C
             elif check_gate_LO_b:
                 # aligning_gate_port_name = f"row{number_sd_rows}_col0_gate_N"
                 aligning_gate_port_name = f"row0_col{finger}_gate_N"
                 rel_gate_aligning_port = multiplier.ports[aligning_gate_port_name]
-                gate_extension = 3 * sdroute_minsep + 5/2 * sdmet_height
+                gate_extension = 3 * sdroute_minsep + 5/2 * sdmet_height + sd_route_extension + gate_route_extension
                 y_align_via = width/2 + gate_extension
             
             # route gates, vertical
@@ -633,23 +630,22 @@ if __name__ == "__main__":
         "sd_route_topmet": "met2",
         "gate_route_topmet": "met2",
         "sd_rmult" : 2,
-        "gate_rmult": 2,
+        "gate_rmult": 3,
         "interfinger_rmult": 2,
         "substrate_tap_layers": ("met2","met1"),
-        "routing": True,
+        # "routing": True,
         "inter_finger_topmet": "met1",
-#         "sdlayer": "n+s/d",
-        "sd_route_extension": 0,
+        # "sdlayer": "n+s/d",
+        "sd_route_extension": 0.8,
         "gate_route_extension": 0,
     }
 
     # Generate differential pair with explicit parameters
     LO_diff_pairs = create_LO_diff_pairs(
         pdk=pdk_choice,
-        # width=20.0,           # [um],  width of channel
-        # fingers=5,            # Number of fingers
-        width=9.0,           # [um],  width of channel
-        fingers=3,            # Number of fingers
+        # length   = 3.0,         # [um], length of channel
+        width    = 9.0,           # [um],  width of channel
+        fingers  = 3,             # Number of fingers
         LO_FET_kwargs=LO_FET_kwargs
     )
 
