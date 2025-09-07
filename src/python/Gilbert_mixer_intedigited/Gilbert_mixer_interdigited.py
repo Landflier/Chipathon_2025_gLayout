@@ -377,12 +377,12 @@ def create_LO_diff_pairs(
     min_width = max(min_length, pdk.get_grule("active_diff")["min_width"])
     width = min_width if (width or min_width) <= min_width else finger_width
     width = pdk.snap_to_2xgrid(width)
-    print(f"DEBUG: width: {width}")
+    # print(f"DEBUG: width: {width}")
 
     # get finger array
     multiplier = component_snap_to_grid(rename_ports_by_orientation(multiplier))
-    print(f"DEBUG: multiplier dimensions: {evaluate_bbox(multiplier)}")
-    print(f"DEBUG: multiplier center: {multiplier.center}")
+    # print(f"DEBUG: multiplier dimensions: {evaluate_bbox(multiplier)}")
+    # print(f"DEBUG: multiplier center: {multiplier.center}")
 
     # route all drains/ gates/ sources
     if routing:
@@ -394,24 +394,29 @@ def create_LO_diff_pairs(
                 row_part = port_name.split("_")[2]
                 row_num = int(row_part.replace("row", ""))
                 number_sd_rows = max(number_sd_rows, row_num)
+
         # place vias, then straight route from top port to via-botmet_N
         # print(f"DEBUG: number_sd_rows : {number_sd_rows}")
-
         sdvia = via_stack(pdk, "met1", sd_route_topmet)
-        sdmet_hieght = sd_rmult*evaluate_bbox(sdvia)[1]
+        sdmet_height = sd_rmult*evaluate_bbox(sdvia)[1]
         sdroute_minsep = pdk.get_grule(sd_route_topmet)["min_separation"]
         sdvia_ports = list()
         """
-        A-s-B C-s-D
+        mosfet circuit:
+        s/d denotes source drain
+        '-' denotes connected
+        d-----d
+            d-----d
+        A   B C   D
+        s---s s---s
 
-       
-        --- LO2_gate_Lo_b         ---
+        --- LO2_gate_LO_b         ---
         --- LO2_source  (port2)   --- * extends to the right 
         --- LO2_drain   (port4)   --- * extends to the left
         --- finger array          ---
         --- LO_1_drain  (port1)   --- * extends to the left
         --- LO_1_source (port3)   --- * extends to the right
-        --- LO_1_gate_Lo          ---
+        --- LO_1_gate_LO          ---
         """
         for finger in range(4*fingers+1):
             """ 
@@ -426,6 +431,7 @@ def create_LO_diff_pairs(
             check_port_2 = (finger % 4 == 3 )
             check_port_3 = (finger % 4 == 0 )
             check_port_4 = (finger % 4 == 2 )
+
             # port 3 (drain A/drain C)
             if check_port_3:
                 if finger != 0:
@@ -442,8 +448,8 @@ def create_LO_diff_pairs(
                 y_align_via = -width/2
                 alignment_port=('c', 'b')
 
-                #sdvia_extension = sdroute_minsep + (sdmet_hieght)/2
-                sdvia_extension = -(sdroute_minsep + sdroute_minsep + sdmet_hieght/2 + sdmet_hieght)
+                #sdvia_extension = sdroute_minsep + (sdmet_height)/2
+                sdvia_extension = -(sdroute_minsep + sdroute_minsep + (sdmet_height/2 + sdmet_height))
                 sd_route_extension =  -pdk.snap_to_2xgrid(sd_route_extension)
 
             # port 1 (source B/source A)
@@ -453,7 +459,7 @@ def create_LO_diff_pairs(
                 y_align_via = -width/2
                 alignment_port=('c', 'b')
 
-                sdvia_extension = -(sdroute_minsep + (sdmet_hieght)/2)
+                sdvia_extension = -(sdroute_minsep + (sdmet_height)/2)
                 sd_route_extension =  -pdk.snap_to_2xgrid(sd_route_extension)
    
             # port 4 (drain D/drain B)
@@ -463,7 +469,7 @@ def create_LO_diff_pairs(
                 y_align_via = width/2
                 alignment_port=('c', 't')
 
-                sdvia_extension = sdroute_minsep + sdroute_minsep + sdmet_hieght/2 + sdmet_hieght
+                sdvia_extension = sdroute_minsep + sdroute_minsep + (sdmet_height/2 + sdmet_height)
                 sd_route_extension = pdk.snap_to_2xgrid(sd_route_extension)
 
             # port 2 (source C/source D)
@@ -473,13 +479,12 @@ def create_LO_diff_pairs(
                 y_align_via = width/2
                 alignment_port=('c', 't')
 
-                # sdvia_ref = align_comp_to_port(sdvia,diff_top_port,alignment=('c','c'))
-                sdvia_extension = sdroute_minsep + (sdmet_hieght)/2
+                sdvia_extension = sdroute_minsep + (sdmet_height)/2
                 sd_route_extension =  pdk.snap_to_2xgrid(sd_route_extension)
 
             # diff_top_port = movey(rel_align_port,y_align_viaination=dest)
-            print(f"DEBUG: y_align_via: {y_align_via} ")
-            print(f"DEBUG: sdvia: {sdvia} ")
+            # print(f"DEBUG: y_align_via: {y_align_via} ")
+            # print(f"DEBUG: sdvia: {sdvia} ")
             # print(f"DEBUG: rel_align_port: {rel_align_port} ")
             # print(f"DEBUG: rel_align_port.layer: {rel_align_port.layer} ")
             # print(f"DEBUG: rel_align_port.width: {rel_align_port.width} ")
@@ -493,49 +498,124 @@ def create_LO_diff_pairs(
                     width=rel_align_port.width,
                     orientation=90,  # North orientation
                     layer=rel_align_port.layer,
-                    name=f"diffusion_port_to_align_{finger}"
+                    name=f"diffusion_port_to_align_sd_{finger}"
                     )
 
-            print(f"DEBUG: diff_top_port: {diff_top_port} ")
+            # print(f"DEBUG: diff_top_port: {diff_top_port} ")
 
+            # routing all source-drains of the 4 transistors
             # place sdvia such that metal does not overlap diffusion
             # sdvia_ref = align_comp_to_port(sdvia,diff_top_port,alignment=('c','c'))
+
+            sd_track_y_displacement = sdvia_extension + sd_route_extension
             sdvia_ref = align_comp_to_port(sdvia,diff_top_port,alignment=(alignment_port))
-            multiplier.add(sdvia_ref.movey(sdvia_extension + sd_route_extension))
+            multiplier.add(sdvia_ref.movey(sd_track_y_displacement))
             multiplier << straight_route(pdk, diff_top_port, sdvia_ref.ports["bottom_met_N"])
+            # multiplier << straight_route(pdk, diff_top_port, sdvia_ref.ports["bottom_lay_N"])
             sdvia_ports += [sdvia_ref.ports["top_met_W"], sdvia_ref.ports["top_met_E"]]
 
             if finger==4*fingers:
                 break
 
+            # gates routing 
+            """ 
+            # (dA sB dC sD dD sC dB sA)*4_d
+            check_gate_LO   = (finger % 2 ==0) 
+            check_gate_LO_b = (finger % 2 ==1)
             """
-            # route gates
-            gate_S_port = multiplier.ports[f"row0_col{finger}_gate_S"]
-            metal_seperation = pdk.util_max_metal_seperation()
-            psuedo_Ngateroute = movey(gate_S_port.copy(),0-metal_seperation-gate_route_extension)
-            psuedo_Ngateroute.y = pdk.snap_to_2xgrid(psuedo_Ngateroute.y)
-            multiplier << straight_route(pdk,gate_S_port,psuedo_Ngateroute)
-            """
-        """
-        # place route met: gate
-        gate_width = gate_S_port.center[0] - multiplier.ports["row0_col0_gate_S"].center[0] + gate_S_port.width
-        gate = rename_ports_by_list(via_array(pdk,"poly",gate_route_topmet, size=(gate_width,None),num_vias=(None,gate_rmult), no_exception=True, fullbottom=True),[("top_met_","gate_")])
-        gate_ref = align_comp_to_port(gate.copy(), psuedo_Ngateroute, alignment=(None,'b'),layer=pdk.get_glayer("poly"))
-        multiplier.add(gate_ref)
-        """
 
-        # place route met: source, drain
+            """
+            --- LO2_gate_LO_b         ---
+            --- LO2_source  (port2)   --- * extends to the right 
+            --- LO2_drain   (port4)   --- * extends to the left
+            --- finger array          ---
+            --- LO_1_drain  (port1)   --- * extends to the left
+            --- LO_1_source (port3)   --- * extends to the right
+            --- LO_1_gate_LO          ---
+            """
+            # (dA sB dC sD)*4 _d
+            check_gate_LO   = (finger % 2 == 0)
+            check_gate_LO_b = (finger % 2 == 1)
+
+            metal_seperation = pdk.util_max_metal_seperation()
+
+            gate_ports = {name: port for name, port in multiplier.ports.items() if "gate" in name}
+            # print(f"DEBUG: Gate ports: {gate_ports}")
+
+            # LO_gate, transistors A and D
+            if check_gate_LO:
+                aligning_gate_port_name = f"row0_col{finger}_gate_S"
+                rel_gate_aligning_port = multiplier.ports[aligning_gate_port_name]
+                # gate_yshift = 0 - metal_seperation - gate_route_extension 
+                gate_extension = -(3 * sdroute_minsep + 5/2 * sdmet_height)
+                y_align_via = - width/2 + gate_extension
+            # LO_b_gate, transistors B and C
+            elif check_gate_LO_b:
+                # aligning_gate_port_name = f"row{number_sd_rows}_col0_gate_N"
+                aligning_gate_port_name = f"row0_col{finger}_gate_N"
+                rel_gate_aligning_port = multiplier.ports[aligning_gate_port_name]
+                gate_extension = 3 * sdroute_minsep + 5/2 * sdmet_height
+                y_align_via = width/2 + gate_extension
+            
+            # route gates, vertical
+            psuedo_Ngateroute = multiplier.add_port(
+                    center=(rel_gate_aligning_port.center[0], y_align_via),
+                    width=rel_gate_aligning_port.width,
+                    orientation=90,  # North orientation
+                    layer=rel_gate_aligning_port.layer,
+                    name=f"gate_port_vroute_{finger}"
+                    )
+            psuedo_Ngateroute.y = pdk.snap_to_2xgrid(psuedo_Ngateroute.y)
+            multiplier << straight_route(pdk,rel_gate_aligning_port,psuedo_Ngateroute)
+        # place route met: gate, horziontal
+        # print(f"DEBUG: fingers:: {fingers}")
+        print(f"DEBUG: Gate ports: {gate_ports}")
+        gate_width = multiplier.ports[f"gate_port_vroute_{4*fingers-2}"].center[0] - multiplier.ports["gate_port_vroute_0"].center[0] + rel_gate_aligning_port.width
+        gate_route = rename_ports_by_list(via_array(pdk,"poly",gate_route_topmet, size=(gate_width,None),num_vias=(None,gate_rmult), no_exception=True, fullbottom=True),[("top_met_","gate_top_")])
+        # North gate
+        gate_LO_b_ref = align_comp_to_port(gate_route.copy(), multiplier.ports[f"gate_port_vroute_{4*fingers-1}"], alignment=('l','t'),layer=pdk.get_glayer("poly"))
+        # South gate
+        gate_LO_ref = align_comp_to_port(gate_route.copy(), multiplier.ports[f"gate_port_vroute_{4*fingers-2}"], alignment=('l','b'),layer=pdk.get_glayer("poly"))
+        multiplier.add(gate_LO_b_ref)
+        multiplier.add(gate_LO_ref)
+
+        # Get unique y-coordinates for each of the ports and get the indeces of the ports on that port/track/s-d line
+        y_coords = [port.center[1] for port in sdvia_ports]
+        unique_y_coords = list(set(y_coords))
+        unique_y_coords.sort()  # Sort for consistent ordering
+        
+        # Get indices for each unique y-coordinate
+        y_coord_indices = [] 
+        for unique_y in unique_y_coords:
+            first_index = next(i for i, y in enumerate(y_coords) if y == unique_y)
+            y_coord_indices.append(first_index)
+        
+        # print(f"DEBUG: Unique Y coordinates: {unique_y_coords}")
+        # print(f"DEBUG: Indices for each Y coordinate: {y_coord_indices}")
+
+        port_1_sd_index = y_coord_indices[1]
+        port_2_sd_index = y_coord_indices[2]
+        port_3_sd_index = y_coord_indices[0]
+        port_4_sd_index = y_coord_indices[3]
+        # print(f"DEBUG: sd_via_ports :{sdvia_ports}")
+        # place route met: port_1 port_2 port_3 port_4
         sd_width = sdvia_ports[-1].center[0] - sdvia_ports[0].center[0]
-        sd_route = rectangle(size=(sd_width,sdmet_hieght),layer=pdk.get_glayer(sd_route_topmet),centered=True)
-        source = align_comp_to_port(sd_route.copy(), sdvia_ports[0], alignment=(None,'c'))
-        drain = align_comp_to_port(sd_route.copy(), sdvia_ports[2], alignment=(None,'c'))
-        multiplier.add(source)
-        multiplier.add(drain)
+        sd_route = rectangle(size=(sd_width,sdmet_height),layer=pdk.get_glayer(sd_route_topmet),centered=True)
+        port_1_sd_route = align_comp_to_port(sd_route.copy(), sdvia_ports[port_1_sd_index], alignment=(None,'c'))
+        port_2_sd_route = align_comp_to_port(sd_route.copy(), sdvia_ports[port_2_sd_index], alignment=(None,'c'))
+        port_3_sd_route = align_comp_to_port(sd_route.copy(), sdvia_ports[port_3_sd_index], alignment=(None,'c'))
+        port_4_sd_route = align_comp_to_port(sd_route.copy(), sdvia_ports[port_4_sd_index], alignment=(None,'c'))
+        multiplier.add(port_1_sd_route)
+        multiplier.add(port_2_sd_route)
+        multiplier.add(port_3_sd_route)
+        multiplier.add(port_4_sd_route)
         # add ports
-        multiplier.add_ports(drain.get_ports_list(), prefix="drain_")
-        multiplier.add_ports(source.get_ports_list(), prefix="source_")
+        multiplier.add_ports(port_1_sd_route.get_ports_list(), prefix="port_1_")
+        multiplier.add_ports(port_2_sd_route.get_ports_list(), prefix="port_2_")
+        multiplier.add_ports(port_3_sd_route.get_ports_list(), prefix="port_3_")
+        multiplier.add_ports(port_4_sd_route.get_ports_list(), prefix="port_4_")
         # multiplier.add_ports(gate_ref.get_ports_list(prefix="gate_"))
-    # ensure correct port names and return
+        # multiplier.add_ports(gate_ref.get_ports_list(prefix="gate_"))
 
     # Create final interdigitized component
     lo_diff_pairs = component_snap_to_grid(rename_ports_by_orientation(multiplier))
@@ -552,13 +632,13 @@ if __name__ == "__main__":
         "with_dnwell": False,
         "sd_route_topmet": "met2",
         "gate_route_topmet": "met2",
-        "sd_rmult" : 1,
+        "sd_rmult" : 2,
         "gate_rmult": 2,
         "interfinger_rmult": 2,
         "substrate_tap_layers": ("met2","met1"),
         "routing": True,
         "inter_finger_topmet": "met1",
-        "sdlayer": "n+s/d",
+#         "sdlayer": "n+s/d",
         "sd_route_extension": 0,
         "gate_route_extension": 0,
     }
