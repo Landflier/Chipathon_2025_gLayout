@@ -25,6 +25,109 @@ from glayout.spice import Netlist
 # Add the diff_pair module to the path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../diff_pair'))
 
+def _create_finger_array(
+    pdk: MappedPDK,
+    width: float,
+    fingers: int,
+    length: float,
+    sdlayer: str,
+    sd_route_topmet: str,
+    interfinger_rmult: int,
+    sd_rmult: int,
+    gate_rmult: int
+) -> Component:
+    """
+    Internal function to create a finger array with extra edge gates.
+    
+    Args:
+        pdk: PDK for design rules and layer information
+        width: Total width of the transistor
+        fingers: Number of fingers
+        length: Gate length
+        sdlayer: Source/drain doping layer (e.g., "n+s/d")
+        sd_route_topmet: Top metal layer for source/drain routing
+        interfinger_rmult: Routing multiplier for interfinger connections
+        sd_rmult: Source/drain routing multiplier
+        gate_rmult: Gate routing multiplier
+    
+    Returns:
+        Component: Finger array with diffusion, doping, and extra edge gates
+    """
+    # error checking
+    if "+s/d" not in sdlayer:
+        raise ValueError("specify + doped region for multiplier")
+
+    if sd_rmult<1 or interfinger_rmult<1 or gate_rmult<1:
+        raise ValueError("routing multipliers must be positive int")
+
+    # Calculate finger width
+    finger_width = width / fingers
+    
+    # Calculate poly height for transistor finger
+    poly_height = finger_width + 2 * pdk.get_grule("poly", "active_diff")["overhang"]
+    
+    # Snap dimensions to grid
+    length = pdk.snap_to_2xgrid(length)
+    finger_width = pdk.snap_to_2xgrid(finger_width)
+    poly_height = pdk.snap_to_2xgrid(poly_height)
+    
+    # figure out poly (gate) spacing: s/d metal doesnt overlap transistor, s/d min seperation criteria is met
+    sd_viaxdim = interfinger_rmult * evaluate_bbox(via_stack(pdk, "active_diff", "met1"))[0]
+    poly_spacing = 2 * pdk.get_grule("poly", "mcon")["min_separation"] + pdk.get_grule("mcon")["width"]
+    poly_spacing = max(sd_viaxdim, poly_spacing)
+    met1_minsep = pdk.get_grule("met1")["min_separation"]
+    poly_spacing += met1_minsep if length < met1_minsep else 0
+    
+    # create a single finger
+    finger = Component("finger")
+    gate = finger << rectangle(size=(length, poly_height), layer=pdk.get_glayer("poly"), centered=True)
+    sd_viaarr = via_array(pdk, "active_diff", "met1", size=(sd_viaxdim, finger_width), minus1=True, lay_bottom=False).copy()
+    interfinger_correction = via_array(pdk, "met1", sd_route_topmet, size=(None, finger_width), lay_every_layer=True, num_vias=(1, None))
+    sd_viaarr << interfinger_correction
+    sd_viaarr_ref = finger << sd_viaarr
+    sd_viaarr_ref.movex((poly_spacing + length) / 2)
+    finger.add_ports(gate.get_ports_list(), prefix="gate_")
+    finger.add_ports(sd_viaarr_ref.get_ports_list(), prefix="rightsd_")
+    
+    # create finger array
+    fingerarray = prec_array(finger, columns=4*fingers, rows=1, spacing=(poly_spacing + length, 1), absolute_spacing=True)
+    sd_via_ref_left = fingerarray << sd_viaarr
+    sd_via_ref_left.movex(0 - (poly_spacing + length) / 2)
+    fingerarray.add_ports(sd_via_ref_left.get_ports_list(), prefix="leftsd_")
+    
+    # center finger array and add ports
+    centered_farray = Component()
+    fingerarray_ref_center = prec_ref_center(fingerarray)
+    centered_farray.add(fingerarray_ref_center)
+    centered_farray.add_ports(fingerarray_ref_center.get_ports_list())
+    
+    # add extra gates at far left and far right after centering
+    spacing = poly_spacing + length  # same spacing as used in the array
+    # Calculate positions relative to outermost finger centers, not bbox edges
+    num_fingers = 4 * fingers
+    leftmost_finger_center = -(num_fingers - 1) * spacing / 2
+    rightmost_finger_center = (num_fingers - 1) * spacing / 2
+    left_gate = centered_farray << rectangle(size=(length, poly_height), layer=pdk.get_glayer("poly"), centered=True)
+    left_gate.movex(leftmost_finger_center - spacing)
+    right_gate = centered_farray << rectangle(size=(length, poly_height), layer=pdk.get_glayer("poly"), centered=True)
+    right_gate.movex(rightmost_finger_center + spacing)
+    centered_farray.add_ports(left_gate.get_ports_list(), prefix="leftgate_")
+    centered_farray.add_ports(right_gate.get_ports_list(), prefix="rightgate_")
+    
+    # create diffusion and +doped region
+    multiplier = rename_ports_by_orientation(centered_farray)
+    diff_extra_enc = 2 * pdk.get_grule("mcon", "active_diff")["min_enclosure"]
+    diff_dims = (diff_extra_enc + evaluate_bbox(multiplier)[0], finger_width)
+    diff = multiplier << rectangle(size=diff_dims, layer=pdk.get_glayer("active_diff"), centered=True)
+    sd_diff_ovhg = pdk.get_grule("n+s/d", "active_diff")["min_enclosure"]  # Using n+s/d for NMOS
+    sdlayer_dims = [dim + 2 * sd_diff_ovhg for dim in diff_dims]
+    sdlayer_ref = multiplier << rectangle(size=sdlayer_dims, layer=pdk.get_glayer("n+s/d"), centered=True)
+    multiplier.add_ports(sdlayer_ref.get_ports_list(), prefix="plusdoped_")
+    multiplier.add_ports(diff.get_ports_list(), prefix="diff_")
+
+    return multiplier
+
+
 def add_via_pins_and_labels(
     top_level: Component,
     via_ref: Component,
@@ -287,61 +390,21 @@ def create_LO_diff_pairs(
     finger_width = pdk.snap_to_2xgrid(finger_width)
     poly_height = pdk.snap_to_2xgrid(poly_height)
     # sizing_ref_viastack = via_stack(pdk, "active_diff", "met1")
-    
-    # figure out poly (gate) spacing: s/d metal doesnt overlap transistor, s/d min seperation criteria is met
-    sd_viaxdim = interfinger_rmult * evaluate_bbox(via_stack(pdk, "active_diff", "met1"))[0]
-    poly_spacing = 2 * pdk.get_grule("poly", "mcon")["min_separation"] + pdk.get_grule("mcon")["width"]
-    poly_spacing = max(sd_viaxdim, poly_spacing)
-    met1_minsep = pdk.get_grule("met1")["min_separation"]
-    poly_spacing += met1_minsep if length < met1_minsep else 0
-    
-    # create a single finger
-    finger = Component("finger")
-    gate = finger << rectangle(size=(length, poly_height), layer=pdk.get_glayer("poly"), centered=True)
-    sd_viaarr = via_array(pdk, "active_diff", "met1", size=(sd_viaxdim, finger_width), minus1=True, lay_bottom=False).copy()
-    interfinger_correction = via_array(pdk, "met1", sd_route_topmet, size=(None, finger_width), lay_every_layer=True, num_vias=(1, None))
-    sd_viaarr << interfinger_correction
-    sd_viaarr_ref = finger << sd_viaarr
-    sd_viaarr_ref.movex((poly_spacing + length) / 2)
-    finger.add_ports(gate.get_ports_list(), prefix="gate_")
-    finger.add_ports(sd_viaarr_ref.get_ports_list(), prefix="rightsd_")
-    
-    # create finger array
-    fingerarray = prec_array(finger, columns=4*fingers, rows=1, spacing=(poly_spacing + length, 1), absolute_spacing=True)
-    sd_via_ref_left = fingerarray << sd_viaarr
-    sd_via_ref_left.movex(0 - (poly_spacing + length) / 2)
-    fingerarray.add_ports(sd_via_ref_left.get_ports_list(), prefix="leftsd_")
-    
-    # center finger array and add ports
-    centered_farray = Component()
-    fingerarray_ref_center = prec_ref_center(fingerarray)
-    centered_farray.add(fingerarray_ref_center)
-    centered_farray.add_ports(fingerarray_ref_center.get_ports_list())
 
-    # add extra dummy gates at far left and far right after centering
-    spacing = poly_spacing + length  # same spacing as used in the array
-    # Calculate positions relative to outermost finger centers, and place accordingly
-    num_fingers = 4 * fingers
-    leftmost_finger_center = -(num_fingers - 1) * spacing / 2
-    rightmost_finger_center = (num_fingers - 1) * spacing / 2
-    left_dummy_gate = centered_farray << rectangle(size=(length, poly_height), layer=pdk.get_glayer("poly"), centered=True)
-    left_dummy_gate.movex(leftmost_finger_center - spacing)
-    right_dummy_gate = centered_farray << rectangle(size=(length, poly_height), layer=pdk.get_glayer("poly"), centered=True)
-    right_dummy_gate.movex(rightmost_finger_center + spacing)
-    centered_farray.add_ports(left_dummy_gate.get_ports_list(), prefix="dummy_gate_L_")
-    centered_farray.add_ports(right_dummy_gate.get_ports_list(), prefix="dummy_gate_R_")
     
-    # create diffusion and +doped region
-    multiplier = rename_ports_by_orientation(centered_farray)
-    diff_extra_enc = 2 * pdk.get_grule("mcon", "active_diff")["min_enclosure"]
-    diff_dims = (diff_extra_enc + evaluate_bbox(multiplier)[0], finger_width)
-    diff = multiplier << rectangle(size=diff_dims, layer=pdk.get_glayer("active_diff"), centered=True)
-    sd_diff_ovhg = pdk.get_grule("n+s/d", "active_diff")["min_enclosure"]  # Using n+s/d for NMOS
-    sdlayer_dims = [dim + 2 * sd_diff_ovhg for dim in diff_dims]
-    sdlayer_ref = multiplier << rectangle(size=sdlayer_dims, layer=pdk.get_glayer("n+s/d"), centered=True)
-    multiplier.add_ports(sdlayer_ref.get_ports_list(), prefix="plusdoped_")
-    multiplier.add_ports(diff.get_ports_list(), prefix="diff_")
-
+    # Create finger array using the internal function
+    multiplier = _create_finger_array(
+        pdk=pdk,
+        width=width,
+        fingers=fingers,
+        length=length,
+        sdlayer=sdlayer,
+        sd_route_topmet=sd_route_topmet,
+        interfinger_rmult=interfinger_rmult,
+        sd_rmult=sd_rmult,
+        gate_rmult=gate_rmult
+    )
+    
     
     """Generic poly/sd vias generator
     args:
