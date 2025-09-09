@@ -225,6 +225,7 @@ def create_LO_diff_pairs(
     fingers: int,
     LO_FET_kwargs: dict,
     length: Optional[float] = None,
+    tie: Optional[bool] = True,
 ) -> Component:
     """
     Create interdigitized LO differential pairs for Gilbert cell mixer.
@@ -265,6 +266,7 @@ def create_LO_diff_pairs(
     interfinger_rmult = LO_FET_kwargs.get("interfinger_rmult", 1)
     sd_route_extension = LO_FET_kwargs.get("sd_route_extension", 0)
     gate_route_extension = LO_FET_kwargs.get("gate_route_extension", 0)
+    tie_layers = LO_FET_kwargs.get("tie_layers", ("met2","met1"))
 
     # error checking
     if "+s/d" not in sdlayer:
@@ -315,6 +317,19 @@ def create_LO_diff_pairs(
     fingerarray_ref_center = prec_ref_center(fingerarray)
     centered_farray.add(fingerarray_ref_center)
     centered_farray.add_ports(fingerarray_ref_center.get_ports_list())
+
+    # add extra dummy gates at far left and far right after centering
+    spacing = poly_spacing + length  # same spacing as used in the array
+    # Calculate positions relative to outermost finger centers, and place accordingly
+    num_fingers = 4 * fingers
+    leftmost_finger_center = -(num_fingers - 1) * spacing / 2
+    rightmost_finger_center = (num_fingers - 1) * spacing / 2
+    left_dummy_gate = centered_farray << rectangle(size=(length, poly_height), layer=pdk.get_glayer("poly"), centered=True)
+    left_dummy_gate.movex(leftmost_finger_center - spacing)
+    right_dummy_gate = centered_farray << rectangle(size=(length, poly_height), layer=pdk.get_glayer("poly"), centered=True)
+    right_dummy_gate.movex(rightmost_finger_center + spacing)
+    centered_farray.add_ports(left_dummy_gate.get_ports_list(), prefix="dummy_gate_L_")
+    centered_farray.add_ports(right_dummy_gate.get_ports_list(), prefix="dummy_gate_R_")
     
     # create diffusion and +doped region
     multiplier = rename_ports_by_orientation(centered_farray)
@@ -617,11 +632,13 @@ def create_LO_diff_pairs(
     # add tapring
 
     # add tie if tie
-    if with_tie:
+    if tie:
         tap_separation = max(
-            pdk.util_max_metal_seperation(),
-            pdk.get_grule("active_diff", "active_tap")["min_separation"],
-        )
+                pdk.get_grule("met2")["min_separation"],
+                pdk.get_grule("met1")["min_separation"],
+                pdk.get_grule("active_diff", "active_tap")["min_separation"],
+                )
+
         tap_separation += pdk.get_grule("p+s/d", "active_tap")["min_enclosure"]
         tap_encloses = (
             2 * (tap_separation + multiplier.xmax),
@@ -635,12 +652,14 @@ def create_LO_diff_pairs(
             vertical_glayer=tie_layers[1],
         )
         multiplier.add_ports(tiering_ref.get_ports_list(), prefix="tie_")
-        for row in range(multipliers):
+        """
+        for row in range(m):
             for dummyside,tieside in [("L","W"),("R","E")]:
                 try:
                     multiplier<<straight_route(pdk,multiplier.ports[f"multiplier_{row}_dummy_{dummyside}_gsdcon_top_met_W"],multiplier.ports[f"tie_{tieside}_top_met_{tieside}"],glayer2="met1")
                 except KeyError:
                     pass
+        """
     # add pwell
     multiplier.add_padding(
         layers=(pdk.get_glayer("pwell"),),
