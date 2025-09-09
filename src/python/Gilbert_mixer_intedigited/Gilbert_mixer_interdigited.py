@@ -566,7 +566,7 @@ def create_LO_diff_pairs(
             multiplier << straight_route(pdk,rel_gate_aligning_port,psuedo_Ngateroute)
         # place route met: gate, horziontal
         # print(f"DEBUG: fingers:: {fingers}")
-        print(f"DEBUG: Gate ports: {gate_ports}")
+        # print(f"DEBUG: Gate ports: {gate_ports}")
         gate_width = multiplier.ports[f"gate_port_vroute_{4*fingers-2}"].center[0] - multiplier.ports["gate_port_vroute_0"].center[0] + rel_gate_aligning_port.width
         gate_route = rename_ports_by_list(via_array(pdk,"poly",gate_route_topmet, size=(gate_width,None),num_vias=(None,gate_rmult), no_exception=True, fullbottom=True),[("top_met_","gate_top_")])
         # North gate
@@ -614,6 +614,41 @@ def create_LO_diff_pairs(
         # multiplier.add_ports(gate_ref.get_ports_list(prefix="gate_"))
         # multiplier.add_ports(gate_ref.get_ports_list(prefix="gate_"))
 
+    # add tapring
+
+    # add tie if tie
+    if with_tie:
+        tap_separation = max(
+            pdk.util_max_metal_seperation(),
+            pdk.get_grule("active_diff", "active_tap")["min_separation"],
+        )
+        tap_separation += pdk.get_grule("p+s/d", "active_tap")["min_enclosure"]
+        tap_encloses = (
+            2 * (tap_separation + multiplier.xmax),
+            2 * (tap_separation + multiplier.ymax),
+        )
+        tiering_ref = multiplier << tapring(
+            pdk,
+            enclosed_rectangle=tap_encloses,
+            sdlayer="p+s/d",
+            horizontal_glayer=tie_layers[0],
+            vertical_glayer=tie_layers[1],
+        )
+        multiplier.add_ports(tiering_ref.get_ports_list(), prefix="tie_")
+        for row in range(multipliers):
+            for dummyside,tieside in [("L","W"),("R","E")]:
+                try:
+                    multiplier<<straight_route(pdk,multiplier.ports[f"multiplier_{row}_dummy_{dummyside}_gsdcon_top_met_W"],multiplier.ports[f"tie_{tieside}_top_met_{tieside}"],glayer2="met1")
+                except KeyError:
+                    pass
+    # add pwell
+    multiplier.add_padding(
+        layers=(pdk.get_glayer("pwell"),),
+        default=pdk.get_grule("pwell", "active_tap")["min_enclosure"],
+    )
+    multiplier = add_ports_perimeter(multiplier,layer=pdk.get_glayer("pwell"),prefix="well_")
+    
+ 
     # Create final interdigitized component
     lo_diff_pairs = component_snap_to_grid(rename_ports_by_orientation(multiplier))
     lo_diff_pairs.name = "LO_diff_pairs_interdigitized"
