@@ -35,7 +35,8 @@ def _create_finger_array(
     sd_route_topmet: str,
     interfinger_rmult: int,
     sd_rmult: int,
-    gate_rmult: int
+    gate_rmult: int,
+    with_dummies: bool,
 ) -> Component:
     """
     Internal function to create a finger array with extra edge gates.
@@ -50,6 +51,7 @@ def _create_finger_array(
         interfinger_rmult: Routing multiplier for interfinger connections
         sd_rmult: Source/drain routing multiplier
         gate_rmult: Gate routing multiplier
+        with_dummies: include dummy gates at the end of the finger array, connected to tie ring
     
     Returns:
         Component: Finger array with diffusion, doping, and extra edge gates
@@ -102,18 +104,19 @@ def _create_finger_array(
     centered_farray.add(fingerarray_ref_center)
     centered_farray.add_ports(fingerarray_ref_center.get_ports_list())
     
-    # add extra gates at far left and far right after centering
-    spacing = poly_spacing + length  # same spacing as used in the array
-    # Calculate positions relative to outermost finger centers, not bbox edges
-    num_fingers = fets * fingers
-    leftmost_finger_center = -(num_fingers - 1) * spacing / 2
-    rightmost_finger_center = (num_fingers - 1) * spacing / 2
-    left_dummy_gate = centered_farray << rectangle(size=(length, poly_height), layer=pdk.get_glayer("poly"), centered=True)
-    left_dummy_gate.movex(leftmost_finger_center - spacing)
-    right_dummy_gate = centered_farray << rectangle(size=(length, poly_height), layer=pdk.get_glayer("poly"), centered=True)
-    right_dummy_gate.movex(rightmost_finger_center + spacing)
-    centered_farray.add_ports(left_dummy_gate.get_ports_list(), prefix="dummy_gate_L_")
-    centered_farray.add_ports(right_dummy_gate.get_ports_list(), prefix="dummy_gate_R_")
+    if with_dummies:
+        # add extra gates at far left and far right after centering
+        spacing = poly_spacing + length  # same spacing as used in the array
+        # Calculate positions relative to outermost finger centers, not bbox edges
+        num_fingers = fets * fingers
+        leftmost_finger_center = -(num_fingers - 1) * spacing / 2
+        rightmost_finger_center = (num_fingers - 1) * spacing / 2
+        left_dummy_gate = centered_farray << rectangle(size=(length, poly_height), layer=pdk.get_glayer("poly"), centered=True)
+        left_dummy_gate.movex(leftmost_finger_center - spacing)
+        right_dummy_gate = centered_farray << rectangle(size=(length, poly_height), layer=pdk.get_glayer("poly"), centered=True)
+        right_dummy_gate.movex(rightmost_finger_center + spacing)
+        centered_farray.add_ports(left_dummy_gate.get_ports_list(), prefix="dummy_gate_L_")
+        centered_farray.add_ports(right_dummy_gate.get_ports_list(), prefix="dummy_gate_R_")
     
     # create diffusion and +doped region
     multiplier = rename_ports_by_orientation(centered_farray)
@@ -158,11 +161,6 @@ def _add_source_drain_gate_routing(
         gate_route_extension: Extension for gate connections
         interfinger_rmult: Interfinger routing multiplier
     """
-    from glayout import via_stack, via_array
-    from glayout.routing.straight_route import straight_route
-    from glayout.util.comp_utils import align_comp_to_port
-    from glayout.util.port_utils import rename_ports_by_list
-    
     number_sd_rows = 0
     # print(f"DEBUG: multiplier ports, just before adding sd vias: {multiplier.ports}")
     for port_name in multiplier.ports.keys():
@@ -588,6 +586,7 @@ def create_LO_diff_pairs(
     sd_route_extension = LO_FET_kwargs.get("sd_route_extension", 0)  # float, how far extra to extend the source/drain connections
     gate_route_extension = LO_FET_kwargs.get("gate_route_extension", 0)  # float, how far extra to extend the gate connection
     tie_layers = LO_FET_kwargs.get("tie_layers", ("met2","met1"))  # layers for tie ring (horizontal, vertical)
+    with_dummies = LO_FET_kwargs.get("with_dummies", False)  # whether to include dummy gates connected to the tiering
 
     # error checking
     if "+s/d" not in sdlayer:
@@ -619,7 +618,8 @@ def create_LO_diff_pairs(
         sd_route_topmet=sd_route_topmet,
         interfinger_rmult=interfinger_rmult,
         sd_rmult=sd_rmult,
-        gate_rmult=gate_rmult
+        gate_rmult=gate_rmult,
+        with_dummies=with_dummies
     )
 
     # dummy_gate_ports = {name: port for name, port in multiplier.ports.items() if "dummy" in name}
@@ -650,10 +650,9 @@ def create_LO_diff_pairs(
     """
 
     # argument parsing and rule setup
-    min_length = pdk.get_grule("poly")["min_width"]
-    length = min_length if (length or min_length) <= min_length else length
+    min_width = pdk.get_grule("poly")["min_width"]
     length = pdk.snap_to_2xgrid(length)
-    min_width = max(min_length, pdk.get_grule("active_diff")["min_width"])
+    min_width = max(min_width, pdk.get_grule("active_diff")["min_width"])
     width = min_width if (width or min_width) <= min_width else finger_width
     width = pdk.snap_to_2xgrid(width)
     # print(f"DEBUG: width: {width}")
@@ -708,19 +707,20 @@ def create_LO_diff_pairs(
     # print(f"DEBUG: tie ports: {tie_ports}")
 
     # route dummies
-    multiplier << straight_route(pdk, 
-            multiplier.ports["dummy_gate_L_W"] , 
-            multiplier.ports["tie_W_bottom_lay_E"],
-            glayer1 = "poly",
-            glayer2 = "met1",
-            )
+    if with_dummies:
+        multiplier << straight_route(pdk, 
+                multiplier.ports["dummy_gate_L_W"] , 
+                multiplier.ports["tie_W_bottom_lay_E"],
+                glayer1 = "poly",
+                glayer2 = "met1",
+                )
 
-    multiplier << straight_route(pdk, 
-            multiplier.ports["dummy_gate_R_E"] , 
-            multiplier.ports["tie_E_bottom_lay_W"],
-            glayer1 = "poly",
-            glayer2 = "met1",
-            )
+        multiplier << straight_route(pdk, 
+                multiplier.ports["dummy_gate_R_E"] , 
+                multiplier.ports["tie_E_bottom_lay_W"],
+                glayer1 = "poly",
+                glayer2 = "met1",
+                )
 
     # Create final interdigitized component
     lo_diff_pairs = component_snap_to_grid(rename_ports_by_orientation(multiplier))
@@ -773,7 +773,8 @@ if __name__ == "__main__":
 
     sep = max(sep_met1, sep_met2)
     
-    create_LO_vias_outside_tapring_and_route(pdk_choice,
+    
+    via_port_LO_ref, via_port_LO_b_ref, via_port_1_ref, via_port_2_ref, via_port_3_ref, via_port_4_ref = create_LO_vias_outside_tapring_and_route(pdk_choice,
             LO_diff_pairs_ref,
             comp,
             )
