@@ -192,6 +192,14 @@ def _add_source_drain_gate_routing(
     --- LO_1_drain  (port1)   --- * extends to the left
     --- LO_1_source (port3)   --- * extends to the right
     --- LO_1_gate_LO          ---
+
+    --- LO2_gate_LO_b         ---
+    --- LO2_drain   (port4)   --- * extends to the right
+    --- LO_1_source (port3)   --- * extends to the right
+    --- finger array          ---
+    --- LO2_source  (port2)   --- * extends to the right 
+    --- LO_1_drain  (port1)   --- * extends to the left
+    --- LO_1_gate_LO          ---
     """
     for finger in range(4*fingers+1):
         """ 
@@ -207,8 +215,29 @@ def _add_source_drain_gate_routing(
         check_port_3 = (finger % 4 == 0 )
         check_port_4 = (finger % 4 == 2 )
 
+
+        # port 1 (source B/source A)
+        if check_port_1:
+            aligning_port_name = f"row0_col{finger-1}_rightsd_array_row0_col0_top_met_N"
+            rel_align_port = multiplier.ports[aligning_port_name]
+            y_align_via = -width/2
+            alignment_port=('c', 'b')
+
+            sdvia_extension = -(sdroute_minsep + sdroute_minsep + (sdmet_height/2 + sdmet_height))
+            sd_route_extension_temp =  -pdk.snap_to_2xgrid(sd_route_extension)
+
+        # port 2 (source C/source D)
+        elif check_port_2:
+            aligning_port_name = f"row0_col{finger-1}_rightsd_array_row0_col0_top_met_N"
+            rel_align_port = multiplier.ports[aligning_port_name]
+            y_align_via = -width/2
+            alignment_port=('c', 'b')
+
+            sdvia_extension = -(sdroute_minsep + (sdmet_height)/2)
+            sd_route_extension_temp = -pdk.snap_to_2xgrid(sd_route_extension)
+
         # port 3 (drain A/drain C)
-        if check_port_3:
+        elif check_port_3:
             if finger != 0:
                 aligning_port_name = f"row0_col{finger-1}_rightsd_array_row{number_sd_rows}_col0_top_met_N"
                 rel_align_port = multiplier.ports[aligning_port_name]
@@ -220,22 +249,11 @@ def _add_source_drain_gate_routing(
                 # by interfinger_rmult, since this uses a different port
                 rel_align_port.width = rel_align_port.width / interfinger_rmult 
 
-            y_align_via = -width/2
-            alignment_port=('c', 'b')
+            y_align_via = width/2
+            alignment_port=('c', 't')
 
-            #sdvia_extension = sdroute_minsep + (sdmet_height)/2
-            sdvia_extension = -(sdroute_minsep + sdroute_minsep + (sdmet_height/2 + sdmet_height))
-            sd_route_extension_temp =  -pdk.snap_to_2xgrid(sd_route_extension)
-
-        # port 1 (source B/source A)
-        elif check_port_1:
-            aligning_port_name = f"row0_col{finger-1}_rightsd_array_row0_col0_top_met_N"
-            rel_align_port = multiplier.ports[aligning_port_name]
-            y_align_via = -width/2
-            alignment_port=('c', 'b')
-
-            sdvia_extension = -(sdroute_minsep + (sdmet_height)/2)
-            sd_route_extension_temp = -pdk.snap_to_2xgrid(sd_route_extension)
+            sdvia_extension = +(sdroute_minsep + (sdmet_height)/2)
+            sd_route_extension_temp = pdk.snap_to_2xgrid(sd_route_extension)
 
         # port 4 (drain D/drain B)
         elif check_port_4:
@@ -244,18 +262,10 @@ def _add_source_drain_gate_routing(
             y_align_via = width/2
             alignment_port=('c', 't')
 
-            sdvia_extension = sdroute_minsep + sdroute_minsep + (sdmet_height/2 + sdmet_height)
-            sd_route_extension_temp = pdk.snap_to_2xgrid(sd_route_extension)
-
-        # port 2 (source C/source D)
-        elif check_port_2:
-            aligning_port_name = f"row0_col{finger-1}_rightsd_array_row0_col0_top_met_N"
-            rel_align_port = multiplier.ports[aligning_port_name]
-            y_align_via = width/2
-            alignment_port=('c', 't')
-
-            sdvia_extension = sdroute_minsep + (sdmet_height)/2
+            #sdvia_extension = sdroute_minsep + (sdmet_height)/2
+            sdvia_extension = +(sdroute_minsep + sdroute_minsep + (sdmet_height/2 + sdmet_height))
             sd_route_extension_temp =  pdk.snap_to_2xgrid(sd_route_extension)
+
 
         # diff_top_port = movey(rel_align_port,y_align_viaination=dest)
         # print(f"DEBUG: y_align_via: {y_align_via} ")
@@ -301,11 +311,11 @@ def _add_source_drain_gate_routing(
 
         """
         --- LO2_gate_LO_b         ---
-        --- LO2_source  (port2)   --- * extends to the right 
         --- LO2_drain   (port4)   --- * extends to the left
-        --- finger array          ---
-        --- LO_1_drain  (port1)   --- * extends to the left
         --- LO_1_source (port3)   --- * extends to the right
+        --- finger array          ---
+        --- LO2_source  (port2)   --- * extends to the right 
+        --- LO_1_drain  (port1)   --- * extends to the left
         --- LO_1_gate_LO          ---
         """
         # (dA sB dC sD)*4 _d
@@ -372,9 +382,9 @@ def _add_source_drain_gate_routing(
     # print(f"DEBUG: Unique Y coordinates: {unique_y_coords}")
     # print(f"DEBUG: Indices for each Y coordinate: {y_coord_indices}")
 
-    port_1_sd_index = y_coord_indices[1]
-    port_2_sd_index = y_coord_indices[2]
-    port_3_sd_index = y_coord_indices[0]
+    port_1_sd_index = y_coord_indices[0]
+    port_2_sd_index = y_coord_indices[1]
+    port_3_sd_index = y_coord_indices[2]
     port_4_sd_index = y_coord_indices[3]
     # print(f"DEBUG: sd_via_ports :{sdvia_ports}")
     # place route met: port_1 port_2 port_3 port_4
