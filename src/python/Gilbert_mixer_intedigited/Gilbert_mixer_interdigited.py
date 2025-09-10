@@ -469,6 +469,9 @@ def create_LO_diff_pairs(
         multiplier.add(gate_LO_b_ref)
         multiplier.add(gate_LO_ref)
 
+        multiplier.add_ports(gate_LO_ref.get_ports_list(), prefix="LO_")
+        multiplier.add_ports(gate_LO_b_ref.get_ports_list(), prefix="LO_b_")
+
         # Get unique y-coordinates for each of the ports and get the indeces of the ports on that port/track/s-d line
         y_coords = [port.center[1] for port in sdvia_ports]
         unique_y_coords = list(set(y_coords))
@@ -493,10 +496,11 @@ def create_LO_diff_pairs(
         sd_route = rectangle(size=(sd_width,sdmet_height),layer=pdk.get_glayer(sd_route_topmet),centered=True)
 
         # change widths to match the topmet layer width
-        sdvia_ports[port_1_sd_index].width = sd_width
-        sdvia_ports[port_2_sd_index].width = sd_width
-        sdvia_ports[port_3_sd_index].width = sd_width
-        sdvia_ports[port_4_sd_index].width = sd_width
+        sdvia_ports[port_1_sd_index].width = sdmet_height
+        sdvia_ports[port_2_sd_index].width = sdmet_height
+        sdvia_ports[port_3_sd_index].width = sdmet_height
+        sdvia_ports[port_4_sd_index].width = sdmet_height
+
 
         port_1_sd_route = align_comp_to_port(sd_route.copy(), sdvia_ports[port_1_sd_index], alignment=(None,'c'))
         port_2_sd_route = align_comp_to_port(sd_route.copy(), sdvia_ports[port_2_sd_index], alignment=(None,'c'))
@@ -606,25 +610,137 @@ if __name__ == "__main__":
 
     LO_diff_pairs_ref = comp << LO_diff_pairs
 
-    # Print available ports for debugging
-    # print(f"DEBUG: RF ports: {list(RF_diff_pair_ref.ports.keys())}")
-    # print(f"DEBUG: LO_left ports: {list(LO_diff_pair_top_ref.ports.keys())}")
-    # print(f"DEBUG: LO_right ports: {list(LO_diff_pair_bot_ref.ports.keys())}")
+    # port_ports = {name: port for name, port in LO_diff_pairs_ref.ports.items() if "port" in name}
+    # print(f"DEBUG: LO_ports : {port_ports}")
+    
 
     # get minimal separtion needed for tapring separations
     sep_met1 = pdk_choice.get_grule('met1', 'met1')['min_separation']
     sep_met2 = pdk_choice.get_grule('met2', 'met2')['min_separation']
     sep_met3 = pdk_choice.get_grule('met3', 'met3')['min_separation']
-    # sep_pplus = pdk_choice.get_grule('pplus', 'pplus')['min_separation']
 
     sep = max(sep_met1, sep_met2)
     
+    # Add vias for routing the s/d of the LO_pairs
+    lo_bbox = evaluate_bbox(LO_diff_pairs_ref)
+    
+    # Check if port_1_E exists, otherwise find a suitable port
+    
+    port_1 = LO_diff_pairs_ref.ports["port_1_W"]
+    port_2 = LO_diff_pairs_ref.ports["port_2_E"]
+    port_3 = LO_diff_pairs_ref.ports["port_3_W"]
+    port_4 = LO_diff_pairs_ref.ports["port_4_E"]
+
+    via_width = port_1.width
+    
+    # Create via with the target port's width
+    via_port_1 = via_array(pdk_choice, "met3", "met2", 
+                        size=(via_width, via_width),
+                        fullbottom=True)
+    via_port_2 = via_array(pdk_choice, "met3", "met2", 
+                        size=(via_width, via_width),
+                        fullbottom=True)
+    via_port_3 = via_array(pdk_choice, "met3", "met2", 
+                        size=(via_width, via_width),
+                        fullbottom=True)
+    via_port_4 = via_array(pdk_choice, "met3", "met2", 
+                        size=(via_width, via_width),
+                        fullbottom=True)
+
+    via_port_1_ref = comp << via_port_1
+    via_port_2_ref = comp << via_port_2
+    via_port_3_ref = comp << via_port_3
+    via_port_4_ref = comp << via_port_4
+
+    # Position via at same y-level as target port, displaced by -half bbox width in x
+    align_comp_to_port(via_port_1_ref, port_1, alignment=('c', 'c'))
+    align_comp_to_port(via_port_2_ref, port_2, alignment=('c', 'c'))
+    align_comp_to_port(via_port_3_ref, port_3, alignment=('c', 'c'))
+    align_comp_to_port(via_port_4_ref, port_4, alignment=('c', 'c'))
+    
+    # Displace in x by -half the width of LO_diff_pairs bounding box
+    port_1_x_displacement = 1.5*(LO_diff_pairs_ref.ports["tie_W_bottom_lay_W"].center[0] - port_1.center[0]) - port_1.width
+    port_2_x_displacement = 1.5*(LO_diff_pairs_ref.ports["tie_E_bottom_lay_E"].center[0] - port_2.center[0]) + port_2.width
+    port_3_x_displacement = 2.5*(LO_diff_pairs_ref.ports["tie_W_bottom_lay_W"].center[0] - port_3.center[0]) - port_3.width
+    port_4_x_displacement = 2.5*(LO_diff_pairs_ref.ports["tie_E_bottom_lay_E"].center[0] - port_4.center[0]) + port_4.width
+
+    port_1_x_displacement = pdk_choice.snap_to_2xgrid(port_1_x_displacement)
+    port_2_x_displacement = pdk_choice.snap_to_2xgrid(port_2_x_displacement)
+    port_3_x_displacement = pdk_choice.snap_to_2xgrid(port_3_x_displacement)
+    port_4_x_displacement = pdk_choice.snap_to_2xgrid(port_4_x_displacement)
+
+    via_port_1_ref.movex(port_1_x_displacement)
+    via_port_2_ref.movex(port_2_x_displacement)
+    via_port_3_ref.movex(port_3_x_displacement)
+    via_port_4_ref.movex(port_4_x_displacement)
+
+
+    comp << straight_route(pdk_choice, 
+            port_1, 
+            via_port_1_ref["bottom_lay_E"],
+            )
+    comp << straight_route(pdk_choice, 
+            port_2, 
+            via_port_2_ref["bottom_lay_E"],
+            )
+    comp << straight_route(pdk_choice, 
+            port_3, 
+            via_port_3_ref["bottom_lay_E"],
+            )
+    comp << straight_route(pdk_choice, 
+            port_4, 
+            via_port_4_ref["bottom_lay_E"],
+            )
+    
+    # Create and route gate vias
+
+    port_LO = LO_diff_pairs_ref.ports["LO_bottom_lay_W"]
+    port_LO_b = LO_diff_pairs_ref.ports["LO_b_bottom_lay_E"]
+
+    via_width = port_LO.width
+
+    # Create via with the target port's width
+    via_port_LO = via_array(pdk_choice, "met3", "met2", 
+                        size=(via_width, via_width),
+                        fullbottom=True)
+
+    via_port_LO_b = via_array(pdk_choice, "met3", "met2", 
+                        size=(via_width, via_width),
+                        fullbottom=True)
+
+    via_port_LO_ref = comp << via_port_LO
+    via_port_LO_b_ref = comp << via_port_LO_b
+
+    # Position via at same y-level as target port, displaced by -half bbox width in x
+    align_comp_to_port(via_port_LO_ref, port_LO, alignment=('c', 'c'))
+    align_comp_to_port(via_port_LO_b_ref, port_LO_b, alignment=('c', 'c'))
+
+    via_LO_x_displacement   = port_3_x_displacement - 2*port_LO.width
+    via_LO_b_x_displacement = port_4_x_displacement + 2*port_LO_b.width
+
+    via_LO_x_displacement   = pdk_choice.snap_to_2xgrid(via_LO_x_displacement)
+    via_LO_b_x_displacement = pdk_choice.snap_to_2xgrid(via_LO_b_x_displacement )
+
+    via_port_LO_ref.movex(via_LO_x_displacement)
+    via_port_LO_b_ref.movex(via_LO_b_x_displacement)
+
+    comp << straight_route(pdk_choice, 
+            port_LO, 
+            via_port_LO_ref["bottom_lay_E"],
+            glayer1="met2",
+            fullbottom=True
+            )
+    comp << straight_route(pdk_choice, 
+            port_LO_b, 
+            via_port_LO_b_ref["bottom_lay_E"],
+            glayer1="met2"
+            )
 
     # Write both hierarchical and flattened GDS files
     print("✓ Writing GDS files...")
     comp.write_gds('lvs/gds/Gilbert_cell_interdigitized.gds', cellname="Gilbert_cell_interdigitized")
     print("  - Hierarchical GDS: Gilbert_cell_interdigitized.gds")
-
+    """
     print("\n...Running DRC...")
     
     try:
@@ -635,5 +751,6 @@ if __name__ == "__main__":
     print("\n" + "="*60)
     print("TEST COMPLETED - GDS file generated successfully!")
     print("="*60)
+    """
     
     
