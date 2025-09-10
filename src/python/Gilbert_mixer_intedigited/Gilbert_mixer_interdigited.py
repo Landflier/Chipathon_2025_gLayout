@@ -128,199 +128,12 @@ def _create_finger_array(
 
     return multiplier
 
-
-def add_via_pins_and_labels(
-    top_level: Component,
-    via_ref: Component,
-    pin_name: str,
-    pdk: MappedPDK,
-    pin_layer: str = "met4",
-    debug_mode: str = True,
-) -> Component:
+def create_LO_vias_outside_tapring_and_route(
+        pdk: MappedPDK,
+        LO_diff_pair: Component,
+        ) -> Component:
     """
-    Add pins and labels to a via for external connectivity.
-    
-    Args:
-        top_level: Component to add pins and labels to
-        via_ref: Reference to the via component
-        pin_name: Name for the pin and label
-        pdk: PDK for layer information
-        pin_layer: Metal layer for the pin (default: "met4")
-        debug_mode: whether to show rectangles where the pin should be
-    
-    Returns:
-        Component: The modified top_level component
     """
-
-    top_level.unlock()
-    
-    # print(f"DEBUG: {via_ref.ports}")
-    # print(f"DEBUG: {via_ref.center}")
-    # print(f"DEBUG: {via_ref.size}")
-    # Get via center and size
-    via_center = via_ref.center
-    via_size = via_ref.size
-    
-    # Use the largest dimension for pin size
-    pin_size = max(via_size[0], via_size[1])
-    
-    # Get the metal layer and convert to pin/label layers using diff_pair function
-    metal_layer = pdk.get_glayer(pin_layer)
-    
-    # Get pin and label layers - dynamic layer from via top metal layer
-    pin_layer_gds, label_layer_gds = get_pin_layers(metal_layer, pdk)
-    
-    # Create visual pin rectangle following diff_pair pattern
-    top_level.add_label(text=pin_name, position=via_center, layer=label_layer_gds)
-    
-    if debug_mode:
-        pin_label = rectangle(layer=pin_layer_gds, size=(pin_size, pin_size), centered=True).copy()
-        pin_label_ref = top_level << pin_label
-        pin_label_ref.move(via_center)
-    
-    # Add electrical ports for connectivity using the via center
-    # Create ports with all four orientations (E=0°, N=90°, W=180°, S=270°)
-    top_level.add_port(
-        center=via_center,
-        width=pin_size,
-        orientation=0,  # East orientation
-        layer=metal_layer,
-        name=f"{pin_name}_E"
-    )
-    top_level.add_port(
-        center=via_center,
-        width=pin_size,
-        orientation=90,  # North orientation
-        layer=metal_layer,
-        name=f"{pin_name}_N"
-    )
-    top_level.add_port(
-        center=via_center,
-        width=pin_size,
-        orientation=180,  # West orientation
-        layer=metal_layer,
-        name=f"{pin_name}_W"
-    )
-    top_level.add_port(
-        center=via_center,
-        width=pin_size,
-        orientation=270,  # South orientation
-        layer=metal_layer,
-        name=f"{pin_name}_S"
-    )
-    
-    return top_level
-
-# Routing the LO drains towards VDD and outside pins
-def create_vias_and_route(comp, pin1, pin2, pin3, pin4, pdk_choice, lo_bbox, offset=1.0, route_hlayer="met2", route_vlayer="met3", via_top_layer="met4", via_bottom_layer="met3"):
-    """
-    Create vias and routing for 4 drain pins in pairs.
-    
-    Args:
-        comp: Component to add vias and routing to
-        pin1, pin2: First pair of pins to connect (e.g., left M1, right M1)
-        pin3, pin4: Second pair of pins to connect (e.g., left M2, right M2)
-        pdk_choice: PDK choice for via creation
-        lo_bbox: Width/edge dimension of the LO bbox for positioning calculation
-        offset: Offset for the vias (default: 1.0)
-        route_hlayer: Layer for horizontal routing (default: "met2")
-        route_vlayer: Layer for vertical routing (default: "met3")
-        via_top_layer: Top metal layer for vias (default: "met4")
-        via_bottom_layer: Bottom metal layer for vias (default: "met3")
-    
-    Returns:
-        Tuple of (via1_ref, via2_ref) - references to the created vias
-    """
-    # print(f"DEBUG: offset: {offset}")
-    # Get pin properties
-    pin_width = pin1.width
-    pin1_center = pin1.center
-    pin2_center = pin2.center
-    pin3_center = pin3.center
-    pin4_center = pin4.center
-    
-    # Calculate Y positions (middle of each pair)
-    via1_y = (pin1_center[1] + pin2_center[1]) / 2
-    via2_y = (pin3_center[1] + pin4_center[1]) / 2
-    
-    sep_met_vlayer = pdk_choice.get_grule(route_vlayer, route_vlayer)['min_separation']
-    # Calculate via X positions: 0.5um right of the right border of each tapring
-    via1_x = pin1_center[0] + lo_bbox / 2 + offset  # Right edge of left tapring + 1.0um (default offset)
-    via2_x = pin2_center[0] + lo_bbox / 2 + offset + pin_width + sep_met_vlayer  # Right edge of left tapring + 1.0um (default offset)
-
-   # Create vias (square, matching the pin width)
-    via1 = via_array(pdk_choice, via_top_layer, via_bottom_layer, 
-                     size=(pin_width, pin_width),
-                     fullbottom=True)
-    via2 = via_array(pdk_choice, via_top_layer, via_bottom_layer, 
-                     size=(pin_width, pin_width),
-                     fullbottom=True)
-    
-    # Add vias to component and position them
-    via1_ref = comp << via1
-    via2_ref = comp << via2
-    
-    via1_ref.move((via1_x, via1_y))
-    via2_ref.move((via2_x, via2_y))
-    
-    # Create L-routes for each pin to its respective via
-    route1 = L_route(
-        pdk_choice, 
-        pin1,
-        via1_ref['top_met_N'],
-        hglayer=route_hlayer,
-        vglayer=route_vlayer
-    )
-    route2 = L_route(
-        pdk_choice, 
-        pin2,
-        via1_ref['top_met_N'],
-        hglayer=route_hlayer,
-        vglayer=route_vlayer
-    )
-    route3 = L_route(
-        pdk_choice, 
-        pin3,
-        via2_ref['top_met_N'],
-        hglayer=route_hlayer,
-        vglayer=route_vlayer
-    )
-    route4 = L_route(
-        pdk_choice, 
-        pin4,
-        via2_ref['top_met_N'],
-        hglayer=route_hlayer,
-        vglayer=route_vlayer
-    )
-    
-    # Add routes to component
-    comp << route1
-    comp << route2
-    comp << route3
-    comp << route4
-    
-    return via1_ref, via2_ref
-
-
-def create_labels_and_ports(
-    top_level: Component,
-    pdk: MappedPDK,
-    debug_mode: bool = True
-) -> Component:
-    """
-    Add electrical ports and labels to a top-level design component.
-    Similar to add_via_pins_and_labels() but for complete design labeling.
-    
-    Args:
-        top_level: Component to add ports and labels to
-        pdk: PDK for layer information and design rules
-        debug_mode: If True, add visual pin rectangles for debugging
-    
-    Returns:
-        Component: The modified top_level component with added ports and labels
-    """
-    # TODO: Implementation needed
-    pass
 
 
 def create_LO_diff_pairs(
@@ -678,6 +491,13 @@ def create_LO_diff_pairs(
         # place route met: port_1 port_2 port_3 port_4
         sd_width = sdvia_ports[-1].center[0] - sdvia_ports[0].center[0]
         sd_route = rectangle(size=(sd_width,sdmet_height),layer=pdk.get_glayer(sd_route_topmet),centered=True)
+
+        # change widths to match the topmet layer width
+        sdvia_ports[port_1_sd_index].width = sd_width
+        sdvia_ports[port_2_sd_index].width = sd_width
+        sdvia_ports[port_3_sd_index].width = sd_width
+        sdvia_ports[port_4_sd_index].width = sd_width
+
         port_1_sd_route = align_comp_to_port(sd_route.copy(), sdvia_ports[port_1_sd_index], alignment=(None,'c'))
         port_2_sd_route = align_comp_to_port(sd_route.copy(), sdvia_ports[port_2_sd_index], alignment=(None,'c'))
         port_3_sd_route = align_comp_to_port(sd_route.copy(), sdvia_ports[port_3_sd_index], alignment=(None,'c'))
@@ -755,6 +575,8 @@ def create_LO_diff_pairs(
 
 if __name__ == "__main__":
     
+    from diff_pair import diff_pair, get_pin_layers
+
     pdk_choice = gf180
 
     LO_FET_kwargs = {
