@@ -1,0 +1,30 @@
+* NGSPICE file created from Gilbert_cell_layout.ext - technology: gf180mcuD
+
+.subckt Unnamed_94182174$1 a_n572_n222# a_2756_n220# a_n856_n222# a_n1750_n914# a_3040_n220#
++ a_1862_n912# a_2984_n750# a_n628_n748#
+X0 a_n572_n222# a_n628_n748# a_n856_n222# a_n1750_n914# nfet_03v3 ad=2.2914p pd=6.3u as=1.2261p ps=3.23u w=2.01u l=0.28u M=5
+X1 a_n1750_n914# a_n1750_n914# a_n1750_n914# a_n1750_n914# nfet_03v3 ad=2.2914p pd=6.3u as=18.285599p ps=50.32u w=2.01u l=0.28u M=2
+X2 a_3040_n220# a_3584_n328# a_2756_n220# a_n1750_n914# nfet_03v3 ad=1.22p pd=3.22u as=1.22305p ps=4.445u w=2u l=0.28u
+X3 a_2756_n220# a_3284_n220# a_3040_n220# a_n1750_n914# nfet_03v3 ad=1.22305p pd=4.445u as=1.22p ps=3.22u w=2u l=0.28u
+X4 a_n1750_n914# a_n1750_n914# a_n1750_n914# a_n1750_n914# nfet_03v3 ad=2.28p pd=6.28u as=0 ps=0 w=2u l=0.28u M=2
+X5 a_3040_n220# a_2984_n750# a_2756_n220# a_n1750_n914# nfet_03v3 ad=2.28p pd=6.28u as=1.22305p ps=4.445u w=2u l=0.28u
+X6 a_2756_n220# a_3884_n221# a_3040_n220# a_n1750_n914# nfet_03v3 ad=1.22305p pd=4.445u as=1.22p ps=3.22u w=2u l=0.28u
+X7 a_3040_n220# a_2984_n220# a_2756_n220# a_n1750_n914# nfet_03v3 ad=1.22p pd=3.22u as=2.28p ps=6.28u w=2u l=0.28u
+.ends
+
+.subckt LO_diff_pairs_interdigitized a_n2222_n400# a_n2878_n1500# a_n2578_n448# a_n2822_n400#
++ a_n3106_n400# a_n2522_n400# a_n3316_n1664#
+X0 a_n2522_n400# a_n2578_n448# a_n2822_n400# a_n3316_n1664# nfet_03v3 ad=2.44p pd=5.22u as=2.44p ps=5.22u w=4u l=0.28u M=5
+X1 a_n3106_n400# a_n2578_n448# a_n2222_n400# a_n3316_n1664# nfet_03v3 ad=2.44p pd=5.22u as=2.44p ps=5.22u w=4u l=0.28u M=5
+X2 a_n2822_n400# a_n2878_n1500# a_n3106_n400# a_n3316_n1664# nfet_03v3 ad=2.44p pd=5.22u as=2.44p ps=5.22u w=4u l=0.28u M=5
+X3 a_n2222_n400# a_n2878_n1500# a_n2522_n400# a_n3316_n1664# nfet_03v3 ad=2.44p pd=5.22u as=2.44p ps=5.22u w=4u l=0.28u M=5
+.ends
+
+.subckt Gilbert_cell_layout VSS I_bias_pos I_bias_neg V_out_p V_out_n V_LO V_LO_b
++ V_RF V_RF_b
+XUnnamed_94182174$1_0 I_bias_pos Unnamed_94182174$1_0/a_2756_n220# Unnamed_94182174$1_0/a_n856_n222#
++ VSS I_bias_neg VSS V_RF_b V_RF Unnamed_94182174$1
+XLO_diff_pairs_interdigitized_0 Unnamed_94182174$1_0/a_2756_n220# V_LO V_LO_b Unnamed_94182174$1_0/a_n856_n222#
++ V_out_p V_out_n VSS LO_diff_pairs_interdigitized
+.ends
+
