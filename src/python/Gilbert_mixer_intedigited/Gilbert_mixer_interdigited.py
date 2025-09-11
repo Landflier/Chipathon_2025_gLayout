@@ -599,10 +599,9 @@ def create_RF_diff_pair(
     interfinger_rmult_temp = RF_FET_kwargs.get("interfinger_rmult", 1)  # multiplies thickness of source/drain routes between the gates (int only)
     tie_layers_temp = RF_FET_kwargs.get("tie_layers", ("met2","met1"))  # layers for tie ring (horizontal, vertical)
     with_dummies_temp = RF_FET_kwargs.get("with_dummies", True)  # whether to include dummy gates connected to the tiering
-    rmult_temp = RF_FET_kwargs.get("rmult", 1)  # multiplies thickness of sd metal (int only)
     with_dnwell_temp = RF_FET_kwargs.get("with_dnwell", False)
-    with_tie_temp = RF_FET_kwargs.get("with_tie", False)
-    with_substrate_tap_temp = RF_FET_kwargs.get("with_substrate_tap", True) 
+    with_tie_temp = RF_FET_kwargs.get("with_tie", True)
+    with_substrate_tap_temp = RF_FET_kwargs.get("with_substrate_tap", False) 
 
     # error checking
     if sd_rmult_temp<1 or interfinger_rmult_temp<1 or gate_rmult_temp<1:
@@ -615,6 +614,7 @@ def create_RF_diff_pair(
     M1_temp = nmos(pdk, 
             width = width, 
             fingers =fingers, 
+            multipliers = 1,
             with_tie = with_tie_temp,
             with_dummy = with_dummies_temp,
             with_dnwell = with_dnwell_temp,
@@ -627,11 +627,11 @@ def create_RF_diff_pair(
             gate_rmult = gate_rmult_temp,
             interfinger_rmult = interfinger_rmult_temp,
             tie_layers = tie_layers_temp,
-            rmult = rmult_temp,
             )
     M2_temp = nmos(pdk, 
             width = width, 
             fingers =fingers, 
+            multipliers = 1,
             with_tie = with_tie_temp,
             with_dummy = with_dummies_temp,
             with_dnwell = with_dnwell_temp,
@@ -644,7 +644,6 @@ def create_RF_diff_pair(
             gate_rmult = gate_rmult_temp,
             interfinger_rmult = interfinger_rmult_temp,
             tie_layers = tie_layers_temp,
-            rmult = rmult_temp,
             )
 
     # swap the drain and sources of M1 only
@@ -663,32 +662,15 @@ def create_RF_diff_pair(
     top_level.add_ports(M1_ref.get_ports_list(), prefix="RF_M1_")
     top_level.add_ports(M2_ref.get_ports_list(), prefix="RF_M2_")
 
-
-    # route dummies
+    # print(f"top_level ports: {top_level.ports}")
     """
-    if with_dummies:
-        multiplier << straight_route(pdk, 
-                multiplier.ports["dummy_gate_L_W"] , 
-                multiplier.ports["tie_W_bottom_lay_E"],
-                glayer1 = "poly",
-                glayer2 = "met1",
-                )
-
-        multiplier << straight_route(pdk, 
-                multiplier.ports["dummy_gate_R_E"] , 
-                multiplier.ports["tie_E_bottom_lay_W"],
-                glayer1 = "poly",
-                glayer2 = "met1",
-                )
-    print(f"top_level ports: {top_level.ports}")
-    """
-
     top_level.add_padding(
         layers=(pdk.get_glayer("pwell"),),
         default=pdk.get_grule("pwell", "active_tap")["min_enclosure"],
     )
 
     top_level = add_ports_perimeter(top_level,layer=pdk.get_glayer("pwell"),prefix="RF_well_")
+    """
     # rf_diff_pair = component_snap_to_grid(rename_ports_by_orientation(top_level))
     # rf_diff_pair.name = "RF_diff_pair"
     
@@ -921,8 +903,6 @@ if __name__ == "__main__":
         "interfinger_rmult": 2,
         "substrate_tap_layers": ("met2","met1"),
         "inter_finger_topmet": "met1",
-        "sd_route_extension": 0.0,
-        "gate_route_extension": 0,
     }
     
     RF_diff_pair = create_RF_diff_pair(
@@ -935,9 +915,6 @@ if __name__ == "__main__":
 
     comp = Component( name = "Gilbert_mixer_interdigitized" )
     RF_diff_pair_ref = comp << RF_diff_pair
-    print(f"DEBUG: RF_diff_ports: {RF_diff_pair_ref.ports}")
-    # port_ports = {name: port for name, port in LO_diff_pairs_ref.ports.items() if "port" in name}
-    # print(f"DEBUG: LO_ports : {port_ports}")
 
     """
     LO_diff_pairs_ref = comp << LO_diff_pairs
