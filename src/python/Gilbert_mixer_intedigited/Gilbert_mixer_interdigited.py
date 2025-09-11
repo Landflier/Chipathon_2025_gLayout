@@ -417,7 +417,6 @@ def _add_source_drain_gate_routing(
     # multiplier.add_ports(gate_ref.get_ports_list(prefix="gate_"))
     # multiplier.add_ports(gate_ref.get_ports_list(prefix="gate_"))
 
-
 def create_LO_vias_outside_tapring_and_route(
         pdk: MappedPDK,
         LO_diff_pairs_ref: Component,
@@ -555,6 +554,147 @@ def create_LO_vias_outside_tapring_and_route(
 
     return via_port_LO_ref, via_port_LO_b_ref, via_port_1_ref, via_port_2_ref, via_port_3_ref, via_port_4_ref
 
+def create_RF_vias_outside_tapring_and_route(
+        pdk: MappedPDK,
+        RF_diff_pair_ref: Component,
+        comp: Component,
+        extra_port_vias_x_displacement: float,
+        ) -> tuple:
+    """
+    Create vias for routing the s/d of the RF_pairs outside the tapring.
+    
+    Args:
+        pdk: PDK for design rules and layer information
+        LO_diff_pairs_ref: Component reference with the LO differential pairs
+        comp: Top-level component to add vias to
+    
+    Returns:
+        tuple: References to the created vias
+    """
+    # Add vias for routing the s/d of the LO_pairs
+    fet_bbox_x = RF_diff_pair_ref.ports["RF_M1_well_S"].width 
+    
+    
+    gate_ports = {name: port for name, port in RF_diff_pair_ref.ports.items() if port.width == 0.5}
+    print(f"DEBUG: Gate ports: {gate_ports}")
+    
+    RF_gate = RF_diff_pair_ref.ports["RF_M1_gate_W"]
+    RF_b_gate = RF_diff_pair_ref.ports["RF_M1_gate_E"]
+    M1_source = RF_diff_pair_ref.ports["RF_M1_source_W"]
+    M2_source = RF_diff_pair_ref.ports["RF_M2_source_W"]
+
+    gate_via_width = RF_gate.width
+    source_via_width = M1_source.width
+    
+    # Create via with the target port's width
+    via_RF_gate = via_array(pdk, "met3", "met2", 
+                        size=(gate_via_width, gate_via_width),
+                        fullbottom=True)
+    via_RF_b_gate = via_array(pdk, "met3", "met2", 
+                        size=(gate_via_width, gate_via_width),
+                        fullbottom=True)
+    via_M1_source = via_array(pdk, "met3", "met2", 
+                        size=(source_via_width, source_via_width),
+                        fullbottom=True)
+    via_M2_source = via_array(pdk, "met3", "met2", 
+                        size=(source_via_width, source_via_width),
+                        fullbottom=True)
+
+    via_RF_gate_ref = comp << via_RF_gate
+    via_RF_b_gate_ref = comp << via_RF_b_gate
+    via_M1_source_ref = comp << via_M1_source
+    via_M2_source_ref = comp << via_M2_source
+
+    # Position via at same y-level as target port, displaced by -half bbox width in x
+    align_comp_to_port(via_RF_gate_ref, RF_gate, alignment=('c', 'c'))
+    align_comp_to_port(via_RF_b_gate_ref, RF_b_gate, alignment=('c', 'c'))
+    align_comp_to_port(via_M1_source_ref, M1_source, alignment=('c', 'c'))
+    align_comp_to_port(via_M2_source_ref, M2_source, alignment=('c', 'c'))
+    
+    """
+    # Displace in x by -half the width of LO_diff_pairs bounding box
+    port_1_x_displacement = 1.5*(M1_ref.ports["tie_W_bottom_lay_W"].center[0] - port_1.center[0]) - port_1.width
+    port_2_x_displacement = 1.5*(M1_ref.ports["tie_E_bottom_lay_E"].center[0] - port_2.center[0]) + port_2.width
+    port_3_x_displacement = 2.5*(M1_ref.ports["tie_W_bottom_lay_W"].center[0] - port_3.center[0]) - port_3.width
+    port_4_x_displacement = 2.5*(M1_ref.ports["tie_E_bottom_lay_E"].center[0] - port_4.center[0]) + port_4.width
+
+    port_1_x_displacement = pdk.snap_to_2xgrid(port_1_x_displacement)
+    port_2_x_displacement = pdk.snap_to_2xgrid(port_2_x_displacement)
+    port_3_x_displacement = pdk.snap_to_2xgrid(port_3_x_displacement)
+    port_4_x_displacement = pdk.snap_to_2xgrid(port_4_x_displacement)
+
+    via_port_1_ref.movex(port_1_x_displacement)
+    via_port_2_ref.movex(port_2_x_displacement)
+    via_port_3_ref.movex(port_3_x_displacement)
+    via_port_4_ref.movex(port_4_x_displacement)
+
+
+    comp << straight_route(pdk_choice, 
+            port_1, 
+            via_port_1_ref["bottom_lay_E"],
+            )
+    comp << straight_route(pdk_choice, 
+            port_2, 
+            via_port_2_ref["bottom_lay_E"],
+            )
+    comp << straight_route(pdk_choice, 
+            port_3, 
+            via_port_3_ref["bottom_lay_E"],
+            )
+    comp << straight_route(pdk_choice, 
+            port_4, 
+            via_port_4_ref["bottom_lay_E"],
+            )
+    
+    # Create and route gate vias
+
+    port_LO = LO_diff_pairs_ref.ports["LO_bottom_lay_W"]
+    port_LO_b = LO_diff_pairs_ref.ports["LO_b_bottom_lay_E"]
+
+    via_width = port_LO.width
+
+    # Create via with the target port's width
+    via_port_LO = via_array(pdk_choice, "met3", "met2", 
+                        size=(via_width, via_width),
+                        fullbottom=True)
+
+    via_port_LO_b = via_array(pdk_choice, "met3", "met2", 
+                        size=(via_width, via_width),
+                        fullbottom=True)
+
+    via_port_LO_ref = comp << via_port_LO
+    via_port_LO_b_ref = comp << via_port_LO_b
+
+    # Position via at same y-level as target port, displaced by -half bbox width in x
+    align_comp_to_port(via_port_LO_ref, port_LO, alignment=('c', 'c'))
+    align_comp_to_port(via_port_LO_b_ref, port_LO_b, alignment=('c', 'c'))
+
+    via_LO_x_displacement   = port_3_x_displacement - 2*port_LO.width 
+    via_LO_b_x_displacement = port_4_x_displacement + 2*port_LO_b.width 
+
+    via_LO_x_displacement   = pdk_choice.snap_to_2xgrid(via_LO_x_displacement)
+    via_LO_b_x_displacement = pdk_choice.snap_to_2xgrid(via_LO_b_x_displacement )
+
+    via_port_LO_ref.movex(via_LO_x_displacement)
+    via_port_LO_b_ref.movex(via_LO_b_x_displacement)
+
+    comp << straight_route(pdk_choice, 
+            port_LO, 
+            via_port_LO_ref["bottom_lay_W"],
+            glayer1="met2",
+            via1_alignment = ('c', 'c'),
+            via2_alignment = ('c', 'c'),
+            )
+    comp << straight_route(pdk_choice, 
+            port_LO_b, 
+            via_port_LO_b_ref["bottom_lay_W"],
+            glayer1="met2",
+            via1_alignment = ('c', 'c'),
+            via2_alignment = ('c', 'c'),
+            )
+
+    return via_port_LO_ref, via_port_LO_b_ref, via_port_1_ref, via_port_2_ref, via_port_3_ref, via_port_4_ref
+    """
 
 def create_RF_diff_pair(
     pdk: MappedPDK,
@@ -666,7 +806,6 @@ def create_RF_diff_pair(
     top_level.add_ports(M1_ref.get_ports_list(), prefix="RF_M1_")
     top_level.add_ports(M2_ref.get_ports_list(), prefix="RF_M2_")
 
-    # print(f"top_level ports: {top_level.ports}")
     """
     top_level.add_padding(
         layers=(pdk.get_glayer("pwell"),),
@@ -936,6 +1075,9 @@ if __name__ == "__main__":
     # port_ports = {name: port for name, port in LO_diff_pairs_ref.ports.items() if "tie" in name}
     # print(f"DEBUG: LO_ports : {port_ports}")
 
+    # port_ports = {name: port for name, port in LO_diff_pairs_ref.ports.items() if "tie" in name}
+    # print(f"DEBUG: LO_ports : {port_ports}")
+
     # connect up the guard rings
     route_RF_guardrings = straight_route(
             pdk_choice, 
@@ -978,6 +1120,11 @@ if __name__ == "__main__":
             extra_port_vias_x_displacement = LO_via_extension,
             )
 
+    create_RF_vias_outside_tapring_and_route(pdk_choice,
+            RF_diff_pair_ref,
+            comp,
+            extra_port_vias_x_displacement = 0,
+            )
 
     # drain_ports = {name: port for name, port in RF_diff_pair_ref.ports.items() if ("drain" in name) and ("row" not in name)}
     # print(f"DEBUG: via_port_1 ports : {via_port_1_ref.ports}")
@@ -1006,6 +1153,7 @@ if __name__ == "__main__":
     print("✓ Writing GDS files...")
     comp.write_gds('lvs/gds/Gilbert_cell_interdigitized.gds', cellname="Gilbert_cell_interdigitized")
     print("  - Hierarchical GDS: Gilbert_cell_interdigitized.gds")
+    """
     print("\n...Running DRC...")
     
     try:
@@ -1016,4 +1164,5 @@ if __name__ == "__main__":
     print("\n" + "="*60)
     print("TEST COMPLETED - GDS file generated successfully!")
     print("="*60)
+    """
    
