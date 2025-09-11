@@ -575,15 +575,15 @@ def create_RF_vias_outside_tapring_and_route(
     fet_bbox_x = RF_diff_pair_ref.ports["RF_M1_well_S"].width 
     
     
-    gate_ports = {name: port for name, port in RF_diff_pair_ref.ports.items() if port.width == 0.5}
-    print(f"DEBUG: Gate ports: {gate_ports}")
+    # gate_ports = {name: port for name, port in RF_diff_pair_ref.ports.items() if ("gate" in name) and (port.width == 0.28)}
+    # print(f"DEBUG: Gate ports: {gate_ports}")
     
-    RF_gate = RF_diff_pair_ref.ports["RF_M1_gate_W"]
-    RF_b_gate = RF_diff_pair_ref.ports["RF_M1_gate_E"]
+    RF_gate = RF_diff_pair_ref.ports["RF_M1_multiplier_0_gate_S"]
+    RF_b_gate = RF_diff_pair_ref.ports["RF_M2_multiplier_0_gate_S"]
     M1_source = RF_diff_pair_ref.ports["RF_M1_source_W"]
     M2_source = RF_diff_pair_ref.ports["RF_M2_source_W"]
 
-    gate_via_width = RF_gate.width
+    gate_via_width = abs(RF_diff_pair_ref.ports["RF_M1_gate_E"].center[1] - RF_diff_pair_ref.ports["RF_M1_gate_W"].center[1]) + RF_gate.width
     source_via_width = M1_source.width
     
     # Create via with the target port's width
@@ -606,33 +606,52 @@ def create_RF_vias_outside_tapring_and_route(
     via_M2_source_ref = comp << via_M2_source
 
     # Position via at same y-level as target port, displaced by -half bbox width in x
-    align_comp_to_port(via_RF_gate_ref, RF_gate, alignment=('c', 'c'))
-    align_comp_to_port(via_RF_b_gate_ref, RF_b_gate, alignment=('c', 'c'))
+    align_comp_to_port(via_RF_gate_ref, RF_gate, alignment=('c', 'b'))
+    align_comp_to_port(via_RF_b_gate_ref, RF_b_gate, alignment=('c', 'b'))
     align_comp_to_port(via_M1_source_ref, M1_source, alignment=('c', 'c'))
     align_comp_to_port(via_M2_source_ref, M2_source, alignment=('c', 'c'))
-    
+
+    # TODO: fix hard-coded displacement. It is there to move the via just ouside the ring
+    via_M1_source_ref.movex(-abs(  RF_diff_pair_ref.ports["RF_M1_source_W"].center[0] - RF_diff_pair_ref.ports["RF_M1_tie_W_bottom_lay_W"].center[0] ) - source_via_width)
+    via_M2_source_ref.movex( abs(  RF_diff_pair_ref.ports["RF_M2_source_W"].center[0] - RF_diff_pair_ref.ports["RF_M2_tie_W_bottom_lay_W"].center[0] ) + source_via_width)
+
+    via_RF_gate_ref.movex(-abs(RF_gate.center[0] - RF_diff_pair_ref.ports["RF_M1_tie_W_bottom_lay_W"].center[0] ) - gate_via_width)
+    via_RF_b_gate_ref.movex(abs(RF_b_gate.center[0] - RF_diff_pair_ref.ports["RF_M2_tie_W_bottom_lay_W"].center[0] ) + gate_via_width)
+
+    via_RF_gate_ref.movey(RF_gate.width)
+    via_RF_b_gate_ref.movey(RF_gate.width)
+
+    comp << straight_route(pdk_choice, 
+            via_M1_source_ref.ports["bottom_lay_W"], 
+            M1_source 
+            )
+
+    comp << straight_route(pdk_choice, 
+            via_M2_source_ref.ports["bottom_lay_W"], 
+            M2_source 
+            )
+    comp << straight_route(pdk_choice, 
+            via_RF_gate_ref.ports["bottom_lay_W"], 
+            RF_gate
+            )
+    comp << straight_route(pdk_choice, 
+            via_RF_b_gate_ref.ports["bottom_lay_W"], 
+            RF_b_gate
+            )
     """
     # Displace in x by -half the width of LO_diff_pairs bounding box
-    port_1_x_displacement = 1.5*(M1_ref.ports["tie_W_bottom_lay_W"].center[0] - port_1.center[0]) - port_1.width
-    port_2_x_displacement = 1.5*(M1_ref.ports["tie_E_bottom_lay_E"].center[0] - port_2.center[0]) + port_2.width
-    port_3_x_displacement = 2.5*(M1_ref.ports["tie_W_bottom_lay_W"].center[0] - port_3.center[0]) - port_3.width
-    port_4_x_displacement = 2.5*(M1_ref.ports["tie_E_bottom_lay_E"].center[0] - port_4.center[0]) + port_4.width
+    via_RF_gate_ref_x_displacement = 1.5*(M1_ref.ports["RF_M1_tie_W_bottom_lay_W"].center[0] - via_RF_gate_ref.center[0]) - via_RF_gate_ref.width
+    port_2_x_displacement = 1.5*(M1_ref.ports["RF_M1_tie_E_bottom_lay_E"].center[0] - port_2.center[0]) + port_2.width
+    port_3_x_displacement = 2.5*(M1_ref.ports["RF_M2_tie_W_bottom_lay_W"].center[0] - port_3.center[0]) - port_3.width
+    port_4_x_displacement = 2.5*(M1_ref.ports["RF_M2_tie_E_bottom_lay_E"].center[0] - port_4.center[0]) + port_4.width
+    """
 
+    """
     port_1_x_displacement = pdk.snap_to_2xgrid(port_1_x_displacement)
     port_2_x_displacement = pdk.snap_to_2xgrid(port_2_x_displacement)
     port_3_x_displacement = pdk.snap_to_2xgrid(port_3_x_displacement)
     port_4_x_displacement = pdk.snap_to_2xgrid(port_4_x_displacement)
 
-    via_port_1_ref.movex(port_1_x_displacement)
-    via_port_2_ref.movex(port_2_x_displacement)
-    via_port_3_ref.movex(port_3_x_displacement)
-    via_port_4_ref.movex(port_4_x_displacement)
-
-
-    comp << straight_route(pdk_choice, 
-            port_1, 
-            via_port_1_ref["bottom_lay_E"],
-            )
     comp << straight_route(pdk_choice, 
             port_2, 
             via_port_2_ref["bottom_lay_E"],
