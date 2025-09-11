@@ -4,18 +4,20 @@ import os
 import sys
 from typing import Optional
 from gdsfactory import Component
-from gdsfactory.components import rectangle
-from glayout import MappedPDK
-from glayout import gf180
+
+from glayout import gf180, MappedPDK
+from glayout import nmos, pmos, tapring
 from glayout.routing.straight_route import straight_route
 from glayout.routing.c_route import c_route
 from glayout.routing.L_route import L_route
 from glayout import via_stack, via_array
+
+from gdsfactory.components import rectangle
 from gdsfactory.grid import grid
 from gdsfactory.cell import cell
 from gdsfactory.component import Component, copy
+
 from glayout.primitives.via_gen import via_array, via_stack
-from glayout.primitives.guardring import tapring
 # from pydantic import validate_arguments
 from glayout.util.comp_utils import evaluate_bbox, to_float, to_decimal, prec_array, prec_center, prec_ref_center, movey, align_comp_to_port
 from glayout.util.port_utils import rename_ports_by_orientation, rename_ports_by_list, add_ports_perimeter, print_ports
@@ -24,6 +26,8 @@ from glayout.spice import Netlist
     
 # Add the diff_pair module to the path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../diff_pair'))
+from diff_pair import swap_drain_source_ports
+from diff_pair import get_pin_layers
 
 def _create_finger_array(
     pdk: MappedPDK,
@@ -130,7 +134,6 @@ def _create_finger_array(
     multiplier.add_ports(diff.get_ports_list(), prefix="diff_")
 
     return multiplier
-
 
 def _add_source_drain_gate_routing(
     pdk: MappedPDK,
@@ -548,6 +551,149 @@ def create_LO_vias_outside_tapring_and_route(
 
     return via_port_LO_ref, via_port_LO_b_ref, via_port_1_ref, via_port_2_ref, via_port_3_ref, via_port_4_ref
 
+
+def create_RF_diff_pair(
+    pdk: MappedPDK,
+    width: float,
+    fingers: int,
+    RF_FET_kwargs: dict,
+    length: Optional[float] = None,
+    component_name: Optional[str] = "RF_diff_pair",
+) -> Component:
+    """
+    Create interdigitized RF differential pairs for Gilbert cell mixer.
+    This is the main function for implementing interdigitized layout.
+    
+    Args:
+        pdk: PDK for design rules and layer information
+        length: float of length of the transistors in the LO_diff_pairs
+        width: float of width of the transistors in the LO_diff_pairs
+        fingers: int of number of fingers in the LO_diff_pairs
+        RF_FET_kwargs: Dictionary of additional FET parameters (similar to current __main__ kwargs)
+                      Should include parameters like:
+                      - with_dnwell
+                      - sd_route_topmet, gate_route_topmet
+                      - sd_rmult, rmult
+                      - gate_rmult
+                      - substrate_tap_layers
+    
+    Returns:
+        Component: Single interdigitized component containing both LO differential pairs
+    """
+    print("Careful! There is no check for width % fingers != 0. \n The designer should be careful when choosing nf and W.") 
+    # if width % fingers != 0:
+    #     raise ValueError(f"Width ({width}) must be a multiple of number of fingers ({fingers})")
+    
+    pdk.activate()
+
+    # Use PDK minimum length if not specified
+    if length is None:
+        length = pdk.get_grule('poly')['min_width']
+
+    # Get parameters from RF_FET_kwargs
+    sd_rmult_temp = RF_FET_kwargs.get("sd_rmult", 1)  # multiplies thickness of sd metal (int only)
+    sd_route_topmet_temp = RF_FET_kwargs.get("sd_route_topmet", "met2")  # top metal layer for source/drain routing
+    inter_finger_topmet_temp = RF_FET_kwargs.get("inter_finger_topmet", "met1")  # top metal of the via array laid on the source/drain regions
+    gate_route_topmet_temp = RF_FET_kwargs.get("gate_route_topmet", "met2")  # top metal layer for gate routing
+    gate_rmult_temp = RF_FET_kwargs.get("gate_rmult", 1)  # multiplies gate by adding rows to the gate via array (int only)
+    interfinger_rmult_temp = RF_FET_kwargs.get("interfinger_rmult", 1)  # multiplies thickness of source/drain routes between the gates (int only)
+    tie_layers_temp = RF_FET_kwargs.get("tie_layers", ("met2","met1"))  # layers for tie ring (horizontal, vertical)
+    with_dummies_temp = RF_FET_kwargs.get("with_dummies", True)  # whether to include dummy gates connected to the tiering
+    rmult_temp = RF_FET_kwargs.get("rmult", 1)  # multiplies thickness of sd metal (int only)
+    with_dnwell_temp = RF_FET_kwargs.get("with_dnwell", False)
+    with_tie_temp = RF_FET_kwargs.get("with_tie", False)
+    with_substrate_tap_temp = RF_FET_kwargs.get("with_substrate_tap", True) 
+
+    # error checking
+    if sd_rmult_temp<1 or interfinger_rmult_temp<1 or gate_rmult_temp<1:
+        raise ValueError("routing multipliers must be positive int")
+    
+    ##top level component
+    top_level = Component()
+
+    ## two fets
+    M1_temp = nmos(pdk, 
+            width = width, 
+            fingers =fingers, 
+            with_tie = with_tie_temp,
+            with_dummy = with_dummies_temp,
+            with_dnwell = with_dnwell_temp,
+            with_substrate_tap = with_substrate_tap_temp, 
+            length = length, 
+            sd_rmult = sd_rmult_temp,
+            sd_route_topmet = sd_route_topmet_temp,
+            # inter_finger_topmet = inter_finger_topmet_temp,
+            gate_route_topmet = gate_route_topmet_temp,
+            gate_rmult = gate_rmult_temp,
+            interfinger_rmult = interfinger_rmult_temp,
+            tie_layers = tie_layers_temp,
+            rmult = rmult_temp,
+            )
+    M2_temp = nmos(pdk, 
+            width = width, 
+            fingers =fingers, 
+            with_tie = with_tie_temp,
+            with_dummy = with_dummies_temp,
+            with_dnwell = with_dnwell_temp,
+            with_substrate_tap = with_substrate_tap_temp, 
+            length = length, 
+            sd_rmult = sd_rmult_temp,
+            sd_route_topmet = sd_route_topmet_temp,
+            # inter_finger_topmet = inter_finger_topmet_temp,
+            gate_route_topmet = gate_route_topmet_temp,
+            gate_rmult = gate_rmult_temp,
+            interfinger_rmult = interfinger_rmult_temp,
+            tie_layers = tie_layers_temp,
+            rmult = rmult_temp,
+            )
+
+    # swap the drain and sources of M1 only
+    M1 = swap_drain_source_ports(M1_temp)
+    M2 = M2_temp
+    
+    M1_ref = top_level << M1
+    M2_ref = top_level << M2
+    
+    M2_ref.mirror_x()
+    M2_ref.movex(M1_ref.xmax + evaluate_bbox(M2)[0]/2 )
+    M2_ref.movex(pdk.util_max_metal_seperation()+0.5)
+
+    # top_level = component_snap_to_grid(rename_ports_by_orientation(top_level))
+
+    top_level.add_ports(M1_ref.get_ports_list(), prefix="RF_M1_")
+    top_level.add_ports(M2_ref.get_ports_list(), prefix="RF_M2_")
+
+
+    # route dummies
+    """
+    if with_dummies:
+        multiplier << straight_route(pdk, 
+                multiplier.ports["dummy_gate_L_W"] , 
+                multiplier.ports["tie_W_bottom_lay_E"],
+                glayer1 = "poly",
+                glayer2 = "met1",
+                )
+
+        multiplier << straight_route(pdk, 
+                multiplier.ports["dummy_gate_R_E"] , 
+                multiplier.ports["tie_E_bottom_lay_W"],
+                glayer1 = "poly",
+                glayer2 = "met1",
+                )
+    print(f"top_level ports: {top_level.ports}")
+    """
+
+    top_level.add_padding(
+        layers=(pdk.get_glayer("pwell"),),
+        default=pdk.get_grule("pwell", "active_tap")["min_enclosure"],
+    )
+
+    top_level = add_ports_perimeter(top_level,layer=pdk.get_glayer("pwell"),prefix="RF_well_")
+    # rf_diff_pair = component_snap_to_grid(rename_ports_by_orientation(top_level))
+    # rf_diff_pair.name = "RF_diff_pair"
+    
+    return component_snap_to_grid(top_level)
+    
 def create_LO_diff_pairs(
     pdk: MappedPDK,
     width: float,
@@ -767,9 +913,33 @@ if __name__ == "__main__":
         LO_FET_kwargs=LO_FET_kwargs
     )
 
+    RF_FET_kwargs = {
+        "sd_route_topmet": "met2",
+        "gate_route_topmet": "met2",
+        "sd_rmult" : 2,
+        "gate_rmult": 3,
+        "interfinger_rmult": 2,
+        "substrate_tap_layers": ("met2","met1"),
+        "inter_finger_topmet": "met1",
+        "sd_route_extension": 0.0,
+        "gate_route_extension": 0,
+    }
+    
+    RF_diff_pair = create_RF_diff_pair(
+        pdk=pdk_choice,
+        width=10.0,
+        fingers=5,
+        RF_FET_kwargs=RF_FET_kwargs
+    )
+
 
     comp = Component( name = "Gilbert_mixer_interdigitized" )
+    RF_diff_pair_ref = comp << RF_diff_pair
+    print(f"DEBUG: RF_diff_ports: {RF_diff_pair_ref.ports}")
+    # port_ports = {name: port for name, port in LO_diff_pairs_ref.ports.items() if "port" in name}
+    # print(f"DEBUG: LO_ports : {port_ports}")
 
+    """
     LO_diff_pairs_ref = comp << LO_diff_pairs
 
     # port_ports = {name: port for name, port in LO_diff_pairs_ref.ports.items() if "port" in name}
@@ -788,7 +958,7 @@ if __name__ == "__main__":
             LO_diff_pairs_ref,
             comp,
             )
-
+    """
     # Write both hierarchical and flattened GDS files
     print("✓ Writing GDS files...")
     comp.write_gds('lvs/gds/Gilbert_cell_interdigitized.gds', cellname="Gilbert_cell_interdigitized")
@@ -805,5 +975,3 @@ if __name__ == "__main__":
     print("TEST COMPLETED - GDS file generated successfully!")
     print("="*60)
     """
-    
-    
