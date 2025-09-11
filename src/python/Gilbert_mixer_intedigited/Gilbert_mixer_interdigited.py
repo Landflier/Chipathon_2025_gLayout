@@ -540,14 +540,17 @@ def create_LO_vias_outside_tapring_and_route(
 
     comp << straight_route(pdk_choice, 
             port_LO, 
-            via_port_LO_ref["bottom_lay_E"],
+            via_port_LO_ref["bottom_lay_W"],
             glayer1="met2",
-            fullbottom=True
+            via1_alignment = ('c', 'c'),
+            via2_alignment = ('c', 'c'),
             )
     comp << straight_route(pdk_choice, 
             port_LO_b, 
-            via_port_LO_b_ref["bottom_lay_E"],
-            glayer1="met2"
+            via_port_LO_b_ref["bottom_lay_W"],
+            glayer1="met2",
+            via1_alignment = ('c', 'c'),
+            via2_alignment = ('c', 'c'),
             )
 
     return via_port_LO_ref, via_port_LO_b_ref, via_port_1_ref, via_port_2_ref, via_port_3_ref, via_port_4_ref
@@ -914,39 +917,37 @@ if __name__ == "__main__":
         RF_FET_kwargs=RF_FET_kwargs
     )
 
+    # get minimal separtion needed for tapring separations
+    sep_met1 = pdk_choice.get_grule('met1', 'met1')['min_separation']
+    sep_met2 = pdk_choice.get_grule('met2', 'met2')['min_separation']
+    sep_met3 = pdk_choice.get_grule('met3', 'met3')['min_separation']
+    sep = max(sep_met1, sep_met2, sep_met3)
+    
 
     comp = Component( name = "Gilbert_mixer_interdigitized" )
     LO_diff_pairs_ref = comp << LO_diff_pairs
     RF_diff_pair_ref = comp << RF_diff_pair
 
     align_comp_to_port(RF_diff_pair_ref, LO_diff_pairs_ref.ports["tie_S_bottom_lay_S"], alignment=('c','b'))
+    RF_diff_pair_ref.movey(-2*sep - 0.1)
     # align_comp_to_port(RF_diff_pair_ref, LO_diff_pairs_ref.ports["well_S_bottom_lay_S"], alignment=('c','b'))
     
     # port_ports = {name: port for name, port in LO_diff_pairs_ref.ports.items() if "port" in name}
     # print(f"DEBUG: LO_ports : {port_ports}")
-    
-    port_ports = {name: port for name, port in LO_diff_pairs_ref.ports.items() if "well" in name}
-    print(f"DEBUG: LO_ports : {port_ports}")
 
-    # get minimal separtion needed for tapring separations
-    sep_met1 = pdk_choice.get_grule('met1', 'met1')['min_separation']
-    sep_met2 = pdk_choice.get_grule('met2', 'met2')['min_separation']
-    sep_met3 = pdk_choice.get_grule('met3', 'met3')['min_separation']
-
-    sep = max(sep_met1, sep_met2)
     
-    
+    LO_via_extension = abs( evaluate_bbox(LO_diff_pairs_ref)[0] - evaluate_bbox(RF_diff_pair_ref)[0] )
     via_port_LO_ref, via_port_LO_b_ref, via_port_1_ref, via_port_2_ref, via_port_3_ref, via_port_4_ref = create_LO_vias_outside_tapring_and_route(pdk_choice,
             LO_diff_pairs_ref,
             comp,
-            extra_port_vias_x_displacement= 3.0,
+            extra_port_vias_x_displacement = LO_via_extension,
             )
 
     # Write both hierarchical and flattened GDS files
     print("✓ Writing GDS files...")
     comp.write_gds('lvs/gds/Gilbert_cell_interdigitized.gds', cellname="Gilbert_cell_interdigitized")
     print("  - Hierarchical GDS: Gilbert_cell_interdigitized.gds")
-    """
+    
     print("\n...Running DRC...")
     
     try:
@@ -957,4 +958,4 @@ if __name__ == "__main__":
     print("\n" + "="*60)
     print("TEST COMPLETED - GDS file generated successfully!")
     print("="*60)
-    """
+   
