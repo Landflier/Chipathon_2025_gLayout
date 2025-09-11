@@ -146,7 +146,7 @@ def _add_source_drain_gate_routing(
     gate_route_topmet: str,
     gate_rmult: int,
     gate_route_extension: float,
-    interfinger_rmult: int
+    interfinger_rmult: int,
 ) -> None:
     """
     Add source/drain and gate routing to the multiplier component.
@@ -421,7 +421,8 @@ def _add_source_drain_gate_routing(
 def create_LO_vias_outside_tapring_and_route(
         pdk: MappedPDK,
         LO_diff_pairs_ref: Component,
-        comp: Component
+        comp: Component,
+        extra_port_vias_x_displacement: float,
         ) -> tuple:
     """
     Create vias for routing the s/d of the LO_pairs outside the tapring.
@@ -472,10 +473,10 @@ def create_LO_vias_outside_tapring_and_route(
     align_comp_to_port(via_port_4_ref, port_4, alignment=('c', 'c'))
     
     # Displace in x by -half the width of LO_diff_pairs bounding box
-    port_1_x_displacement = 1.5*(LO_diff_pairs_ref.ports["tie_W_bottom_lay_W"].center[0] - port_1.center[0]) - port_1.width
-    port_2_x_displacement = 1.5*(LO_diff_pairs_ref.ports["tie_E_bottom_lay_E"].center[0] - port_2.center[0]) + port_2.width
-    port_3_x_displacement = 2.5*(LO_diff_pairs_ref.ports["tie_W_bottom_lay_W"].center[0] - port_3.center[0]) - port_3.width
-    port_4_x_displacement = 2.5*(LO_diff_pairs_ref.ports["tie_E_bottom_lay_E"].center[0] - port_4.center[0]) + port_4.width
+    port_1_x_displacement = 1.5*(LO_diff_pairs_ref.ports["tie_W_bottom_lay_W"].center[0] - port_1.center[0]) - port_1.width - extra_port_vias_x_displacement
+    port_2_x_displacement = 1.5*(LO_diff_pairs_ref.ports["tie_E_bottom_lay_E"].center[0] - port_2.center[0]) + port_2.width + extra_port_vias_x_displacement
+    port_3_x_displacement = 2.5*(LO_diff_pairs_ref.ports["tie_W_bottom_lay_W"].center[0] - port_3.center[0]) - port_3.width - extra_port_vias_x_displacement
+    port_4_x_displacement = 2.5*(LO_diff_pairs_ref.ports["tie_E_bottom_lay_E"].center[0] - port_4.center[0]) + port_4.width + extra_port_vias_x_displacement
 
     port_1_x_displacement = pdk.snap_to_2xgrid(port_1_x_displacement)
     port_2_x_displacement = pdk.snap_to_2xgrid(port_2_x_displacement)
@@ -528,8 +529,8 @@ def create_LO_vias_outside_tapring_and_route(
     align_comp_to_port(via_port_LO_ref, port_LO, alignment=('c', 'c'))
     align_comp_to_port(via_port_LO_b_ref, port_LO_b, alignment=('c', 'c'))
 
-    via_LO_x_displacement   = port_3_x_displacement - 2*port_LO.width
-    via_LO_b_x_displacement = port_4_x_displacement + 2*port_LO_b.width
+    via_LO_x_displacement   = port_3_x_displacement - 2*port_LO.width 
+    via_LO_b_x_displacement = port_4_x_displacement + 2*port_LO_b.width 
 
     via_LO_x_displacement   = pdk_choice.snap_to_2xgrid(via_LO_x_displacement)
     via_LO_b_x_displacement = pdk_choice.snap_to_2xgrid(via_LO_b_x_displacement )
@@ -683,6 +684,7 @@ def create_LO_diff_pairs(
     LO_FET_kwargs: dict,
     length: Optional[float] = None,
     tie: Optional[bool] = True,
+    extra_port_vias_x_displacement: Optional[float] = 0,
 ) -> Component:
     """
     Create interdigitized LO differential pairs for Gilbert cell mixer.
@@ -882,7 +884,7 @@ if __name__ == "__main__":
         "interfinger_rmult": 2,
         "substrate_tap_layers": ("met2","met1"),
         "inter_finger_topmet": "met1",
-        "sd_route_extension": 0.8,
+        "sd_route_extension": 0.0,
         "gate_route_extension": 0,
     }
 
@@ -914,14 +916,17 @@ if __name__ == "__main__":
 
 
     comp = Component( name = "Gilbert_mixer_interdigitized" )
+    LO_diff_pairs_ref = comp << LO_diff_pairs
     RF_diff_pair_ref = comp << RF_diff_pair
 
-    """
-    LO_diff_pairs_ref = comp << LO_diff_pairs
-
+    align_comp_to_port(RF_diff_pair_ref, LO_diff_pairs_ref.ports["tie_S_bottom_lay_S"], alignment=('c','b'))
+    # align_comp_to_port(RF_diff_pair_ref, LO_diff_pairs_ref.ports["well_S_bottom_lay_S"], alignment=('c','b'))
+    
     # port_ports = {name: port for name, port in LO_diff_pairs_ref.ports.items() if "port" in name}
     # print(f"DEBUG: LO_ports : {port_ports}")
     
+    port_ports = {name: port for name, port in LO_diff_pairs_ref.ports.items() if "well" in name}
+    print(f"DEBUG: LO_ports : {port_ports}")
 
     # get minimal separtion needed for tapring separations
     sep_met1 = pdk_choice.get_grule('met1', 'met1')['min_separation']
@@ -934,8 +939,9 @@ if __name__ == "__main__":
     via_port_LO_ref, via_port_LO_b_ref, via_port_1_ref, via_port_2_ref, via_port_3_ref, via_port_4_ref = create_LO_vias_outside_tapring_and_route(pdk_choice,
             LO_diff_pairs_ref,
             comp,
+            extra_port_vias_x_displacement= 3.0,
             )
-    """
+
     # Write both hierarchical and flattened GDS files
     print("✓ Writing GDS files...")
     comp.write_gds('lvs/gds/Gilbert_cell_interdigitized.gds', cellname="Gilbert_cell_interdigitized")
