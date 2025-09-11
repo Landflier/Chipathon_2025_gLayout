@@ -29,6 +29,91 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../diff_pair'))
 from diff_pair import swap_drain_source_ports
 from diff_pair import get_pin_layers
 
+def add_pin_and_label_to_via(
+    comp: Component,
+    via_ref: Component,
+    pin_name: str,
+    pdk: MappedPDK,
+    debug_mode: bool = False,
+) -> Component:
+    """
+    Add a pin and label to an existing via at its center on the top metal layer.
+    
+    Args:
+        comp: Component to add pins and labels to
+        via_ref: Reference to the via component
+        pin_name: Name for the pin and label
+        pdk: PDK for layer information
+        debug_mode: whether to show rectangles where the pin should be
+    
+    Returns:
+        Component: The modified comp component
+    """
+    comp.unlock()
+    
+    # Get via center and size
+    via_center = via_ref.center
+    via_size = via_ref.size
+    
+    # Use the largest dimension for pin size
+    pin_size = max(via_size[0], via_size[1])
+    
+    # Find the top metal port of the via
+    top_met_ports = [port for port_name, port in via_ref.ports.items() if "top_met" in port_name]
+    
+    if not top_met_ports:
+        print(f"⚠ Warning: No top_met ports found in via for {pin_name}")
+        return comp
+    
+    # Use the first top metal port to determine the layer
+    top_met_port = top_met_ports[0]
+    metal_layer = top_met_port.layer
+    
+    # Get pin and label layers from the top metal layer
+    pin_layer_gds, label_layer_gds = get_pin_layers(metal_layer, pdk)
+    
+    # Add label at via center
+    comp.add_label(text=pin_name, position=via_center, layer=label_layer_gds)
+    
+    if debug_mode:
+        # Create visual pin rectangle for debugging
+        pin_rect = rectangle(layer=pin_layer_gds, size=(pin_size, pin_size), centered=True).copy()
+        pin_rect_ref = comp << pin_rect
+        pin_rect_ref.move(via_center)
+    
+    # Add electrical ports for connectivity using the via center
+    # Create ports with all four orientations (E=0°, N=90°, W=180°, S=270°)
+    comp.add_port(
+        center=via_center,
+        width=pin_size,
+        orientation=0,  # East orientation
+        layer=metal_layer,
+        name=f"{pin_name}_E"
+    )
+    comp.add_port(
+        center=via_center,
+        width=pin_size,
+        orientation=90,  # North orientation
+        layer=metal_layer,
+        name=f"{pin_name}_N"
+    )
+    comp.add_port(
+        center=via_center,
+        width=pin_size,
+        orientation=180,  # West orientation
+        layer=metal_layer,
+        name=f"{pin_name}_W"
+    )
+    comp.add_port(
+        center=via_center,
+        width=pin_size,
+        orientation=270,  # South orientation
+        layer=metal_layer,
+        name=f"{pin_name}_S"
+    )
+    
+    return comp
+
 def _create_finger_array(
     pdk: MappedPDK,
     width: float,
@@ -638,82 +723,8 @@ def create_RF_vias_outside_tapring_and_route(
             via_RF_b_gate_ref.ports["bottom_lay_W"], 
             RF_b_gate
             )
-    """
-    # Displace in x by -half the width of LO_diff_pairs bounding box
-    via_RF_gate_ref_x_displacement = 1.5*(M1_ref.ports["RF_M1_tie_W_bottom_lay_W"].center[0] - via_RF_gate_ref.center[0]) - via_RF_gate_ref.width
-    port_2_x_displacement = 1.5*(M1_ref.ports["RF_M1_tie_E_bottom_lay_E"].center[0] - port_2.center[0]) + port_2.width
-    port_3_x_displacement = 2.5*(M1_ref.ports["RF_M2_tie_W_bottom_lay_W"].center[0] - port_3.center[0]) - port_3.width
-    port_4_x_displacement = 2.5*(M1_ref.ports["RF_M2_tie_E_bottom_lay_E"].center[0] - port_4.center[0]) + port_4.width
-    """
 
-    """
-    port_1_x_displacement = pdk.snap_to_2xgrid(port_1_x_displacement)
-    port_2_x_displacement = pdk.snap_to_2xgrid(port_2_x_displacement)
-    port_3_x_displacement = pdk.snap_to_2xgrid(port_3_x_displacement)
-    port_4_x_displacement = pdk.snap_to_2xgrid(port_4_x_displacement)
-
-    comp << straight_route(pdk_choice, 
-            port_2, 
-            via_port_2_ref["bottom_lay_E"],
-            )
-    comp << straight_route(pdk_choice, 
-            port_3, 
-            via_port_3_ref["bottom_lay_E"],
-            )
-    comp << straight_route(pdk_choice, 
-            port_4, 
-            via_port_4_ref["bottom_lay_E"],
-            )
-    
-    # Create and route gate vias
-
-    port_LO = LO_diff_pairs_ref.ports["LO_bottom_lay_W"]
-    port_LO_b = LO_diff_pairs_ref.ports["LO_b_bottom_lay_E"]
-
-    via_width = port_LO.width
-
-    # Create via with the target port's width
-    via_port_LO = via_array(pdk_choice, "met3", "met2", 
-                        size=(via_width, via_width),
-                        fullbottom=True)
-
-    via_port_LO_b = via_array(pdk_choice, "met3", "met2", 
-                        size=(via_width, via_width),
-                        fullbottom=True)
-
-    via_port_LO_ref = comp << via_port_LO
-    via_port_LO_b_ref = comp << via_port_LO_b
-
-    # Position via at same y-level as target port, displaced by -half bbox width in x
-    align_comp_to_port(via_port_LO_ref, port_LO, alignment=('c', 'c'))
-    align_comp_to_port(via_port_LO_b_ref, port_LO_b, alignment=('c', 'c'))
-
-    via_LO_x_displacement   = port_3_x_displacement - 2*port_LO.width 
-    via_LO_b_x_displacement = port_4_x_displacement + 2*port_LO_b.width 
-
-    via_LO_x_displacement   = pdk_choice.snap_to_2xgrid(via_LO_x_displacement)
-    via_LO_b_x_displacement = pdk_choice.snap_to_2xgrid(via_LO_b_x_displacement )
-
-    via_port_LO_ref.movex(via_LO_x_displacement)
-    via_port_LO_b_ref.movex(via_LO_b_x_displacement)
-
-    comp << straight_route(pdk_choice, 
-            port_LO, 
-            via_port_LO_ref["bottom_lay_W"],
-            glayer1="met2",
-            via1_alignment = ('c', 'c'),
-            via2_alignment = ('c', 'c'),
-            )
-    comp << straight_route(pdk_choice, 
-            port_LO_b, 
-            via_port_LO_b_ref["bottom_lay_W"],
-            glayer1="met2",
-            via1_alignment = ('c', 'c'),
-            via2_alignment = ('c', 'c'),
-            )
-
-    return via_port_LO_ref, via_port_LO_b_ref, via_port_1_ref, via_port_2_ref, via_port_3_ref, via_port_4_ref
-    """
+    return via_RF_gate_ref, via_RF_b_gate_ref, via_M1_source_ref, via_M2_source_ref
 
 def create_RF_diff_pair(
     pdk: MappedPDK,
@@ -1131,6 +1142,26 @@ if __name__ == "__main__":
     # port_ports = {name: port for name, port in LO_diff_pairs_ref.ports.items() if "port" in name}
     # print(f"DEBUG: LO_ports : {port_ports}")
 
+  
+    # Add VSS via right between all three tapring (similarly to the 'center-of-mass' of the three)
+    via_size = (1.42, 1.42)   # size is such to cover the hole between the three guard rings, exactly
+    # Create via
+    via_vss = via_array(pdk_choice, "met2", "met3", 
+                         size=via_size,
+                         lay_every_layer=True,
+                         fullbottom=True
+                         )
+    """
+    via_vss = rectangle(size=via_size,
+        layer=pdk_choice.get_glayer("met2"),
+        centered=True)
+    """
+    # Add via to component
+    via_vss_ref = comp << via_vss
+
+    # Position via exaclty in the middle of LO_well southern side
+    align_comp_to_port(via_vss_ref, LO_diff_pairs_ref.ports["LO_well_S"], alignment= ('c', 'c'))
+    add_pin_and_label_to_via(comp, via_vss_ref, "VSS", pdk_choice, debug_mode=False)
 
     LO_via_extension = abs( evaluate_bbox(LO_diff_pairs_ref)[0] - evaluate_bbox(RF_diff_pair_ref)[0] )
     via_port_LO_ref, via_port_LO_b_ref, via_port_1_ref, via_port_2_ref, via_port_3_ref, via_port_4_ref = create_LO_vias_outside_tapring_and_route(pdk_choice,
@@ -1139,7 +1170,7 @@ if __name__ == "__main__":
             extra_port_vias_x_displacement = LO_via_extension,
             )
 
-    create_RF_vias_outside_tapring_and_route(pdk_choice,
+    via_RF_gate_ref, via_RF_b_gate_ref, via_M1_source_ref, via_M2_source_ref = create_RF_vias_outside_tapring_and_route(pdk_choice,
             RF_diff_pair_ref,
             comp,
             extra_port_vias_x_displacement = 0,
@@ -1147,6 +1178,47 @@ if __name__ == "__main__":
 
     # drain_ports = {name: port for name, port in RF_diff_pair_ref.ports.items() if ("drain" in name) and ("row" not in name)}
     # print(f"DEBUG: via_port_1 ports : {via_port_1_ref.ports}")
+    add_pin_and_label_to_via(comp,
+            via_M1_source_ref,
+            "I_bias_pos",
+            pdk_choice,
+            )
+    add_pin_and_label_to_via(comp,
+            via_M2_source_ref,
+            "I_bias_neg",
+            pdk_choice,
+            )
+    add_pin_and_label_to_via(comp,
+            via_port_3_ref,
+            "V_out_p",
+            pdk_choice,
+            )
+    add_pin_and_label_to_via(comp,
+            via_port_4_ref,
+            "V_out_n",
+            pdk_choice,
+            )
+
+    add_pin_and_label_to_via(comp,
+            via_port_LO_ref,
+            "V_LO",
+            pdk_choice,
+            )
+    add_pin_and_label_to_via(comp,
+            via_port_LO_b_ref,
+            "V_LO_b",
+            pdk_choice,
+            )
+    add_pin_and_label_to_via(comp,
+            via_RF_gate_ref,
+            "V_RF",
+            pdk_choice,
+            )
+    add_pin_and_label_to_via(comp,
+            via_RF_b_gate_ref,
+            "V_RF_b",
+            pdk_choice,
+            )
 
     # route common sources of LO to drains of RF FETs
     route_port1 = L_route(
@@ -1170,9 +1242,12 @@ if __name__ == "__main__":
 
     # Write both hierarchical and flattened GDS files
     print("✓ Writing GDS files...")
-    comp.write_gds('lvs/gds/Gilbert_cell_interdigitized.gds', cellname="Gilbert_cell_interdigitized")
+    comp.write_gds('lvs/gds/Gilbert_cell_interdigitized.gds', 
+                   cellname="Gilbert_cell_interdigitized",
+                   unit=1e-6,
+                   precision=1e-8,
+               )
     print("  - Hierarchical GDS: Gilbert_cell_interdigitized.gds")
-    """
     print("\n...Running DRC...")
     
     try:
@@ -1183,5 +1258,4 @@ if __name__ == "__main__":
     print("\n" + "="*60)
     print("TEST COMPLETED - GDS file generated successfully!")
     print("="*60)
-    """
    
