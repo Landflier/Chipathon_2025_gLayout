@@ -13,71 +13,35 @@ Circuit 1: nfet_03v3                       |Circuit 2: nfet_03v3
 ---------------------------------------------------------------------------------------
 Cell pin lists are equivalent.
 Device classes nfet_03v3 and nfet_03v3 are equivalent.
-Flattening unmatched subcell Unnamed_94182174$1 in circuit Gilbert_cell_layout (0)(1 instance)
 Flattening unmatched subcell LO_diff_pairs_interdigitized in circuit Gilbert_cell_layout (0)(1 instance)
+Flattening unmatched subcell RF_diff_pair$1 in circuit Gilbert_cell_layout (0)(1 instance)
 
-Class Gilbert_cell_layout (0):  Merged 4 parallel devices.
 Subcircuit summary:
 Circuit 1: Gilbert_cell_layout             |Circuit 2: Gilbert_cell_xschem             
 -------------------------------------------|-------------------------------------------
-nfet_03v3 (34->8)                          |nfet_03v3 (10->7) **Mismatch**             
-Number of devices: 8 **Mismatch**          |Number of devices: 7 **Mismatch**          
-Number of nets: 12 **Mismatch**            |Number of nets: 11 **Mismatch**            
+nfet_03v3 (34->7)                          |nfet_03v3 (10->7)                          
+Number of devices: 7                       |Number of devices: 7                       
+Number of nets: 11                         |Number of nets: 11                         
 ---------------------------------------------------------------------------------------
-NET mismatches: Class fragments follow (with fanout counts):
-Circuit 1: Gilbert_cell_layout             |Circuit 2: Gilbert_cell_xschem             
-
----------------------------------------------------------------------------------------
-Net: Unnamed_94182174$1_0/a_2756_n220#     |Net: RF_M1_drain                           
-  nfet_03v3/(1|3) = 4                      |  nfet_03v3/(1|3) = 3                      
-                                           |                                           
-Net: Unnamed_94182174$1_0/a_n856_n222#     |Net: RF_M2_drain                           
-  nfet_03v3/(1|3) = 3                      |  nfet_03v3/(1|3) = 3                      
-                                           |                                           
-Net: VSS                                   |Net: VSS                                   
-  nfet_03v3/4 = 8                          |  nfet_03v3/4 = 7                          
-  nfet_03v3/(1|3) = 2                      |  nfet_03v3/(1|3) = 2                      
-  nfet_03v3/2 = 1                          |  nfet_03v3/2 = 1                          
-                                           |                                           
-Net: I_bias_neg                            |(no matching net)                          
-  nfet_03v3/(1|3) = 2                      |                                           
----------------------------------------------------------------------------------------
-
----------------------------------------------------------------------------------------
-Net: I_bias_pos                            |Net: I_bias_pos                            
-  nfet_03v3/(1|3) = 1                      |  nfet_03v3/(1|3) = 1                      
-                                           |                                           
-Net: V_RF                                  |Net: V_RF                                  
-  nfet_03v3/2 = 1                          |  nfet_03v3/2 = 1                          
-                                           |                                           
-(no matching net)                          |Net: V_RF_b                                
-                                           |  nfet_03v3/2 = 1                          
-                                           |                                           
-(no matching net)                          |Net: I_bias_neg                            
-                                           |  nfet_03v3/(1|3) = 1                      
----------------------------------------------------------------------------------------
-DEVICE mismatches: Class fragments follow (with node fanout counts):
-Circuit 1: Gilbert_cell_layout             |Circuit 2: Gilbert_cell_xschem             
-
----------------------------------------------------------------------------------------
-Instance: Unnamed_94182174$1_0/nfet_03v3:0 |Instance: nfet_03v3:M_RF_M1                
-  (1,3) = (3,1)                            |  (1,3) = (3,1)                            
-  2 = 1                                    |  2 = 1                                    
-  4 = 11                                   |  4 = 10                                   
-                                           |                                           
-(no matching instance)                     |Instance: nfet_03v3:M_RF_M2                
-                                           |  (1,3) = (3,1)                            
-                                           |  2 = 1                                    
-                                           |  4 = 10                                   
-                                           |                                           
----------------------------------------------------------------------------------------
-Netlists do not match.
+Resolving symmetries by property value.
+Resolving symmetries by pin name.
+Netlists match uniquely.
 
 Subcircuit pins:
 Circuit 1: Gilbert_cell_layout             |Circuit 2: Gilbert_cell_xschem             
 -------------------------------------------|-------------------------------------------
+V_RF_b                                     |V_RF_b                                     
+V_RF                                       |V_RF                                       
+I_bias_neg                                 |I_bias_neg                                 
+I_bias_pos                                 |I_bias_pos                                 
 VSS                                        |VSS                                        
+V_out_n                                    |V_out_n                                    
+V_out_p                                    |V_out_p                                    
+V_LO_b                                     |V_LO_b                                     
+V_LO                                       |V_LO                                       
+---------------------------------------------------------------------------------------
 Cell pin lists are equivalent.
 Device classes Gilbert_cell_layout and Gilbert_cell_xschem are equivalent.
 
-Final result: Netlists do not match.
+Final result: Circuits match uniquely.
+.

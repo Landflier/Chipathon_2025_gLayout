@@ -754,9 +754,9 @@ def create_RF_diff_pair(
     Returns:
         Component: Single interdigitized component containing both LO differential pairs
     """
-    print("Careful! There is no check for width % fingers != 0. \n The designer should be careful when choosing nf and W.") 
-    # if width % fingers != 0:
-    #     raise ValueError(f"Width ({width}) must be a multiple of number of fingers ({fingers})")
+    # print("Careful! There is no check for width % fingers != 0. \n The designer should be careful when choosing nf and W.") 
+    if width % fingers != 0:
+        raise ValueError(f"Width ({width}) must be a multiple of number of fingers ({fingers})")
     
     pdk.activate()
 
@@ -787,7 +787,7 @@ def create_RF_diff_pair(
     ## two fets
     M1_temp = nmos(pdk, 
             width = width, 
-            fingers =fingers, 
+            fingers = fingers, 
             multipliers = 1,
             with_tie = with_tie_temp,
             with_dummy = with_dummies_temp,
@@ -823,7 +823,11 @@ def create_RF_diff_pair(
     # swap the drain and sources of M1 only
     M1 = swap_drain_source_ports(M1_temp)
     M2 = M2_temp
-    
+
+    # Grid snap both transistors individually to ensure identical dimensions
+    # M1 = component_snap_to_grid(rename_ports_by_orientation(M1))
+    # M2 = component_snap_to_grid(rename_ports_by_orientation(M2))
+
     M1_ref = top_level << M1
     M2_ref = top_level << M2
     
@@ -844,9 +848,8 @@ def create_RF_diff_pair(
 
     top_level = add_ports_perimeter(top_level,layer=pdk.get_glayer("pwell"),prefix="RF_well_")
     """
-    # rf_diff_pair = component_snap_to_grid(rename_ports_by_orientation(top_level))
-    # rf_diff_pair.name = "RF_diff_pair"
-    
+    top_level.name = "RF_diff_pair"
+   
     return component_snap_to_grid(top_level)
     
 def create_LO_diff_pairs(
@@ -1244,9 +1247,14 @@ if __name__ == "__main__":
     print("✓ Writing GDS files...")
     comp.write_gds('lvs/gds/Gilbert_cell_interdigitized.gds', 
                    cellname="Gilbert_cell_interdigitized",
+               )
+    """
+    comp.write_gds('lvs/gds/Gilbert_cell_interdigitized.gds', 
+                   cellname="Gilbert_cell_interdigitized",
                    unit=1e-6,
                    precision=1e-8,
                )
+    """
     print("  - Hierarchical GDS: Gilbert_cell_interdigitized.gds")
     print("\n...Running DRC...")
     
