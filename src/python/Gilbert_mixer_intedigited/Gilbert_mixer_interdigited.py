@@ -869,6 +869,8 @@ def create_LO_diff_pairs(
     lo_diff_pairs = component_snap_to_grid(rename_ports_by_orientation(multiplier))
     lo_diff_pairs.name = "LO_diff_pairs_interdigitized"
     
+    lo_diff_pairs.add_ports(lo_diff_pairs.get_ports_list(), prefix="LO_")
+
     return lo_diff_pairs
     
 
@@ -927,15 +929,44 @@ if __name__ == "__main__":
     comp = Component( name = "Gilbert_mixer_interdigitized" )
     LO_diff_pairs_ref = comp << LO_diff_pairs
     RF_diff_pair_ref = comp << RF_diff_pair
-
-    # well_ports = {name: port for name, port in LO_diff_pairs_ref.ports.items() if "well" in name}
-    # print(f"DEBUG: LO_ports : {well_ports}")
-    # tie_ports = {name: port for name, port in RF_diff_pair_ref.ports.items() if "tie" in name}
-    # print(f"DEBUG: RF_ports : {tie_ports}")
-
-    align_comp_to_port(RF_diff_pair_ref, LO_diff_pairs_ref.ports["well_S"], alignment=('c','b'))
-    # align_comp_to_port(RF_diff_pair_ref, LO_diff_pairs_ref.ports["well_S_bottom_lay_S"], alignment=('c','b'))
     
+    # abut the RF comp to the southern side of the guardring of the LO_diff_pairs
+    align_comp_to_port(RF_diff_pair_ref, LO_diff_pairs_ref.ports["well_S"], alignment=('c','b'))
+    
+    # port_ports = {name: port for name, port in LO_diff_pairs_ref.ports.items() if "tie" in name}
+    # print(f"DEBUG: LO_ports : {port_ports}")
+
+    # connect up the guard rings
+    route_RF_guardrings = straight_route(
+            pdk_choice, 
+            RF_diff_pair_ref.ports['RF_M1_tie_E_top_met_E'],
+            RF_diff_pair_ref.ports['RF_M2_tie_E_top_met_W'],
+            )
+    route_RF_M1_LO_guardrings = straight_route(
+            pdk_choice, 
+            RF_diff_pair_ref.ports['RF_M1_tie_N_top_met_N'],
+            LO_diff_pairs_ref.ports['LO_tie_S_top_met_S'],
+            )
+    route_RF_M2_LO_guardrings = straight_route(
+            pdk_choice, 
+            RF_diff_pair_ref.ports['RF_M2_tie_N_top_met_N'],
+            LO_diff_pairs_ref.ports['LO_tie_S_top_met_S'],
+            )
+    route_RF_M1_M2_top_guardrings = straight_route(
+            pdk_choice, 
+            RF_diff_pair_ref.ports['RF_M1_tie_N_top_met_E'],
+            RF_diff_pair_ref.ports['RF_M2_tie_N_top_met_E'],
+            )
+    route_RF_M1_M2_bot_guardrings = straight_route(
+            pdk_choice, 
+            RF_diff_pair_ref.ports['RF_M1_tie_S_top_met_E'],
+            RF_diff_pair_ref.ports['RF_M2_tie_S_top_met_E'],
+            )
+    comp << route_RF_guardrings
+    comp << route_RF_M1_LO_guardrings
+    comp << route_RF_M2_LO_guardrings
+    comp << route_RF_M1_M2_top_guardrings
+    comp << route_RF_M1_M2_bot_guardrings
     # port_ports = {name: port for name, port in LO_diff_pairs_ref.ports.items() if "port" in name}
     # print(f"DEBUG: LO_ports : {port_ports}")
 
@@ -951,6 +982,7 @@ if __name__ == "__main__":
     # drain_ports = {name: port for name, port in RF_diff_pair_ref.ports.items() if ("drain" in name) and ("row" not in name)}
     # print(f"DEBUG: via_port_1 ports : {via_port_1_ref.ports}")
 
+    # route common sources of LO to drains of RF FETs
     route_port1 = L_route(
             pdk_choice, 
             via_port_1_ref.ports['top_met_S'],
