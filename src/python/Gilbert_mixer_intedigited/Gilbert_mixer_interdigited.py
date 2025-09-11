@@ -1247,6 +1247,8 @@ if __name__ == "__main__":
     print("✓ Writing GDS files...")
     comp.write_gds('lvs/gds/Gilbert_cell_interdigitized.gds', 
                    cellname="Gilbert_cell_interdigitized",
+                   unit=1e-6,
+                   precision=1e-9,
                )
     """
     comp.write_gds('lvs/gds/Gilbert_cell_interdigitized.gds', 
