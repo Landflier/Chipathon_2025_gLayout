@@ -5,12 +5,12 @@
 magic -rcfile $PDK_ROOT/$PDK/libs.tech/magic/$PDK.magicrc -dnull -noconsole << 'EOF'
 gds readonly false
 gds rescale true
-gds read gds/Gilbert_cell_interdigitized.gds
+gds read gds/Gilbert_cell_interdigited.gds
 
 # Check what cells are available and load the flattened one
 cellname list allcells
-load Gilbert_mixer_interdigitized
-cellname rename Gilbert_mixer_interdigitized Gilbert_cell_layout
+load Gilbert_mixer_interdigited
+cellname rename Gilbert_mixer_interdigited Gilbert_cell_layout
 
 # Extract with more detailed options
 extract all
