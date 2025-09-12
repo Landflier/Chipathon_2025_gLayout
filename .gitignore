@@ -5,7 +5,6 @@ open_pdks/
 sscs-chipathon-2024/
 *.svg
 !schematic.svg
-*.gds
 .ipynb_checkpoints
 *.raw
 src/jupyter_notebooks/gmId/pfet_03v3.mat
