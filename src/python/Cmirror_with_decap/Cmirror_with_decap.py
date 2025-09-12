@@ -56,20 +56,25 @@ from typing import Optional
 from gdsfactory import Component
 
 from glayout import gf180, MappedPDK
-from glayout import nmos, pmos, tapring
+from glayout import tapring
 from glayout.routing.straight_route import straight_route
 from glayout.routing.c_route import c_route
 from glayout.routing.L_route import L_route
-from glayout import via_array
+from glayout import via_stack, via_array
 
 from gdsfactory.components import rectangle
-from glayout.primitives.via_gen import via_array
-from glayout.util.comp_utils import evaluate_bbox, align_comp_to_port
+from glayout.primitives.via_gen import via_array, via_stack
+from glayout.util.comp_utils import evaluate_bbox, align_comp_to_port, prec_ref_center, prec_center, prec_array, movey
+from glayout.util.port_utils import rename_ports_by_orientation, add_ports_perimeter, rename_ports_by_list
 from glayout.util.snap_to_grid import component_snap_to_grid
     
 # Add the diff_pair module to the path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../diff_pair'))
 from diff_pair import get_pin_layers
+
+# Import custom finger array from Gilbert mixer
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../Gilbert_mixer_intedigited'))
+from Gilbert_mixer_interdigited import _create_finger_array
 
 def add_pin_and_label_to_via(
     comp: Component,
@@ -155,8 +160,6 @@ def add_pin_and_label_to_via(
     )
     
     return comp
-
-
 
 def create_cmirror_vias_outside_tapring_and_route(
         pdk: MappedPDK,
@@ -269,21 +272,18 @@ def create_cmirror_interdigitized(
     component_name: Optional[str] = "cmirror_interdigitized",
 ) -> Component:
     """
-    Create interdigitized current mirror for current mirroring applications.
-    This function creates two NMOS transistors in an interdigitized layout
-    with proper current mirror connections (gate-drain short for reference).
+    Create interdigitized current mirror using custom finger array approach (adapted from Gilbert mixer).
+    This function creates 2 NMOS transistors in an interdigitized layout pattern.
     
     Args:
         pdk: PDK for design rules and layer information
-        width: float of total width of each transistor
+        width: float of total width of the transistor
         fingers: int of number of fingers per transistor
         CM_FET_kwargs: Dictionary of additional FET parameters
                       Should include parameters like:
-                      - with_dnwell
                       - sd_route_topmet, gate_route_topmet
-                      - sd_rmult, gate_rmult
-                      - interfinger_rmult
-                      - tie_layers
+                      - sd_rmult, gate_rmult, interfinger_rmult
+                      - dummy settings
         length: Gate length (uses PDK minimum if not specified)
         component_name: Name for the component
     
@@ -300,76 +300,118 @@ def create_cmirror_interdigitized(
         length = pdk.get_grule('poly')['min_width']
 
     # Get parameters from CM_FET_kwargs
-    sd_rmult_temp = CM_FET_kwargs.get("sd_rmult", 1)  # multiplies thickness of sd metal (int only)
-    sd_route_topmet_temp = CM_FET_kwargs.get("sd_route_topmet", "met2")  # top metal layer for source/drain routing
-    inter_finger_topmet_temp = CM_FET_kwargs.get("inter_finger_topmet", "met1")  # top metal of the via array laid on the source/drain regions
-    gate_route_topmet_temp = CM_FET_kwargs.get("gate_route_topmet", "met2")  # top metal layer for gate routing
-    gate_rmult_temp = CM_FET_kwargs.get("gate_rmult", 1)  # multiplies gate by adding rows to the gate via array (int only)
-    interfinger_rmult_temp = CM_FET_kwargs.get("interfinger_rmult", 1)  # multiplies thickness of source/drain routes between the gates (int only)
-    tie_layers_temp = CM_FET_kwargs.get("tie_layers", ("met2","met1"))  # layers for tie ring (horizontal, vertical)
-    with_dummies_temp = CM_FET_kwargs.get("with_dummies", True)  # whether to include dummy gates connected to the tiering
-    with_dnwell_temp = CM_FET_kwargs.get("with_dnwell", False)
-    with_tie_temp = CM_FET_kwargs.get("with_tie", True)
-    with_substrate_tap_temp = CM_FET_kwargs.get("with_substrate_tap", False) 
+    sd_rmult = CM_FET_kwargs.get("sd_rmult", 1)
+    sd_route_topmet = CM_FET_kwargs.get("sd_route_topmet", "met2")
+    sdlayer = CM_FET_kwargs.get("sdlayer", "n+s/d")  # NMOS for current mirror
+    routing = CM_FET_kwargs.get("routing", True)
+    inter_finger_topmet = CM_FET_kwargs.get("inter_finger_topmet", "met1")
+    gate_route_topmet = CM_FET_kwargs.get("gate_route_topmet", "met2")
+    gate_rmult = CM_FET_kwargs.get("gate_rmult", 1)
+    interfinger_rmult = CM_FET_kwargs.get("interfinger_rmult", 1)
+    sd_route_extension = CM_FET_kwargs.get("sd_route_extension", 0)
+    gate_route_extension = CM_FET_kwargs.get("gate_route_extension", 0)
+    tie_layers = CM_FET_kwargs.get("tie_layers", ("met2","met1"))
+    with_dummies = CM_FET_kwargs.get("with_dummies", False)
 
     # error checking
-    if sd_rmult_temp<1 or interfinger_rmult_temp<1 or gate_rmult_temp<1:
+    if "n+s/d" or "p+s/d" not in sdlayer:
+        raise ValueError("specify + doped region for multiplier")
+
+    if sd_rmult < 1 or interfinger_rmult < 1 or gate_rmult < 1:
         raise ValueError("routing multipliers must be positive int")
+
+    # Calculate finger width
+    finger_width = width / fingers
     
-    ##top level component
-    top_level = Component()
-
-    ## two NMOS transistors for current mirror (reference and mirror)
-    M_ref_temp = nmos(pdk, 
-            width = width, 
-            fingers = fingers, 
-            multipliers = 1,
-            with_tie = with_tie_temp,
-            with_dummy = with_dummies_temp,
-            with_dnwell = with_dnwell_temp,
-            with_substrate_tap = with_substrate_tap_temp, 
-            length = length, 
-            sd_rmult = sd_rmult_temp,
-            sd_route_topmet = sd_route_topmet_temp,
-            gate_route_topmet = gate_route_topmet_temp,
-            gate_rmult = gate_rmult_temp,
-            interfinger_rmult = interfinger_rmult_temp,
-            tie_layers = tie_layers_temp,
-            )
-    M_mirror_temp = nmos(pdk, 
-            width = width, 
-            fingers = fingers, 
-            multipliers = 1,
-            with_tie = with_tie_temp,
-            with_dummy = with_dummies_temp,
-            with_dnwell = with_dnwell_temp,
-            with_substrate_tap = with_substrate_tap_temp, 
-            length = length, 
-            sd_rmult = sd_rmult_temp,
-            sd_route_topmet = sd_route_topmet_temp,
-            gate_route_topmet = gate_route_topmet_temp,
-            gate_rmult = gate_rmult_temp,
-            interfinger_rmult = interfinger_rmult_temp,
-            tie_layers = tie_layers_temp,
-            )
-
-    # For current mirror, we don't swap drain/source - keep standard configuration
-    M_ref = M_ref_temp
-    M_mirror = M_mirror_temp
-
-    M_ref_ref = top_level << M_ref
-    M_mirror_ref = top_level << M_mirror
+    # Calculate poly height for transistor finger
+    poly_height = finger_width + 2 * pdk.get_grule("poly", "active_diff")["overhang"]
     
-    # Place mirror transistor next to reference with mirroring for interdigitation
-    M_mirror_ref.mirror_x()
-    M_mirror_ref.movex(M_ref_ref.xmax + evaluate_bbox(M_mirror)[0]/2 )
+    # Snap dimensions to grid
+    length = pdk.snap_to_2xgrid(length)
+    finger_width = pdk.snap_to_2xgrid(finger_width)
+    poly_height = pdk.snap_to_2xgrid(poly_height)
+    
+    # Create finger array using the Gilbert mixer function (2 FETs for current mirror)
+    multiplier = _create_finger_array(
+        pdk=pdk,
+        width=width,
+        fingers=fingers,
+        length=length,
+        fets=2,  # 2 FETs: reference and mirror
+        sdlayer=sdlayer,
+        sd_route_topmet=sd_route_topmet,
+        interfinger_rmult=interfinger_rmult,
+        sd_rmult=sd_rmult,
+        gate_rmult=gate_rmult,
+        with_dummies=with_dummies
+    )
 
-    top_level.add_ports(M_ref_ref.get_ports_list(), prefix="CM_Mref_")
-    top_level.add_ports(M_mirror_ref.get_ports_list(), prefix="CM_Mmirror_")
+    # argument parsing and rule setup
+    min_width = pdk.get_grule("poly")["min_width"]
+    length = pdk.snap_to_2xgrid(length)
+    min_width = max(min_width, pdk.get_grule("active_diff")["min_width"])
+    width = min_width if (width or min_width) <= min_width else finger_width
+    width = pdk.snap_to_2xgrid(width)
 
-    top_level.name = component_name
-   
-    return component_snap_to_grid(top_level)
+    # get finger array
+    multiplier = component_snap_to_grid(rename_ports_by_orientation(multiplier))
+
+    # Note: Current mirror routing will be handled separately by add_cmirror_routing function
+    # The custom routing is more complex and needs specific current mirror connections
+
+    # add tapring
+    with_tie = CM_FET_kwargs.get("with_tie", True)
+    if with_tie:
+        tap_separation = max(
+            pdk.get_grule("met2")["min_separation"],
+            pdk.get_grule("met1")["min_separation"],
+            pdk.get_grule("active_diff", "active_tap")["min_separation"],
+        )
+        tap_separation += pdk.get_grule("p+s/d", "active_tap")["min_enclosure"]
+        tap_encloses = (
+            2 * (tap_separation + multiplier.xmax),
+            2 * (tap_separation + multiplier.ymax),
+        )
+        tiering_ref = multiplier << tapring(
+            pdk,
+            enclosed_rectangle=tap_encloses,
+            sdlayer="p+s/d",
+            horizontal_glayer=tie_layers[0],
+            vertical_glayer=tie_layers[1],
+        )
+        multiplier.add_ports(tiering_ref.get_ports_list(), prefix="tie_")
+
+    # add pwell
+    multiplier.add_padding(
+        layers=(pdk.get_glayer("pwell"),),
+        default=pdk.get_grule("pwell", "active_tap")["min_enclosure"],
+    )
+    multiplier = add_ports_perimeter(multiplier, layer=pdk.get_glayer("pwell"), prefix="well_")
+    
+    # route dummies
+    if with_dummies:
+        try:
+            multiplier << straight_route(pdk, 
+                    multiplier.ports["dummy_gate_L_W"], 
+                    multiplier.ports["tie_W_bottom_lay_E"],
+                    glayer1="poly",
+                    glayer2="met1",
+                    )
+
+            multiplier << straight_route(pdk, 
+                    multiplier.ports["dummy_gate_R_E"], 
+                    multiplier.ports["tie_E_bottom_lay_W"],
+                    glayer1="poly",
+                    glayer2="met1",
+                    )
+        except KeyError:
+            print("Warning: Could not route dummy gates to tie ring")
+
+    # Create final interdigitized component
+    cmirror_interdigitized = component_snap_to_grid(rename_ports_by_orientation(multiplier))
+    cmirror_interdigitized.name = component_name
+    
+    return cmirror_interdigitized
 
 def add_cmirror_routing(
     pdk: MappedPDK,
@@ -400,6 +442,16 @@ def add_cmirror_routing(
         cm_component << source_route
     except KeyError as e:
         print(f"Warning: Could not find source ports for VSS connection: {e}")
+        # Try alternative port names from multiplier
+        try:
+            source_route = straight_route(
+                pdk, 
+                cm_component.ports["CM_Mref_source_E"], 
+                cm_component.ports["CM_Mmirror_source_E"]
+            )
+            cm_component << source_route
+        except KeyError:
+            print("Warning: Could not find any source ports for VSS connection")
     
     # Route gates together (bias network)
     try:
@@ -421,6 +473,25 @@ def add_cmirror_routing(
         
     except KeyError as e:
         print(f"Warning: Could not find gate/drain ports for bias connection: {e}")
+        # Try alternative approach with different orientations
+        try:
+            gate_route = straight_route(
+                pdk, 
+                cm_component.ports["CM_Mref_gate_S"], 
+                cm_component.ports["CM_Mmirror_gate_S"]
+            )
+            cm_component << gate_route
+            
+            # Connect reference transistor gate to its drain (diode connection)
+            gate_drain_route = c_route(
+                pdk, 
+                cm_component.ports["CM_Mref_gate_N"], 
+                cm_component.ports["CM_Mref_drain_N"],
+                extension=pdk.util_max_metal_seperation()
+            )
+            cm_component << gate_drain_route
+        except KeyError:
+            print("Warning: Could not find any gate/drain ports for bias connection")
     
     return cm_component
 
@@ -478,6 +549,7 @@ if __name__ == "__main__":
         "sd_route_topmet": "met2",
         "gate_route_topmet": "met2",
         "sd_rmult": 2,
+        "sdlayer": 'n+s/d', # n for nmos, p for pmos
         "gate_rmult": 3,
         "interfinger_rmult": 2,
         "tie_layers": ("met2","met1"),
