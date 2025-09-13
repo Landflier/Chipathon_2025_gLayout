@@ -270,6 +270,8 @@ class GilbertMixerInterdigited:
        --- LO_1_drain    --- * extends to the left
        --- LO_1_source   --- * extends to the right
        --- LO_1_gate_Lo  ---
+
+       (dA sB dD sC)*fingers_d
        """
         # Count SD rows
         number_sd_rows = 0
