@@ -325,6 +325,16 @@ class CmirrorWithDecap:
         sdvia_ports = list()
         
         # Define routing configuration dictionary
+        """
+        routes are numbered the following way, wrt to the finger array
+        '-' -> denotes a metal horizontal 'track', connecting all the s/d/gate vertical connections
+
+        ---   top_track_2  ---
+        ---   top_track_1  ---
+             finger_array
+        --- bottom_track_1 ---
+        --- bottom_track_2 ---
+        """
         routing_configs = {
             'top_track_1': {
                 'y_align_via': lambda width: width/2,
@@ -377,15 +387,27 @@ class CmirrorWithDecap:
             
         width = self.width_ref / self.fingers_ref
         # Route fingers
-        # s(Rd Rs)*nf_r/4 (Md Ms)*nf_m/2 (Rd Rs)*nf_r/4
-        if self.fingers_ref % 4 == 0:
+        
+        # Route fingers in the following manner: s(Xd Xs)*nf_r/4 (Yd Ys)*nf_m/2 (Xd Xs)*nf_r/4 
+        if self.fingers_ref % 4 == 0 or self.fingers_mir % 4 == 0:
+            # Determine which case we're in for config selection. ref stands for reference fet, and check if it has fingers divisible by 4
+            ref_case = self.fingers_ref % 4 == 0
+            # ref_case = 1: X=ref, Y=mir (X=R, Y=M)
+            # ref_case = 0: X=mir, Y=ref (X=M, Y=R)
+            
             for finger_couple in range(int((self.fingers_ref + self.fingers_mir)/2)):
-                # (Md Ms) -> route Md
-                if finger_couple >= self.fingers_ref/4 and finger_couple < self.fingers_ref/4 + self.fingers_mir/2:
+                # Select config based on finger position and case
+                in_middle_region = finger_couple >= self.fingers_ref/4 and finger_couple < self.fingers_ref/4 + self.fingers_mir/2
+                
+                # ref_case     is : s(Rd Rs)*nf_r/4 (Md Ms)*nf_m/2 (Rd Rs)*nf_r/4 
+                # not ref_case is : s(Md Ms)*nf_m/4 (Rd Rs)*nf_r/2 (Md Ms)*nf_m/4 
+                # thus ref_case an in_middle_region and not ref_case and not in_middle_region just selects M(irror) FET's s/d regions
+                if (ref_case and in_middle_region) or (not ref_case and not in_middle_region):
+                    # (Md Ms) -> route Md
                     port_name = f"row0_col{2*finger_couple}_rightsd_array_row{number_sd_rows}_col0_top_met_N"
                     config_key = 'top_track_1'
-                # (Rd Rs) -> route Rd
                 else:
+                    # (Rd Rs) -> route Rd
                     port_name = f"row0_col{2*finger_couple}_rightsd_array_row0_col0_top_met_N"
                     config_key = 'top_track_2'
 
@@ -395,7 +417,7 @@ class CmirrorWithDecap:
                     port_suffix=f"{finger_couple*2}"
                 )
 
-                # right finger always routes to common source (port 3)
+                # finger couple's right finger's s/d region always routes to common source (port 3)
                 sdvia_ports += create_and_route_finger(
                     config_key='bottom_track_1',
                     port_name=f"row0_col{2*finger_couple+1}_rightsd_array_row0_col0_top_met_N",
@@ -410,57 +432,34 @@ class CmirrorWithDecap:
                     sdvia_ports += create_and_route_finger(
                         config_key='bottom_track_1',
                         port_name="leftsd_top_met_N",
-                        port_suffix="s_0",
+                        port_suffix="s_0"
                     )
-        # s(Md Ms)*nf_m/4 (Rd Rs)*nf_r/2 (Md Ms)*nf_m/4
-        elif self.fingers_mir % 4 == 0:
-            for finger_couple in range(int((self.fingers_ref + self.fingers_mir)/2)):
-                # Route all the left finger's s/d regions the finger couples
-                # (Rd Rs) -> route Rd
-                if finger_couple >= self.fingers_ref/4 and finger_couple < self.fingers_ref/4 + self.fingers_mir/2:
-                    port_name = f"row0_col{2*finger_couple}_rightsd_array_row{number_sd_rows}_col0_top_met_N"
-                    config_key = 'top_track_2'
-                # (Md Ms) -> route Md
-                else:
-                    port_name = f"row0_col{2*finger_couple}_rightsd_array_row0_col0_top_met_N"
-                    config_key = 'top_track_1'
 
-                sdvia_ports += create_and_route_finger(
-                    config_key=config_key,
-                    port_name=port_name,
-                    port_suffix=f"{finger_couple*2}"
-                )
-
-                # Route all the right finger's s/d regions the finger couples
-                # right finger always routes to common source (port 3)
-                sdvia_ports += create_and_route_finger(
-                    config_key='bottom_track_1',
-                    port_name=f"row0_col{2*finger_couple+1}_rightsd_array_row0_col0_top_met_N",
-                    port_suffix=f"{finger_couple*2+1}"
-                )
-            
-                # route the initial s(ource) region, before all repeated structures
-                if finger_couple == 0:
-                    rel_align_port = multiplier.ports['leftsd_top_met_N']
-                    rel_align_port.width = rel_align_port.width / interfinger_rmult
-
-                    sdvia_ports += create_and_route_finger(
-                        config_key='bottom_track_1',
-                        port_name="leftsd_top_met_N",
-                        port_suffix="s_0",
-                    )
-        # s(Md Ms)*nf_m/4 (Rd Rs)*nf_r/2 (Md Ms)*nf_m/4
+        # Route fingers in the following manner: d(Xs Xd)*abs(nf_x-nf_y)/4 (Xs Yd Ys Xd)*min(nf_y, nf_x) /2 (Xs Xd)*abs(nf_x-nf_y)/4
         else:
+            # Determine which FET has more fingers. ref stands for reference fet, and check if it has fingers divisible by 4
+            # Note if =, is covered in the check below
+            ref_case = self.fingers_ref > self.finger_mir
+            # ref_case = 1: X=ref, Y=mir (X=R, Y=M)
+            # ref_case = 0: X=mir, Y=ref (X=M, Y=R)
+            cutoff_left  = abs(self.fingers_ref - self.fingers_mir)/4
+            cutoff_right = (self.fingers_ref + self.fingers_mir)/2 - cutoff_left
+            
             for finger_couple in range(int((self.fingers_ref + self.fingers_mir)/2)):
-                # Route all the left finger's s/d regions the finger couples
-                # (Rd Rs) -> route Rd
-                if finger_couple >= self.fingers_ref/4 and finger_couple < self.fingers_ref/4 + self.fingers_mir/2:
+                # Select config based on finger position and case
+                in_middle_region = finger_couple >= cutoff_left and finger_couple < cutoff_right
+                
+                # ref_case     is : d(Rs Rd)*(nf_r-nf_m)/4 (Rs Md Ms Rd)nf_m/2 (Rs Rd)*(nf_r-nf_m)/4
+                # not ref_case is : d(Ms Md)*(nf_m-nf_r)/4 (Ms Rd Rs Md)nf_r/2 (Ms Md)*(nf_m-nf_r)/4
+                # thus ref_case an in_middle_region and not ref_case and not in_middle_region just selects M(irror) FET's s/d regions
+                if (ref_case and in_middle_region) or (not ref_case and not in_middle_region):
+                    # (Md Ms) -> route Md
                     port_name = f"row0_col{2*finger_couple}_rightsd_array_row{number_sd_rows}_col0_top_met_N"
-                    config_key = 'top_track_2'
-                # (Md Ms) -> route Md
-                else:
-                    port_name = f"row0_col{2*finger_couple}_rightsd_array_row0_col0_top_met_N"
                     config_key = 'top_track_1'
+                else:
+                    # (Rd Rs) -> route Rd
+                    port_name = f"row0_col{2*finger_couple}_rightsd_array_row0_col0_top_met_N"
+                    config_key = 'top_track_2'
 
                 sdvia_ports += create_and_route_finger(
                     config_key=config_key,
@@ -468,23 +467,23 @@ class CmirrorWithDecap:
                     port_suffix=f"{finger_couple*2}"
                 )
 
-                # Route all the right finger's s/d regions the finger couples
-                # right finger always routes to common source (port 3)
+                # finger couple's right finger's s/d region always routes to common source (port 3)
                 sdvia_ports += create_and_route_finger(
                     config_key='bottom_track_1',
                     port_name=f"row0_col{2*finger_couple+1}_rightsd_array_row0_col0_top_met_N",
                     port_suffix=f"{finger_couple*2+1}"
                 )
             
-                # route the initial s(ource) region, before all repeated structures
-                if finger_couple == 0:
+                # route the initial d, before all repeated structures
+                # ref_case: routing dR
+                if ref_case and finger_couple == 0:
                     rel_align_port = multiplier.ports['leftsd_top_met_N']
                     rel_align_port.width = rel_align_port.width / interfinger_rmult
 
                     sdvia_ports += create_and_route_finger(
-                        config_key='bottom_track_1',
+                        config_key='top_track_1',
                         port_name="leftsd_top_met_N",
-                        port_suffix="s_0",
+                        port_suffix="s_0"
                     )
         """
         for finger in range(4*fingers+1):
