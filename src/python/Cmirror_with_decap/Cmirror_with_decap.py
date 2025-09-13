@@ -155,7 +155,6 @@ class CmirrorWithDecap:
         """
         # Calculate finger dimensions
 
-        print(f"DEBUG: fingers_mir {self.fingers_mir}, fingers_ref {self.fingers_ref}")
         finger_width = self.width_mir / self.fingers_mir
         fingers = self.fingers_mir + self.fingers_ref
         poly_height = finger_width + 2 * self.pdk.get_grule("poly", "active_diff")["overhang"]
@@ -324,8 +323,100 @@ class CmirrorWithDecap:
         sdroute_minsep = self.pdk.get_grule(sd_route_topmet)["min_separation"]
         sdvia_ports = list()
             
-        """
+        width = self.width_ref / self.fingers_ref
         # Route fingers
+        # s(Rd Rs)*nf_r/4 (Md Ms)*nf_m/2 (Rd Rs)*nf_r/4
+        if self.fingers_ref % 4 == 0:
+            for finger_couple in range(int((self.fingers_ref + self.fingers_mir)/2)):
+                # (Md Ms) -> route Md
+                if finger_couple >= self.fingers_ref/4 and finger_couple < self.fingers_ref/4 + self.fingers_mir/2:
+                    aligning_port_name = f"row0_col{2*finger_couple}_rightsd_array_row{number_sd_rows}_col0_top_met_N"
+                    rel_align_port_left = multiplier.ports[aligning_port_name]
+                    y_align_via = width/2
+                    alignment_port = ('c', 't')
+                    sdvia_extension = +(sdroute_minsep + (sdmet_height)/2)
+                    sd_route_extension_temp = +self.pdk.snap_to_2xgrid(sd_route_extension)
+
+                # (Rd Rs) -> route Rd
+                else:
+                    aligning_port_name = f"row0_col{2*finger_couple}_rightsd_array_row0_col0_top_met_N"
+                    rel_align_port_left = multiplier.ports[aligning_port_name]
+                    y_align_via = width/2
+                    alignment_port = ('c', 't')
+                    sdvia_extension = +(sdroute_minsep + sdroute_minsep + (sdmet_height/2 + sdmet_height))
+                    sd_route_extension_temp = self.pdk.snap_to_2xgrid(sd_route_extension)
+
+
+                port_to_route_left_finger = multiplier.add_port(
+                    center=(rel_align_port_left.center[0], y_align_via),
+                    width=rel_align_port_left.width,
+                    orientation=90,
+                    layer=rel_align_port_left.layer,
+                    name=f"diffusion_port_to_align_sd_{finger_couple*2}"
+                )
+
+                # Route left port
+                sd_track_y_displacement = sdvia_extension + sd_route_extension_temp
+                sdvia_ref = align_comp_to_port(sdvia, port_to_route_left_finger, alignment=alignment_port)
+                multiplier.add(sdvia_ref.movey(sd_track_y_displacement))
+                multiplier << straight_route(self.pdk, port_to_route_left_finger, sdvia_ref.ports["bottom_met_N"])
+                sdvia_ports += [sdvia_ref.ports["top_met_W"], sdvia_ref.ports["top_met_E"]]
+
+                # right finger always routes to common source (port 3)
+                aligning_port_name = f"row0_col{2*finger_couple+1}_rightsd_array_row0_col0_top_met_N"
+                rel_align_port_right = multiplier.ports[aligning_port_name]
+                y_align_via = -width/2
+                alignment_port = ('c', 'b')
+                sdvia_extension = -(sdroute_minsep + (sdmet_height)/2)
+                sd_route_extension_temp = -self.pdk.snap_to_2xgrid(sd_route_extension)
+
+                port_to_route_right_finger = multiplier.add_port(
+                    center=(rel_align_port_right.center[0], y_align_via),
+                    width=rel_align_port_right.width,
+                    orientation=90,
+                    layer=rel_align_port_right.layer,
+                    name=f"diffusion_port_to_align_sd_{finger_couple*2+1}"
+                )
+
+                # Route right port
+                sd_track_y_displacement = sdvia_extension + sd_route_extension_temp
+                sdvia_ref = align_comp_to_port(sdvia, port_to_route_right_finger, alignment=alignment_port)
+                multiplier.add(sdvia_ref.movey(sd_track_y_displacement))
+                multiplier << straight_route(self.pdk, port_to_route_right_finger, sdvia_ref.ports["bottom_met_N"])
+                sdvia_ports += [sdvia_ref.ports["top_met_W"], sdvia_ref.ports["top_met_E"]]
+            
+                # route the initial s, before all repeated structures
+                if finger_couple == 0:
+                    aligning_port_name = f"leftsd_top_met_N"
+                    rel_align_port_left = multiplier.ports[aligning_port_name]
+                    rel_align_port_left.width = rel_align_port_left.width / interfinger_rmult
+                    y_align_via = -width/2
+                    alignment_port = ('c', 'b')
+                    sdvia_extension = -(sdroute_minsep + (sdmet_height)/2)
+                    sd_route_extension_temp = -self.pdk.snap_to_2xgrid(sd_route_extension)
+
+                    port_to_route_left_finger = multiplier.add_port(
+                        center=(rel_align_port_left.center[0], y_align_via),
+                        width=rel_align_port_left.width,
+                        orientation=90,
+                        layer=rel_align_port_left.layer,
+                        name=f"diffusion_port_to_align_s_0"
+                    )
+
+                    sd_track_y_displacement = sdvia_extension + sd_route_extension_temp
+                    sdvia_ref = align_comp_to_port(sdvia, port_to_route_left_finger, alignment=alignment_port)
+                    multiplier.add(sdvia_ref.movey(sd_track_y_displacement))
+                    multiplier << straight_route(self.pdk, port_to_route_left_finger, sdvia_ref.ports["bottom_met_N"])
+                    sdvia_ports += [sdvia_ref.ports["top_met_W"], sdvia_ref.ports["top_met_E"]]
+
+
+
+        # (sM dM)*nf_m/4 (sR dR)*nf_r/2 (sM dM)*nf_m/4
+        elif self.fingers_mir % 4 == 0:
+            pass
+        else:
+            pass
+        """
         for finger in range(4*fingers+1):
             # Determine port assignments
             check_port_1 = (finger % 4 == 1)
@@ -829,7 +920,7 @@ if __name__ == "__main__":
         inter_finger_topmet="met1",
         sd_route_extension=0.0,
         gate_route_extension=0,
-        routing=False,
+        routing=True,
         with_dummies=False,
         with_tie=False,
         with_substrate_tap=False
@@ -838,9 +929,9 @@ if __name__ == "__main__":
     # Create current mirror instance
     cmirror = CmirrorWithDecap(
         pdk=pdk_choice,
-        width_ref=10.0,
-        width_mir=5.0,
-        fingers_ref=2,
+        width_ref=7.5,
+        width_mir=1.5,
+        fingers_ref=5,
         fingers_mir=1,
         length=0.28,
         cmirror_config=cmirror_config
