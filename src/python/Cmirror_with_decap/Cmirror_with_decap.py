@@ -350,33 +350,13 @@ class CmirrorWithDecap:
                 'sdvia_extension': lambda sdroute_minsep, sdmet_height: -(sdroute_minsep + sdroute_minsep + (sdmet_height/2 + sdmet_height)),
                 'sd_route_extension_sign': -1
             },
-            'initial_s': {
-                'y_align_via': lambda width: -width/2,
-                'alignment_port': ('c', 'b'),
-                'sdvia_extension': lambda sdroute_minsep, sdmet_height: -(sdroute_minsep + (sdmet_height)/2),
-                'sd_route_extension_sign': -1
-            }
         }
         
-        def create_and_route_finger(config_key, port_name, port_suffix="", special_width_adjustment=None):
-            """
-            Create port and route finger using configuration dictionary
-            
-            Args:
-                config_key (str): Configuration key for routing parameters
-                port_name (str): Name of the port to align to
-                port_suffix (str): Suffix for port naming
-                special_width_adjustment (callable, optional): Function to adjust port width
-                
-            Returns:
-                list: Via ports created during routing
-            """
+        def create_and_route_finger(config_key, port_name, port_suffix=""):
             config = routing_configs[config_key]
             
             # Get alignment port
             rel_align_port = multiplier.ports[port_name]
-            if special_width_adjustment:
-                rel_align_port = special_width_adjustment(rel_align_port)
             
             # Create and route port
             port_to_route = multiplier.add_port(
@@ -400,7 +380,6 @@ class CmirrorWithDecap:
         # s(Rd Rs)*nf_r/4 (Md Ms)*nf_m/2 (Rd Rs)*nf_r/4
         if self.fingers_ref % 4 == 0:
             for finger_couple in range(int((self.fingers_ref + self.fingers_mir)/2)):
-                # Route left finger using the comprehensive function
                 # (Md Ms) -> route Md
                 if finger_couple >= self.fingers_ref/4 and finger_couple < self.fingers_ref/4 + self.fingers_mir/2:
                     port_name = f"row0_col{2*finger_couple}_rightsd_array_row{number_sd_rows}_col0_top_met_N"
@@ -409,6 +388,41 @@ class CmirrorWithDecap:
                 else:
                     port_name = f"row0_col{2*finger_couple}_rightsd_array_row0_col0_top_met_N"
                     config_key = 'top_track_2'
+
+                sdvia_ports += create_and_route_finger(
+                    config_key=config_key,
+                    port_name=port_name,
+                    port_suffix=f"{finger_couple*2}"
+                )
+
+                # right finger always routes to common source (port 3)
+                sdvia_ports += create_and_route_finger(
+                    config_key='bottom_track_1',
+                    port_name=f"row0_col{2*finger_couple+1}_rightsd_array_row0_col0_top_met_N",
+                    port_suffix=f"{finger_couple*2+1}"
+                )
+            
+                # route the initial s, before all repeated structures
+                if finger_couple == 0:
+                    rel_align_port = multiplier.ports['leftsd_top_met_N']
+                    rel_align_port.width = rel_align_port.width / interfinger_rmult
+
+                    sdvia_ports += create_and_route_finger(
+                        config_key='bottom_track_1',
+                        port_name="leftsd_top_met_N",
+                        port_suffix="s_0",
+                    )
+        # s(Md Ms)*nf_m/4 (Rd Rs)*nf_r/2 (Md Ms)*nf_m/4
+        elif self.fingers_mir % 4 == 0:
+            for finger_couple in range(int((self.fingers_ref + self.fingers_mir)/2)):
+                # (Rd Rs) -> route Rd
+                if finger_couple >= self.fingers_ref/4 and finger_couple < self.fingers_ref/4 + self.fingers_mir/2:
+                    port_name = f"row0_col{2*finger_couple}_rightsd_array_row{number_sd_rows}_col0_top_met_N"
+                    config_key = 'top_track_2'
+                # (Md Ms) -> route Md
+                else:
+                    port_name = f"row0_col{2*finger_couple}_rightsd_array_row0_col0_top_met_N"
+                    config_key = 'top_track_1'
 
                 sdvia_ports += create_and_route_finger(
                     config_key=config_key,
@@ -436,7 +450,6 @@ class CmirrorWithDecap:
                         port_suffix="s_0",
                         special_width_adjustment=adjust_width
                     )
-        
         """
         for finger in range(4*fingers+1):
             # Determine port assignments
