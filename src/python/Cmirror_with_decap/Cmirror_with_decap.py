@@ -415,6 +415,7 @@ class CmirrorWithDecap:
         # s(Md Ms)*nf_m/4 (Rd Rs)*nf_r/2 (Md Ms)*nf_m/4
         elif self.fingers_mir % 4 == 0:
             for finger_couple in range(int((self.fingers_ref + self.fingers_mir)/2)):
+                # Route all the left finger's s/d regions the finger couples
                 # (Rd Rs) -> route Rd
                 if finger_couple >= self.fingers_ref/4 and finger_couple < self.fingers_ref/4 + self.fingers_mir/2:
                     port_name = f"row0_col{2*finger_couple}_rightsd_array_row{number_sd_rows}_col0_top_met_N"
@@ -430,6 +431,7 @@ class CmirrorWithDecap:
                     port_suffix=f"{finger_couple*2}"
                 )
 
+                # Route all the right finger's s/d regions the finger couples
                 # right finger always routes to common source (port 3)
                 sdvia_ports += create_and_route_finger(
                     config_key='bottom_track_1',
@@ -437,18 +439,52 @@ class CmirrorWithDecap:
                     port_suffix=f"{finger_couple*2+1}"
                 )
             
-                # route the initial s, before all repeated structures
+                # route the initial s(ource) region, before all repeated structures
                 if finger_couple == 0:
-                    # Special width adjustment function for initial s
-                    def adjust_width(port):
-                        port.width = port.width / interfinger_rmult
-                        return port
-                    
+                    rel_align_port = multiplier.ports['leftsd_top_met_N']
+                    rel_align_port.width = rel_align_port.width / interfinger_rmult
+
                     sdvia_ports += create_and_route_finger(
-                        config_key='initial_s',
+                        config_key='bottom_track_1',
                         port_name="leftsd_top_met_N",
                         port_suffix="s_0",
-                        special_width_adjustment=adjust_width
+                    )
+        # s(Md Ms)*nf_m/4 (Rd Rs)*nf_r/2 (Md Ms)*nf_m/4
+        else:
+            for finger_couple in range(int((self.fingers_ref + self.fingers_mir)/2)):
+                # Route all the left finger's s/d regions the finger couples
+                # (Rd Rs) -> route Rd
+                if finger_couple >= self.fingers_ref/4 and finger_couple < self.fingers_ref/4 + self.fingers_mir/2:
+                    port_name = f"row0_col{2*finger_couple}_rightsd_array_row{number_sd_rows}_col0_top_met_N"
+                    config_key = 'top_track_2'
+                # (Md Ms) -> route Md
+                else:
+                    port_name = f"row0_col{2*finger_couple}_rightsd_array_row0_col0_top_met_N"
+                    config_key = 'top_track_1'
+
+                sdvia_ports += create_and_route_finger(
+                    config_key=config_key,
+                    port_name=port_name,
+                    port_suffix=f"{finger_couple*2}"
+                )
+
+                # Route all the right finger's s/d regions the finger couples
+                # right finger always routes to common source (port 3)
+                sdvia_ports += create_and_route_finger(
+                    config_key='bottom_track_1',
+                    port_name=f"row0_col{2*finger_couple+1}_rightsd_array_row0_col0_top_met_N",
+                    port_suffix=f"{finger_couple*2+1}"
+                )
+            
+                # route the initial s(ource) region, before all repeated structures
+                if finger_couple == 0:
+                    rel_align_port = multiplier.ports['leftsd_top_met_N']
+                    rel_align_port.width = rel_align_port.width / interfinger_rmult
+
+                    sdvia_ports += create_and_route_finger(
+                        config_key='bottom_track_1',
+                        port_name="leftsd_top_met_N",
+                        port_suffix="s_0",
                     )
         """
         for finger in range(4*fingers+1):
