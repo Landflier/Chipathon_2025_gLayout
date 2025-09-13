@@ -452,135 +452,93 @@ class CmirrorWithDecap:
             cutoff_right = (self.fingers_ref + self.fingers_mir)/2 - cutoff_left
             
             finger_couple = 0 
-            # for finger_couple in range(int((self.fingers_ref + self.fingers_mir)/2)):
             while finger_couple < (int((self.fingers_ref + self.fingers_mir)/2)):
-                # Select config based on finger position and case
+                # Select config based on finger position
                 in_middle_region = finger_couple >= cutoff_left and finger_couple < cutoff_right
                 
                 # ref_case     is : d(Rs Rd)*(nf_r-nf_m)/4 (Rs Md Ms Rd)nf_m/2 (Rs Rd)*(nf_r-nf_m)/4
                 # not ref_case is : d(Ms Md)*(nf_m-nf_r)/4 (Ms Rd Rs Md)nf_r/2 (Ms Md)*(nf_m-nf_r)/4
+
                 if in_middle_region:
-                    if ref_case :
-                        # (Rs Md Ms Rd) -> route Md and Rd
-                        # finger_couple points to -> (Rs Md)
-                        # Md port
-                        port_name_1 = f"row0_col{2*finger_couple+1}_rightsd_array_row{number_sd_rows}_col0_top_met_N"
-                        config_key_1 = 'top_track_1'
-
-                        # add 1 to finger couple, since we route two couples of FETS, not only one couple
-                        finger_couple += 1
-
-                        # finger_couple points to -> (Ms Rd)
-                        # Rd port 
-                        port_name_2 = f"row0_col{2*finger_couple+1}_rightsd_array_row{number_sd_rows}_col0_top_met_N"
-                        config_key_2 = 'top_track_2'
-
-                    elif not ref_case:
-                        # (Ms Rd Rs Md) -> route Rd and Md
-
-                        # finger_couple points to -> (Ms Rd)
-                        # Rd port
-                        port_name_1 = f"row0_col{2*finger_couple+1}_rightsd_array_row{number_sd_rows}_col0_top_met_N"
-                        config_key_1 = 'top_track_2'
-                        
-                        # add 1 to finger couple, since we route another pair of FETs
-                        finger_couple += 1
-
-                        # finger_couple+1 points to -> (Rs Md)
-                        # Md port
-                        port_name_2 = f"row0_col{2*finger_couple+1}_rightsd_array_row{number_sd_rows}_col0_top_met_N"
-                        config_key_2 = 'top_track_1'
+                    # Determine config keys based on ref_case
+                    # ref_case: (Rs Md Ms Rd) -> route Md and Rd -> configs: top_track_1, top_track_2
+                    # not ref_case: (Ms Rd Rs Md) -> route Rd and Md -> configs: top_track_2, top_track_1
+                    config_key_1 = 'top_track_1' if ref_case else 'top_track_2'
+                    config_key_2 = 'top_track_2' if ref_case else 'top_track_1'
+                    
+                    # route Yd (port_name_1) and then Xd (port_name_2)
+                    port_name_1 = f"row0_col{2*finger_couple+1}_rightsd_array_row{number_sd_rows}_col0_top_met_N"
+                    port_name_2 = f"row0_col{2*finger_couple+3}_rightsd_array_row{number_sd_rows}_col0_top_met_N"
+                    
 
                     sdvia_ports += create_and_route_finger(
                         config_key=config_key_1,
                         port_name=port_name_1,
-                        port_suffix=f"{2*(finger_couple-1) + 1}"
+                        port_suffix=f"{2*finger_couple + 1}"
                     )
 
                     sdvia_ports += create_and_route_finger(
                         config_key=config_key_2,
                         port_name=port_name_2,
-                        port_suffix=f"{2*(finger_couple)+ 1}"
+                        port_suffix=f"{2*finger_couple + 3}"
                     )
 
-                    # since Ms and Rs are the same port, route both
-                    sdvia_ports += create_and_route_finger(
-                        config_key='bottom_track_1',
-                        port_name=f"row0_col{2*(finger_couple-1)}_rightsd_array_row0_col0_top_met_N",
-                        port_suffix=f"{2*(finger_couple-1)}"
-                    )
+                    # since Xs and Ys are the same port, route both
                     sdvia_ports += create_and_route_finger(
                         config_key='bottom_track_1',
                         port_name=f"row0_col{2*finger_couple}_rightsd_array_row0_col0_top_met_N",
                         port_suffix=f"{2*finger_couple}"
                     )
-                    # one more couple routed
-                    finger_couple += 1 
-            
+                    sdvia_ports += create_and_route_finger(
+                        config_key='bottom_track_1',
+                        port_name=f"row0_col{2*finger_couple + 2}_rightsd_array_row0_col0_top_met_N",
+                        port_suffix=f"{2*finger_couple + 2}"
+                    )
+
+                    # Increment finger_couple by two, since we routed two couples of fingers
+                    finger_couple += 2
+
                 elif not in_middle_region:
                     # route the initial d, before all repeated structures
-                    # ref_case: routing dR
-                    if ref_case and finger_couple == 0:
+                    # ref_case: routing dR -> top_track_2
+                    # not ref_case: routing dM -> top_track_1
+                    if finger_couple == 0:
+                        # Manual width adjustment for initial d
                         rel_align_port = multiplier.ports['leftsd_top_met_N']
                         rel_align_port.width = rel_align_port.width / interfinger_rmult
 
-                        sdvia_ports += create_and_route_finger(
-                            config_key='top_track_2',
-                            port_name="leftsd_top_met_N",
-                            port_suffix="d_0"
-                        )
-                    # not ref_case: routing dM
-                    elif not ref_case and finger_couple == 0:
-                        rel_align_port = multiplier.ports['leftsd_top_met_N']
-                        rel_align_port.width = rel_align_port.width / interfinger_rmult
-
+                        # Determine config key based on ref_case
+                        config_key = 'top_track_2' if ref_case else 'top_track_1'
                         
                         sdvia_ports += create_and_route_finger(
-                            config_key='top_track_1',
+                            config_key=config_key,
                             port_name="leftsd_top_met_N",
                             port_suffix="d_0"
                         )
 
-                    # ref_case     is : d(Rs Rd)*(nf_r-nf_m)/4 (Rs Md Ms Rd)nf_m/2 (Rs Rd)*(nf_r-nf_m)/4
-                    # not ref_case is : d(Ms Md)*(nf_m-nf_r)/4 (Ms Rd Rs Md)nf_r/2 (Ms Md)*(nf_m-nf_r)/4
-                    if ref_case:
-                        # Rd port
-                        port_name = f"row0_col{2*finger_couple+1}_rightsd_array_row{number_sd_rows}_col0_top_met_N"
-                        config_key = 'top_track_2'
+                    # routing all couples (Xs Xd)
+                    # ref_case: route Rd port -> top_track_2
+                    # not ref_case: route Md port -> top_track_1
+                    config_key = 'top_track_2' if ref_case else 'top_track_1'
+                    
+                    drain_port_name = f"row0_col{2*finger_couple+1}_rightsd_array_row{number_sd_rows}_col0_top_met_N"
+                    source_port_name = f"row0_col{2*finger_couple}_rightsd_array_row0_col0_top_met_N"
+        
+                    # Route drain connection (Rd or Md depending on ref_case)
+                    sdvia_ports += create_and_route_finger(
+                        config_key=config_key,
+                        port_name=drain_port_name,
+                        port_suffix=f"{2*finger_couple + 1}"
+                    )
 
-                        sdvia_ports += create_and_route_finger(
-                            config_key=config_key,
-                            port_name=port_name,
-                            port_suffix=f"{2*finger_couple+ 1}"
-                        )
-
-                        # Rs port
-                        sdvia_ports += create_and_route_finger(
-                            config_key='bottom_track_1',
-                            port_name=f"row0_col{2*finger_couple}_rightsd_array_row0_col0_top_met_N",
-                            port_suffix=f"{2*finger_couple}"
-                        )
-
-                    else:
-                        # Md port
-                        port_name = f"row0_col{2*finger_couple+1}_rightsd_array_row{number_sd_rows}_col0_top_met_N"
-                        config_key = 'top_track_1'
-
-                        sdvia_ports += create_and_route_finger(
-                            config_key=config_key,
-                            port_name=port_name,
-                            port_suffix=f"{2*finger_couple + 1}"
-                        )
-
-                        # Ms port
-                        sdvia_ports += create_and_route_finger(
-                            config_key='bottom_track_1',
-                            port_name=f"row0_col{2*finger_couple}_rightsd_array_row0_col0_top_met_N",
-                            port_suffix=f"{2*finger_couple}"
-                        )
+                    # Route (Rs or Ms)
+                    sdvia_ports += create_and_route_finger(
+                        config_key='bottom_track_1',
+                        port_name=source_port_name,
+                        port_suffix=f"{2*finger_couple}"
+                    )
 
                     finger_couple += 1
-
         """
         for finger in range(4*fingers+1):
             # Determine port assignments
@@ -1094,10 +1052,10 @@ if __name__ == "__main__":
     # Create current mirror instance
     cmirror = CmirrorWithDecap(
         pdk=pdk_choice,
-        width_ref=7.5,
-        width_mir=1.5,
-        fingers_ref=5,
-        fingers_mir=1,
+        width_ref=8,
+        width_mir=4,
+        fingers_ref=4,
+        fingers_mir=2,
         length=0.28,
         cmirror_config=cmirror_config
     )
