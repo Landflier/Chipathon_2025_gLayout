@@ -48,7 +48,8 @@ class CMirrorConfig:
     tie_layers: Tuple[str, str] = ("met2", "met1")
     with_dummies: bool = False
     with_tie: bool = True
-    with_substrate_tap: bool = False
+    with_substrate_tap: bool = False,
+    with_dnwell: bool = False
 
 class CmirrorWithDecap:
     """
@@ -224,9 +225,9 @@ class CmirrorWithDecap:
         diff_dims = (diff_extra_enc + evaluate_bbox(multiplier)[0], finger_width)
         diff = multiplier << rectangle(size=diff_dims, layer=self.pdk.get_glayer("active_diff"), centered=True)
         
-        sd_diff_ovhg = self.pdk.get_grule("n+s/d", "active_diff")["min_enclosure"]
+        sd_diff_ovhg = self.pdk.get_grule(sdlayer, "active_diff")["min_enclosure"]
         sdlayer_dims = [dim + 2 * sd_diff_ovhg for dim in diff_dims]
-        sdlayer_ref = multiplier << rectangle(size=sdlayer_dims, layer=self.pdk.get_glayer("n+s/d"), centered=True)
+        sdlayer_ref = multiplier << rectangle(size=sdlayer_dims, layer=self.pdk.get_glayer(sdlayer), centered=True)
         
         multiplier.add_ports(sdlayer_ref.get_ports_list(), prefix="plusdoped_")
         multiplier.add_ports(diff.get_ports_list(), prefix="diff_")
@@ -817,6 +818,9 @@ class CmirrorWithDecap:
             )
 
         # Add tap ring if requested
+        # sdlayer == n+s/d is NMOS, p+s/d is PMOS
+        tie_well = "pwell" if config.sdlayer == "n+s/d" else "nwell"
+        sdlayer_tiering = "p+s/d" if config.sdlayer == "n+s/d" else "n+s/d"
         if config.with_tie:
             tap_separation = max(
                 self.pdk.get_grule("met2")["min_separation"],
@@ -831,7 +835,7 @@ class CmirrorWithDecap:
             tiering_ref = multiplier << tapring(
                 self.pdk,
                 enclosed_rectangle=tap_encloses,
-                sdlayer="p+s/d",
+                sdlayer=sdlayer_tiering,
                 horizontal_glayer=config.tie_layers[0],
                 vertical_glayer=config.tie_layers[1],
             )
@@ -839,9 +843,15 @@ class CmirrorWithDecap:
 
         # Add pwell
         multiplier.add_padding(
-            layers=(self.pdk.get_glayer("pwell"),),
-            default=self.pdk.get_grule("pwell", "active_tap")["min_enclosure"],
+            layers=(self.pdk.get_glayer(tie_well),),
+            default=self.pdk.get_grule(tie_well, "active_tap")["min_enclosure"],
         )
+        # add dnwell if dnwell and using nmos
+        if config.with_dnwell and config.sdlayer == "n+s/d":
+            multiplier.add_padding(
+                    layers=(self.pdk.get_glayer("dnwell"),),
+                    default=self.pdk.get_grule("pwell", "dnwell")["min_enclosure"],
+                    )
         multiplier = add_ports_perimeter(multiplier, layer=self.pdk.get_glayer("pwell"), prefix="well_")
 
         # Route dummies if present
@@ -1043,10 +1053,12 @@ if __name__ == "__main__":
         inter_finger_topmet="met1",
         sd_route_extension=0.0,
         gate_route_extension=0,
+        sdlayer = "p+s/d",
         routing=True,
         with_dummies=False,
-        with_tie=False,
-        with_substrate_tap=False
+        with_tie=True,
+        with_substrate_tap=False,
+        with_dnwell = True
     )
     
     # Create current mirror instance
