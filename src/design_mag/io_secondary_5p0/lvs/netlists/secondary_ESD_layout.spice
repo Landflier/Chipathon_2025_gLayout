@@ -12,16 +12,16 @@ D2 a_n4500_n1152# a_n4348_n1000# diode_nd2ps_06v0 pj=40u area=99.99999p
 D3 a_n4500_n1152# a_n2116_n1000# diode_nd2ps_06v0 pj=40u area=99.99999p
 .ends
 
-.subckt diode_pd2nw_06v0_5DG9HC
+.subckt diode_pd2nw_06v0_5DG9HC w_n4500_n1176#
 D0 a_2324_n1000# w_n4500_n1176# diode_pd2nw_06v0 pj=40u area=99.99999p
 D1 a_n4324_n1000# w_n4500_n1176# diode_pd2nw_06v0 pj=40u area=99.99999p
 D2 a_n2108_n1000# w_n4500_n1176# diode_pd2nw_06v0 pj=40u area=99.99999p
 D3 a_108_n1000# w_n4500_n1176# diode_pd2nw_06v0 pj=40u area=99.99999p
 .ends
 
-.subckt io_secondary_5p0_layout VSS to_gate
+.subckt io_secondary_5p0_layout VSS to_gate VDD
 Xppolyf_u_4VJXJK_0 ppolyf_u_4VJXJK
 Xdiode_nd2ps_06v0_MV3SZ3_0 to_gate to_gate to_gate VSS to_gate diode_nd2ps_06v0_MV3SZ3
-Xdiode_pd2nw_06v0_5DG9HC_0 diode_pd2nw_06v0_5DG9HC
+Xdiode_pd2nw_06v0_5DG9HC_0 VDD diode_pd2nw_06v0_5DG9HC
 .ends
 
