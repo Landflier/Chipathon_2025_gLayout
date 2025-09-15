@@ -1,0 +1,54 @@
+magic
+tech gf180mcuD
+magscale 1 10
+timestamp 1757866917
+<< error_p >>
+rect -43 -32 -32 32
+<< pwell >>
+rect -205 -205 205 205
+<< psubdiff >>
+rect -181 168 181 181
+rect -181 118 -61 168
+rect 61 118 181 168
+rect -181 105 181 118
+rect -181 61 -105 105
+rect -181 -61 -168 61
+rect -118 -61 -105 61
+rect 105 61 181 105
+rect -181 -105 -105 -61
+rect 105 -61 118 61
+rect 168 -61 181 61
+rect 105 -105 181 -61
+rect -181 -118 181 -105
+rect -181 -168 -61 -118
+rect 61 -168 181 -118
+rect -181 -181 181 -168
+<< psubdiffcont >>
+rect -61 118 61 168
+rect -168 -61 -118 61
+rect 118 -61 168 61
+rect -61 -168 61 -118
+<< ndiode >>
+rect -45 32 45 45
+rect -45 -32 -32 32
+rect 32 -32 45 32
+rect -45 -45 45 -32
+<< ndiodec >>
+rect -32 -32 32 32
+<< metal1 >>
+rect -168 118 -61 168
+rect 61 118 168 168
+rect -168 61 -118 118
+rect 118 61 168 118
+rect -43 -32 -32 32
+rect 32 -32 43 32
+rect -168 -118 -118 -61
+rect 118 -118 168 -61
+rect -168 -168 -61 -118
+rect 61 -168 168 -118
+<< properties >>
+string FIXED_BBOX -143 -143 143 143
+string gencell diode_nd2ps_03v3
+string library gf180mcu
+string parameters w 0.45 l 0.45 area 202.5m peri 1.8 nx 1 ny 1 dummy 0 lmin 0.45 wmin 0.45 class diode elc 1 erc 1 etc 1 ebc 1 doverlap 0 full_metal 1 compatible {diode_nd2ps_03v3 diode_nd2ps_06v0} pj {2*1u + 2*1u }
+<< end >>
