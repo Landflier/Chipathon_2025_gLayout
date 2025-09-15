@@ -4,6 +4,7 @@ gLayout/
 open_pdks/
 sscs-chipathon-2024/
 *.svg
+*.swp
 !schematic.svg
 .ipynb_checkpoints
 *.raw
