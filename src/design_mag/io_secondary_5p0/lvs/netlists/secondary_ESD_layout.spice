@@ -1,7 +1,7 @@
 * NGSPICE file created from io_secondary_5p0_layout.ext - technology: gf180mcuD
 
-.subckt ppolyf_u_4VJXJK a_n1600_400# a_n1600_n502# w_n1816_n718#
-X0 a_n1600_400# a_n1600_n502# w_n1816_n718# ppolyf_u r_width=16u r_length=4u
+.subckt ppolyf_u_9H3LNU a_n4000_1000# a_n4000_n1102# w_n4216_n1318#
+X0 a_n4000_1000# a_n4000_n1102# w_n4216_n1318# ppolyf_u r_width=40u r_length=10u
 .ends
 
 .subckt diode_nd2ps_06v0_MV3SZ3 a_116_n1000# a_2348_n1000# a_n4348_n1000# a_n4500_n1152#
@@ -21,7 +21,7 @@ D3 a_108_n1000# w_n4500_n1176# diode_pd2nw_06v0 pj=40u area=99.99999p
 .ends
 
 .subckt io_secondary_5p0_layout ASIG5V to_gate VDD VSS
-Xppolyf_u_4VJXJK_0 ASIG5V to_gate VDD ppolyf_u_4VJXJK
+Xppolyf_u_9H3LNU_0 ASIG5V to_gate VDD ppolyf_u_9H3LNU
 Xdiode_nd2ps_06v0_MV3SZ3_0 to_gate to_gate to_gate VSS to_gate diode_nd2ps_06v0_MV3SZ3
 Xdiode_pd2nw_06v0_5DG9HC_0 to_gate to_gate VDD to_gate to_gate diode_pd2nw_06v0_5DG9HC
 .ends

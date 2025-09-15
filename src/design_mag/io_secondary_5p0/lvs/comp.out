@@ -12,7 +12,7 @@ Circuit 1: ppolyf_u                        |Circuit 2: ppolyf_u
 ---------------------------------------------------------------------------------------
 Cell pin lists are equivalent.
 Device classes ppolyf_u and ppolyf_u are equivalent.
-Flattening unmatched subcell ppolyf_u_4VJXJK in circuit io_secondary_5p0_layout (0)(1 instance)
+Flattening unmatched subcell ppolyf_u_9H3LNU in circuit io_secondary_5p0_layout (0)(1 instance)
 Flattening unmatched subcell diode_nd2ps_06v0_MV3SZ3 in circuit io_secondary_5p0_layout (0)(1 instance)
 Flattening unmatched subcell diode_pd2nw_06v0_5DG9HC in circuit io_secondary_5p0_layout (0)(1 instance)
 
