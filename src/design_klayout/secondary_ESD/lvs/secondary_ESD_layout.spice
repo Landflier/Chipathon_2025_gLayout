@@ -1,0 +1,26 @@
+* NGSPICE file created from io_secondary_5p0_layout.ext - technology: gf180mcuD
+
+.subckt diode_nd2ps w_n1028_n620# a_0_0#
+D0 w_n1028_n620# a_0_0# diode_nd2ps_06v0 pj=40u area=99.99999p
+.ends
+
+.subckt diode_pd2nw Cathode Anode
+D0 Anode Cathode diode_pd2nw_06v0 pj=40u area=99.99999p
+.ends
+
+.subckt ppolyf_u_resistor dw_n512_n328# a_n132_0# a_800_0# w_n512_n328#
+X0 a_n132_0# a_800_0# w_n512_n328# ppolyf_u r_width=16u r_length=4u
+.ends
+
+.subckt io_secondary_5p0_layout to_gate ASIG5V0 VDD VSS
+Xdiode_nd2ps_0[0] VSUBS to_gate diode_nd2ps
+Xdiode_nd2ps_0[1] VSUBS to_gate diode_nd2ps
+Xdiode_nd2ps_0[2] VSUBS to_gate diode_nd2ps
+Xdiode_nd2ps_0[3] VSUBS to_gate diode_nd2ps
+Xdiode_pd2nw_0[0] VSUBS to_gate diode_pd2nw
+Xdiode_pd2nw_0[1] VSUBS to_gate diode_pd2nw
+Xdiode_pd2nw_0[2] VSUBS to_gate diode_pd2nw
+Xdiode_pd2nw_0[3] VSUBS to_gate diode_pd2nw
+Xppolyf_u_resistor_0 VSUBS to_gate ASIG5V0 w_15572_3625# ppolyf_u_resistor
+.ends
+
