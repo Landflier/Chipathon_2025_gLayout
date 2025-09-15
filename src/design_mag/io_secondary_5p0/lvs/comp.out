@@ -13,43 +13,31 @@ Circuit 1: ppolyf_u                        |Circuit 2: ppolyf_u
 Cell pin lists are equivalent.
 Device classes ppolyf_u and ppolyf_u are equivalent.
 Flattening unmatched subcell ppolyf_u_4VJXJK in circuit io_secondary_5p0_layout (0)(1 instance)
-Flattening unmatched subcell diode_pd2nw_06v0_5DGPGC in circuit io_secondary_5p0_layout (0)(1 instance)
 Flattening unmatched subcell diode_nd2ps_06v0_MV3SZ3 in circuit io_secondary_5p0_layout (0)(1 instance)
+Flattening unmatched subcell diode_pd2nw_06v0_5DG9HC in circuit io_secondary_5p0_layout (0)(1 instance)
 
 Class io_secondary_5p0_layout (0):  Merged 6 parallel devices.
 Subcircuit summary:
 Circuit 1: io_secondary_5p0_layout         |Circuit 2: io_secondary_5p0_schematic      
 -------------------------------------------|-------------------------------------------
 ppolyf_u (1)                               |ppolyf_u (1)                               
-diode_pd2nw_06v0 (4->1)                    |diode_pd2nw_06v0 (4->1)                    
 diode_nd2ps_06v0 (4->1)                    |diode_nd2ps_06v0 (4->1)                    
+diode_pd2nw_06v0 (4->1)                    |diode_pd2nw_06v0 (4->1)                    
 Number of devices: 3                       |Number of devices: 3                       
-Number of nets: 3 **Mismatch**             |Number of nets: 4 **Mismatch**             
+Number of nets: 4                          |Number of nets: 4                          
 ---------------------------------------------------------------------------------------
-NET mismatches: Class fragments follow (with fanout counts):
-Circuit 1: io_secondary_5p0_layout         |Circuit 2: io_secondary_5p0_schematic      
-
----------------------------------------------------------------------------------------
-Net: VSS                                   |Net: VSS                                   
-  diode_nd2ps_06v0/anode = 1               |  diode_nd2ps_06v0/anode = 1               
-  diode_pd2nw_06v0/cathode = 1             |                                           
-  ppolyf_u/3 = 1                           |                                           
-                                           |                                           
-(no matching net)                          |Net: VDD                                   
-                                           |  ppolyf_u/3 = 1                           
-                                           |  diode_pd2nw_06v0/cathode = 1             
----------------------------------------------------------------------------------------
-Netlists do not match.
+Netlists match uniquely.
 
 Subcircuit pins:
 Circuit 1: io_secondary_5p0_layout         |Circuit 2: io_secondary_5p0_schematic      
 -------------------------------------------|-------------------------------------------
-VSS                                        |VSS                                        
+VDD                                        |VDD                                        
 to_gate                                    |to_gate                                    
 ASIG5V                                     |ASIG5V                                     
-(no matching pin)                          |VDD                                        
+VSS                                        |VSS                                        
 ---------------------------------------------------------------------------------------
-Cell pin lists for io_secondary_5p0_layout and io_secondary_5p0_schematic altered to match.
+Cell pin lists are equivalent.
 Device classes io_secondary_5p0_layout and io_secondary_5p0_schematic are equivalent.
 
-Final result: Top level cell failed pin matching.
+Final result: Circuits match uniquely.
+.
