@@ -1,0 +1,23 @@
+magic
+tech gf180mcuD
+timestamp 1758012324
+<< metal2 >>
+rect 0 1463 9569 1615
+rect 1191 113 9569 266
+use io_secondary_5p0  io_secondary_5p0_0 ~/Downloads/SSCS_PICO_2025/src/design_mag/io_secondary_5p0/mag
+timestamp 1758012324
+transform 0 1 483 -1 0 776
+box -947 -483 853 1224
+use io_secondary_5p0  io_secondary_5p0_1
+timestamp 1758012324
+transform 0 1 2283 -1 0 776
+box -947 -483 853 1224
+use io_secondary_5p0  io_secondary_5p0_2
+timestamp 1758012324
+transform 0 1 6283 -1 0 776
+box -947 -483 853 1224
+use io_secondary_5p0  io_secondary_5p0_3
+timestamp 1758012324
+transform 0 1 8283 -1 0 776
+box -947 -483 853 1224
+<< end >>
