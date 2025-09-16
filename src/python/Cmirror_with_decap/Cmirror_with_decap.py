@@ -397,10 +397,18 @@ class CmirrorWithDecap:
                 sdvia_ref = align_comp_to_port(sdvia, port_to_route, alignment=config['alignment_port'])
                 multiplier.add(sdvia_ref.movey(displacement))
                 multiplier << straight_route(self.pdk, port_to_route, sdvia_ref.ports["bottom_met_N"])
-                
+
+                # Rename ports within sdvia_ref with config_key prefix and port_suffix suffix
+                sdvia_ref.ports["top_met_W"].name = f"{config_key}_top_met_W_{port_suffix}"
+                sdvia_ref.ports["top_met_E"].name = f"{config_key}_top_met_E_{port_suffix}"
+                sdvia_ref.ports["top_met_N"].name = f"{config_key}_top_met_N_{port_suffix}"
+                sdvia_ref.ports["top_met_S"].name = f"{config_key}_top_met_S_{port_suffix}"
+                # Add renamed ports to multiplier
+                multiplier.add_ports([sdvia_ref.ports["top_met_W"], sdvia_ref.ports["top_met_E"], 
+                                    sdvia_ref.ports["top_met_N"], sdvia_ref.ports["top_met_S"]])
                 return [sdvia_ref.ports["top_met_W"], sdvia_ref.ports["top_met_E"]]
-            
-            
+
+
         width = self.width_ref / self.fingers_ref
         # Route s/d regions next to each finger
         """
@@ -454,7 +462,7 @@ class CmirrorWithDecap:
                     sdvia_ports += create_and_route_finger(
                         config_key='top_track_2',
                         port_name="leftsd_top_met_N",
-                        port_suffix="s_0"
+                        port_suffix="special_0"
                     )
 
         # Route fingers in the following manner: d(Xs Xd)*abs(nf_x-nf_y)/4 (Xs Yd Ys Xd)*min(nf_y, nf_x) /2 (Xs Xd)*abs(nf_x-nf_y)/4
@@ -528,7 +536,7 @@ class CmirrorWithDecap:
                         sdvia_ports += create_and_route_finger(
                             config_key=config_key,
                             port_name="leftsd_top_met_N",
-                            port_suffix="d_0"
+                            port_suffix="special_0"
                         )
 
                     # routing all couples (Xs Xd)
@@ -559,28 +567,30 @@ class CmirrorWithDecap:
             gate_port_name = f"row0_col{finger}_gate_S"
 
             # Route gate to Rd drain connection 
-            sdvia_ports += create_and_route_finger(
+            create_and_route_finger(
                 config_key=config_key,
                 port_name=gate_port_name,
                 port_suffix=f"{finger}",
                 is_gate_routing=True
             )
-        """
         # Place horizontal gate routes
-        gate_width = multiplier.ports[f"gate_vroute_via_{self.fingers_ref + self.fingers_mir-1}"].center[0] \
-                - multiplier.ports["gate_vroute_via_0"].center[0] \
-                + multiplier.ports["row0_col0_gate_S"].width
+
+        gate_width = multiplier.ports[f"diffusion_port_to_align_sd_{self.fingers_ref + self.fingers_mir - 1}"].center[0] \
+                - multiplier.ports["leftsd_top_met_N"].center[0] \
+                + multiplier.ports["leftsd_top_met_N"].width
         gate_route = rename_ports_by_list(
             via_array(self.pdk, "poly", gate_route_topmet, size=(gate_width, None), num_vias=(None, gate_rmult), no_exception=True, fullbottom=True),
             [("top_met_", "gate_top_")]
         )
         
-        # gate routes
-        gate_ref = align_comp_to_port(gate_route.copy(), multiplier.ports[f"gate_vroute_via_{self.fingers_ref + self.fingers_mir - 1}"], alignment=('l', 'b'), layer=self.pdk.get_glayer("poly"))
+        # Horizontal gate routes
+        # gate_ref = align_comp_to_port(gate_route.copy(), multiplier.ports[f"diffusion_port_to_align_sd_special_0"], alignment=('r', 'b'), layer=self.pdk.get_glayer("poly"))
+        gate_ref = align_comp_to_port(gate_route.copy(), multiplier.ports[f"bottom_track_1_top_met_E_{self.fingers_ref + self.fingers_mir - 1}"], alignment=('l', 'b'), layer=self.pdk.get_glayer("poly"))
         multiplier.add(gate_ref)
         
-        multiplier.add_ports(gate_ref.get_ports_list(), prefix="common_gate__")
+        multiplier.add_ports(gate_ref.get_ports_list(), prefix="common_gate_")
         
+        # Horizontal route s/d 
         # Get unique y-coordinates for SD ports
         y_coords = [port.center[1] for port in sdvia_ports]
         unique_y_coords = list(set(y_coords))
@@ -592,11 +602,11 @@ class CmirrorWithDecap:
             y_coord_indices.append(first_index)
         
         # Place SD route metal
-        port_1_sd_index = y_coord_indices[0]
-        port_2_sd_index = y_coord_indices[1]
+        port_1_sd_index = y_coord_indices[1]
+        port_2_sd_index = y_coord_indices[-1]
         
         sd_width = sdvia_ports[-1].center[0] - sdvia_ports[0].center[0]
-        # sd_route = rectangle(size=(sd_width, sdmet_height), layer=self.pdk.get_glayer(sd_route_topmet), centered=True)
+        sd_route = rectangle(size=(sd_width, sdmet_height), layer=self.pdk.get_glayer(sd_route_topmet), centered=True)
         
         # Update port widths
         sdvia_ports[port_1_sd_index].width = sdmet_height
@@ -612,7 +622,6 @@ class CmirrorWithDecap:
         # Add ports
         multiplier.add_ports(port_1_sd_route.get_ports_list(), prefix="port_1_")
         multiplier.add_ports(port_2_sd_route.get_ports_list(), prefix="port_2_")
-        """
 
     def _create_cmirror_vias_outside_tapring_and_route(self) -> Tuple:
         """
