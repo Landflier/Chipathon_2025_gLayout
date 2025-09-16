@@ -362,28 +362,44 @@ class CmirrorWithDecap:
             },
         }
         
-        def create_and_route_finger(config_key, port_name, port_suffix="", new_port_name="diffusion_port_to_align_sd"):
+
+        def create_and_route_finger(config_key, port_name, port_suffix="", new_port_name="diffusion_port_to_align_sd", is_gate_routing=False):
             config = routing_configs[config_key]
             
             # Get alignment port
             rel_align_port = multiplier.ports[port_name]
             
-            # Create and route port
+            # Calculate y position
+            if is_gate_routing:
+                y_position = config['y_align_via'](width) + config['sdvia_extension'](sdroute_minsep, sdmet_height)
+                port_name_prefix = "gate_port_vroute"
+            else:
+                y_position = config['y_align_via'](width)
+                port_name_prefix = new_port_name
+            
+            # Create port
             port_to_route = multiplier.add_port(
-                center=(rel_align_port.center[0], config['y_align_via'](width)),
+                center=(rel_align_port.center[0], y_position),
                 width=rel_align_port.width,
                 orientation=90,
                 layer=rel_align_port.layer,
-                name=f"{new_port_name}_{port_suffix}"
+                name=f"{port_name_prefix}_{port_suffix}"
             )
             
-            # Calculate displacement and route
-            displacement = config['sdvia_extension'](sdroute_minsep, sdmet_height) + config['sd_route_extension_sign'] * self.pdk.snap_to_2xgrid(sd_route_extension)
-            sdvia_ref = align_comp_to_port(sdvia, port_to_route, alignment=config['alignment_port'])
-            multiplier.add(sdvia_ref.movey(displacement))
-            multiplier << straight_route(self.pdk, port_to_route, sdvia_ref.ports["bottom_met_N"])
+            if is_gate_routing:
+                # For gate routing, just create vertical route and snap to grid
+                port_to_route.y = self.pdk.snap_to_2xgrid(port_to_route.y)
+                multiplier << straight_route(self.pdk, rel_align_port, port_to_route)
+                return []
+            else:
+                # For SD routing, there is a via at the end of the route. 
+                displacement = config['sdvia_extension'](sdroute_minsep, sdmet_height) + config['sd_route_extension_sign'] * self.pdk.snap_to_2xgrid(sd_route_extension)
+                sdvia_ref = align_comp_to_port(sdvia, port_to_route, alignment=config['alignment_port'])
+                multiplier.add(sdvia_ref.movey(displacement))
+                multiplier << straight_route(self.pdk, port_to_route, sdvia_ref.ports["bottom_met_N"])
+                
+                return [sdvia_ref.ports["top_met_W"], sdvia_ref.ports["top_met_E"]]
             
-            return [sdvia_ref.ports["top_met_W"], sdvia_ref.ports["top_met_E"]]
             
         width = self.width_ref / self.fingers_ref
         # Route s/d regions next to each finger
@@ -540,38 +556,16 @@ class CmirrorWithDecap:
                     finger_couple += 1
 
         for finger in range(self.fingers_ref + self.fingers_mir):
-            config_key = 'bottom_track_1'
+            gate_port_name = f"row0_col{finger}_gate_S"
 
-            gate_port_name = f"row0_col{finger}_gate_S"    
-            gate_aligning_port = multiplier.ports[gate_port_name]
-
-            config = routing_configs[config_key]
-
-            gate_y_pos = config['y_align_via'](width)
-            gate_displacement = -(sdroute_minsep + sdmet_height/2)
-            finaly_y_gate = gate_y_pos + gate_displacement
-            # Route gate to Rd drain connection 
-            psuedo_gate_route = multiplier.add_port(
-                    center=(gate_aligning_port.center[0], finaly_y_gate),
-                    width=gate_aligning_port.width,
-                    orientation=90,
-                    layer=gate_aligning_port.layer,
-                    name=f"gate_port_vroute_{finger}"
-                    )
-            psuedo_gate_route.y = self.pdk.snap_to_2xgrid(psuedo_gate_route.y)
-
-            multiplier << straight_route(self.pdk, gate_aligning_port, psuedo_gate_route)
-
-
-            """
             # Route gate to Rd drain connection 
             sdvia_ports += create_and_route_finger(
                 config_key=config_key,
                 port_name=gate_port_name,
                 port_suffix=f"{finger}",
-                new_port_name=f"gate_vroute_via"
+                is_gate_routing=True
             )
-
+        """
         # Place horizontal gate routes
         gate_width = multiplier.ports[f"gate_vroute_via_{self.fingers_ref + self.fingers_mir-1}"].center[0] \
                 - multiplier.ports["gate_vroute_via_0"].center[0] \
