@@ -540,61 +540,48 @@ class CmirrorWithDecap:
                     finger_couple += 1
 
         for finger in range(self.fingers_ref + self.fingers_mir):
-                config_key = 'bottom_track_1'
-                
-                gate_port_name = f"row0_col{finger}_gate_S"    
-                # Route gate to Rd drain connection 
-                sdvia_ports += create_and_route_finger(
-                    config_key=config_key,
-                    port_name=gate_port_name,
-                    port_suffix=f"{finger}",
-                    new_port_name=f"gate_vroute_via_"
-                )
+            config_key = 'bottom_track_1'
 
-        """
-        for finger in range(4*fingers+1):
-            
-            # Gate routing
-            check_gate_LO = (finger % 2 == 0)
-            check_gate_LO_b = (finger % 2 == 1)
-            
-            if check_gate_LO:
-                aligning_gate_port_name = f"row0_col{finger}_gate_S"
-                rel_gate_aligning_port = multiplier.ports[aligning_gate_port_name]
-                gate_extension = -(3 * sdroute_minsep + 5/2 * sdmet_height + sd_route_extension + gate_route_extension)
-                y_align_via = -width/2 + gate_extension
-            elif check_gate_LO_b:
-                aligning_gate_port_name = f"row0_col{finger}_gate_N"
-                rel_gate_aligning_port = multiplier.ports[aligning_gate_port_name]
-                gate_extension = 3 * sdroute_minsep + 5/2 * sdmet_height + sd_route_extension + gate_route_extension
-                y_align_via = width/2 + gate_extension
-            
-            # Route gates vertically
-            psuedo_Ngateroute = multiplier.add_port(
-                center=(rel_gate_aligning_port.center[0], y_align_via),
-                width=rel_gate_aligning_port.width,
-                orientation=90,
-                layer=rel_gate_aligning_port.layer,
-                name=f"gate_port_vroute_{finger}"
+            gate_port_name = f"row0_col{finger}_gate_S"    
+            gate_aligning_port = multiplier.ports[gate_port_name]
+
+            config = routing_configs[config_key]
+            # Route gate to Rd drain connection 
+            psuedo_gate_route = multiplier.add_port(
+                    center=(gate_aligning_port.center[0], config['y_align_via'](width)),
+                    width=gate_aligning_port.width,
+                    orientation=90,
+                    layer=gate_aligning_port.layer,
+                    name=f"gate_port_vroute_{finger}"
+                    )
+            psuedo_gate_route.y = self.pdk.snap_to_2xgrid(psuedo_gate_route.y)
+
+            multiplier << straight_route(self.pdk, gate_aligning_port, psuedo_gate_route)
+
+
+            """
+            # Route gate to Rd drain connection 
+            sdvia_ports += create_and_route_finger(
+                config_key=config_key,
+                port_name=gate_port_name,
+                port_suffix=f"{finger}",
+                new_port_name=f"gate_vroute_via"
             )
-            psuedo_Ngateroute.y = self.pdk.snap_to_2xgrid(psuedo_Ngateroute.y)
-            multiplier << straight_route(self.pdk, rel_gate_aligning_port, psuedo_Ngateroute)
-        
+
         # Place horizontal gate routes
-        gate_width = multiplier.ports[f"gate_port_vroute_{4*fingers-2}"].center[0] - multiplier.ports["gate_port_vroute_0"].center[0] + rel_gate_aligning_port.width
+        gate_width = multiplier.ports[f"gate_vroute_via_{self.fingers_ref + self.fingers_mir-1}"].center[0] \
+                - multiplier.ports["gate_vroute_via_0"].center[0] \
+                + multiplier.ports["row0_col0_gate_S"].width
         gate_route = rename_ports_by_list(
             via_array(self.pdk, "poly", gate_route_topmet, size=(gate_width, None), num_vias=(None, gate_rmult), no_exception=True, fullbottom=True),
             [("top_met_", "gate_top_")]
         )
         
-        # North and South gates
-        gate_LO_b_ref = align_comp_to_port(gate_route.copy(), multiplier.ports[f"gate_port_vroute_{4*fingers-1}"], alignment=('l', 't'), layer=self.pdk.get_glayer("poly"))
-        gate_LO_ref = align_comp_to_port(gate_route.copy(), multiplier.ports[f"gate_port_vroute_{4*fingers-2}"], alignment=('l', 'b'), layer=self.pdk.get_glayer("poly"))
-        multiplier.add(gate_LO_b_ref)
-        multiplier.add(gate_LO_ref)
+        # gate routes
+        gate_ref = align_comp_to_port(gate_route.copy(), multiplier.ports[f"gate_vroute_via_{self.fingers_ref + self.fingers_mir - 1}"], alignment=('l', 'b'), layer=self.pdk.get_glayer("poly"))
+        multiplier.add(gate_ref)
         
-        multiplier.add_ports(gate_LO_ref.get_ports_list(), prefix="LO_")
-        multiplier.add_ports(gate_LO_b_ref.get_ports_list(), prefix="LO_b_")
+        multiplier.add_ports(gate_ref.get_ports_list(), prefix="common_gate__")
         
         # Get unique y-coordinates for SD ports
         y_coords = [port.center[1] for port in sdvia_ports]
@@ -609,34 +596,24 @@ class CmirrorWithDecap:
         # Place SD route metal
         port_1_sd_index = y_coord_indices[0]
         port_2_sd_index = y_coord_indices[1]
-        port_3_sd_index = y_coord_indices[2]
-        port_4_sd_index = y_coord_indices[3]
         
         sd_width = sdvia_ports[-1].center[0] - sdvia_ports[0].center[0]
-        sd_route = rectangle(size=(sd_width, sdmet_height), layer=self.pdk.get_glayer(sd_route_topmet), centered=True)
+        # sd_route = rectangle(size=(sd_width, sdmet_height), layer=self.pdk.get_glayer(sd_route_topmet), centered=True)
         
         # Update port widths
         sdvia_ports[port_1_sd_index].width = sdmet_height
         sdvia_ports[port_2_sd_index].width = sdmet_height
-        sdvia_ports[port_3_sd_index].width = sdmet_height
-        sdvia_ports[port_4_sd_index].width = sdmet_height
         
         # Add SD routes
         port_1_sd_route = align_comp_to_port(sd_route.copy(), sdvia_ports[port_1_sd_index], alignment=(None, 'c'))
         port_2_sd_route = align_comp_to_port(sd_route.copy(), sdvia_ports[port_2_sd_index], alignment=(None, 'c'))
-        port_3_sd_route = align_comp_to_port(sd_route.copy(), sdvia_ports[port_3_sd_index], alignment=(None, 'c'))
-        port_4_sd_route = align_comp_to_port(sd_route.copy(), sdvia_ports[port_4_sd_index], alignment=(None, 'c'))
         
         multiplier.add(port_1_sd_route)
         multiplier.add(port_2_sd_route)
-        multiplier.add(port_3_sd_route)
-        multiplier.add(port_4_sd_route)
         
         # Add ports
         multiplier.add_ports(port_1_sd_route.get_ports_list(), prefix="port_1_")
         multiplier.add_ports(port_2_sd_route.get_ports_list(), prefix="port_2_")
-        multiplier.add_ports(port_3_sd_route.get_ports_list(), prefix="port_3_")
-        multiplier.add_ports(port_4_sd_route.get_ports_list(), prefix="port_4_")
         """
 
     def _create_cmirror_vias_outside_tapring_and_route(self) -> Tuple:
