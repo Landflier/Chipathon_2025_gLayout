@@ -48,7 +48,6 @@ class CMirrorConfig:
     tie_layers: Tuple[str, str] = ("met2", "met1")
     with_dummies: bool = False
     with_tie: bool = True
-    with_substrate_tap: bool = False,
     with_dnwell: bool = False
 
 class CmirrorWithDecap:
@@ -390,10 +389,10 @@ class CmirrorWithDecap:
         # Route s/d regions next to each finger
         """
         for our interfingered layout , we use the following convention:
-        ---   top_track_2  --- drain R(eference) FET
-        ---   top_track_1  --- drain M(irror) FET
-             finger_array
-        --- bottom_track_1 --- common source
+        ---   top_track_2 --- common source (Ms Rs)
+        ---   top_track_1  --- drain M(irror) FET (Md)
+              finger_array
+        ---   bottom_track_1  --- drain R(eference) FET / gates (Rd)
         """
         # Route fingers in the following manner: s(Xd Xs)*nf_r/4 (Yd Ys)*nf_m/2 (Xd Xs)*nf_r/4 
         if self.fingers_ref % 4 == 0 or self.fingers_mir % 4 == 0:
@@ -416,7 +415,7 @@ class CmirrorWithDecap:
                 else:
                     # (Rd Rs) -> route Rd
                     port_name = f"row0_col{2*finger_couple}_rightsd_array_row0_col0_top_met_N"
-                    config_key = 'top_track_2'
+                    config_key = 'bottom_track_1'
 
                 sdvia_ports += create_and_route_finger(
                     config_key=config_key,
@@ -426,18 +425,18 @@ class CmirrorWithDecap:
 
                 # finger couple's right finger's s/d region always routes to common source (port 3)
                 sdvia_ports += create_and_route_finger(
-                    config_key='bottom_track_1',
-                    port_name=f"row0_col{2*finger_couple+1}_rightsd_array_row0_col0_top_met_N",
+                    config_key='top_track_2',
+                    port_name=f"row0_col{2*finger_couple+1}_rightsd_array_row{number_sd_rows}_col0_top_met_N",
                     port_suffix=f"{finger_couple*2+1}"
                 )
             
-                # route the initial s, before all repeated structures
+                # route the initial s, before all repeated structures Rs or Ms
                 if finger_couple == 0:
                     rel_align_port = multiplier.ports['leftsd_top_met_N']
                     rel_align_port.width = rel_align_port.width / interfinger_rmult
 
                     sdvia_ports += create_and_route_finger(
-                        config_key='bottom_track_1',
+                        config_key='top_track_2',
                         port_name="leftsd_top_met_N",
                         port_suffix="s_0"
                     )
@@ -459,17 +458,16 @@ class CmirrorWithDecap:
                 
                 # ref_case     is : d(Rs Rd)*(nf_r-nf_m)/4 (Rs Md Ms Rd)nf_m/2 (Rs Rd)*(nf_r-nf_m)/4
                 # not ref_case is : d(Ms Md)*(nf_m-nf_r)/4 (Ms Rd Rs Md)nf_r/2 (Ms Md)*(nf_m-nf_r)/4
-
                 if in_middle_region:
                     # Determine config keys based on ref_case
-                    # ref_case: (Rs Md Ms Rd) -> route Md and Rd -> configs: top_track_1, top_track_2
-                    # not ref_case: (Ms Rd Rs Md) -> route Rd and Md -> configs: top_track_2, top_track_1
-                    config_key_1 = 'top_track_1' if ref_case else 'top_track_2'
-                    config_key_2 = 'top_track_2' if ref_case else 'top_track_1'
+                    # ref_case: (Rs Md Ms Rd) -> route Md and Rd -> configs: top_track_1, bottom_track_1
+                    # not ref_case: (Ms Rd Rs Md) -> route Rd and Md -> configs: bottom_track_1, top_track_1
+                    config_key_1 = 'top_track_1' if ref_case else 'bottom_track_1'
+                    config_key_2 = 'bottom_track_1' if ref_case else 'top_track_1'
                     
                     # route Yd (port_name_1) and then Xd (port_name_2)
-                    port_name_1 = f"row0_col{2*finger_couple+1}_rightsd_array_row{number_sd_rows}_col0_top_met_N"
-                    port_name_2 = f"row0_col{2*finger_couple+3}_rightsd_array_row{number_sd_rows}_col0_top_met_N"
+                    port_name_1 = f"row0_col{2*finger_couple+1}_rightsd_array_row{number_sd_rows}_col0_top_met_N" if ref_case else f"row0_col{2*finger_couple+1}_rightsd_array_row0_col0_top_met_N" 
+                    port_name_2 = f"row0_col{2*finger_couple+3}_rightsd_array_row0_col0_top_met_N" if ref_case else f"row0_col{2*finger_couple+3}_rightsd_array_row{number_sd_rows}_col0_top_met_N" 
                     
 
                     sdvia_ports += create_and_route_finger(
@@ -486,13 +484,13 @@ class CmirrorWithDecap:
 
                     # since Xs and Ys are the same port, route both
                     sdvia_ports += create_and_route_finger(
-                        config_key='bottom_track_1',
-                        port_name=f"row0_col{2*finger_couple}_rightsd_array_row0_col0_top_met_N",
+                        config_key='top_track_2',
+                        port_name=f"row0_col{2*finger_couple}_rightsd_array_row{number_sd_rows}_col0_top_met_N",
                         port_suffix=f"{2*finger_couple}"
                     )
                     sdvia_ports += create_and_route_finger(
-                        config_key='bottom_track_1',
-                        port_name=f"row0_col{2*finger_couple + 2}_rightsd_array_row0_col0_top_met_N",
+                        config_key='top_track_2',
+                        port_name=f"row0_col{2*finger_couple+2}_rightsd_array_row{number_sd_rows}_col0_top_met_N",
                         port_suffix=f"{2*finger_couple + 2}"
                     )
 
@@ -508,8 +506,8 @@ class CmirrorWithDecap:
                         rel_align_port = multiplier.ports['leftsd_top_met_N']
                         rel_align_port.width = rel_align_port.width / interfinger_rmult
 
-                        # Determine config key based on ref_case
-                        config_key = 'top_track_2' if ref_case else 'top_track_1'
+                        # Determine config key based on ref_case, dR or dM
+                        config_key = 'bottom_track_1' if ref_case else 'top_track_1'
                         
                         sdvia_ports += create_and_route_finger(
                             config_key=config_key,
@@ -520,7 +518,7 @@ class CmirrorWithDecap:
                     # routing all couples (Xs Xd)
                     # ref_case: route Rd port -> top_track_2
                     # not ref_case: route Md port -> top_track_1
-                    config_key = 'top_track_2' if ref_case else 'top_track_1'
+                    config_key = 'bottom_track_1' if ref_case else 'top_track_1'
                     
                     drain_port_name = f"row0_col{2*finger_couple+1}_rightsd_array_row{number_sd_rows}_col0_top_met_N"
                     source_port_name = f"row0_col{2*finger_couple}_rightsd_array_row0_col0_top_met_N"
@@ -534,7 +532,7 @@ class CmirrorWithDecap:
 
                     # Route (Rs or Ms)
                     sdvia_ports += create_and_route_finger(
-                        config_key='bottom_track_1',
+                        config_key='top_track_2',
                         port_name=source_port_name,
                         port_suffix=f"{2*finger_couple}"
                     )
@@ -542,10 +540,10 @@ class CmirrorWithDecap:
                     finger_couple += 1
 
         for finger in range(self.fingers_ref + self.fingers_mir):
-                config_key = 'top_track_2'
+                config_key = 'bottom_track_1'
                 
-                gate_port_name = f"row0_col{finger}_gate_N"    
-                # Route drain connection (Rd or Md depending on ref_case)
+                gate_port_name = f"row0_col{finger}_gate_S"    
+                # Route gate to Rd drain connection 
                 sdvia_ports += create_and_route_finger(
                     config_key=config_key,
                     port_name=gate_port_name,
@@ -795,7 +793,7 @@ class CmirrorWithDecap:
             )
             multiplier.add_ports(tiering_ref.get_ports_list(), prefix="tie_")
 
-        # Add pwell
+        # Add pwell or nwell
         multiplier.add_padding(
             layers=(self.pdk.get_glayer(tie_well),),
             default=self.pdk.get_grule(tie_well, "active_tap")["min_enclosure"],
@@ -966,7 +964,7 @@ class CmirrorWithDecap:
             filename,
             cellname=self.component_name,
             unit=1e-6,
-            precision=1e-9,
+            precision=5e-9,
         )
     
     def run_drc(self) -> Optional[str]:
@@ -1011,17 +1009,16 @@ if __name__ == "__main__":
         routing=True,
         with_dummies=False,
         with_tie=True,
-        with_substrate_tap=False,
         with_dnwell = False
     )
     
     # Create current mirror instance
     cmirror = CmirrorWithDecap(
         pdk=pdk_choice,
-        width_ref=8,
-        width_mir=4,
-        fingers_ref=4,
-        fingers_mir=2,
+        width_ref=3,
+        width_mir=1,
+        fingers_ref=3,
+        fingers_mir=1,
         length=0.28,
         cmirror_config=cmirror_config
     )
