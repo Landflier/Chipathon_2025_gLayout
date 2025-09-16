@@ -546,9 +546,13 @@ class CmirrorWithDecap:
             gate_aligning_port = multiplier.ports[gate_port_name]
 
             config = routing_configs[config_key]
+
+            gate_y_pos = config['y_align_via'](width)
+            gate_displacement = -(sdroute_minsep + sdmet_height/2)
+            finaly_y_gate = gate_y_pos + gate_displacement
             # Route gate to Rd drain connection 
             psuedo_gate_route = multiplier.add_port(
-                    center=(gate_aligning_port.center[0], config['y_align_via'](width)),
+                    center=(gate_aligning_port.center[0], finaly_y_gate),
                     width=gate_aligning_port.width,
                     orientation=90,
                     layer=gate_aligning_port.layer,
