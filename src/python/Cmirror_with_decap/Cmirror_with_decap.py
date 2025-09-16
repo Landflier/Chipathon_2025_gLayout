@@ -363,7 +363,7 @@ class CmirrorWithDecap:
             },
         }
         
-        def create_and_route_finger(config_key, port_name, port_suffix=""):
+        def create_and_route_finger(config_key, port_name, port_suffix="", new_port_name="diffusion_port_to_align_sd"):
             config = routing_configs[config_key]
             
             # Get alignment port
@@ -375,7 +375,7 @@ class CmirrorWithDecap:
                 width=rel_align_port.width,
                 orientation=90,
                 layer=rel_align_port.layer,
-                name=f"diffusion_port_to_align_sd_{port_suffix}"
+                name=f"{new_port_name}_{port_suffix}"
             )
             
             # Calculate displacement and route
@@ -387,7 +387,7 @@ class CmirrorWithDecap:
             return [sdvia_ref.ports["top_met_W"], sdvia_ref.ports["top_met_E"]]
             
         width = self.width_ref / self.fingers_ref
-        # Route fingers
+        # Route s/d regions next to each finger
         """
         for our interfingered layout , we use the following convention:
         ---   top_track_2  --- drain R(eference) FET
@@ -540,67 +540,21 @@ class CmirrorWithDecap:
                     )
 
                     finger_couple += 1
+
+        for finger in range(self.fingers_ref + self.fingers_mir):
+                config_key = 'top_track_2'
+                
+                gate_port_name = f"row0_col{finger}_gate_N"    
+                # Route drain connection (Rd or Md depending on ref_case)
+                sdvia_ports += create_and_route_finger(
+                    config_key=config_key,
+                    port_name=gate_port_name,
+                    port_suffix=f"{finger}",
+                    new_port_name=f"gate_vroute_via_"
+                )
+
         """
         for finger in range(4*fingers+1):
-            # Determine port assignments
-            check_port_1 = (finger % 4 == 1)
-            check_port_2 = (finger % 4 == 3)
-            check_port_3 = (finger % 4 == 0)
-            check_port_4 = (finger % 4 == 2)
-            
-            # Configure routing based on port type
-            if check_port_1:
-                aligning_port_name = f"row0_col{finger-1}_rightsd_array_row0_col0_top_met_N"
-                rel_align_port = multiplier.ports[aligning_port_name]
-                y_align_via = -width/2
-                alignment_port = ('c', 'b')
-                sdvia_extension = -(sdroute_minsep + sdroute_minsep + (sdmet_height/2 + sdmet_height))
-                sd_route_extension_temp = -self.pdk.snap_to_2xgrid(sd_route_extension)
-            elif check_port_2:
-                aligning_port_name = f"row0_col{finger-1}_rightsd_array_row0_col0_top_met_N"
-                rel_align_port = multiplier.ports[aligning_port_name]
-                y_align_via = -width/2
-                alignment_port = ('c', 'b')
-                sdvia_extension = -(sdroute_minsep + (sdmet_height)/2)
-                sd_route_extension_temp = -self.pdk.snap_to_2xgrid(sd_route_extension)
-            elif check_port_3:
-                if finger != 0:
-                    aligning_port_name = f"row0_col{finger-1}_rightsd_array_row{number_sd_rows}_col0_top_met_N"
-                    rel_align_port = multiplier.ports[aligning_port_name]
-                else:
-                    aligning_port_name = f"leftsd_top_met_N"
-                    rel_align_port = multiplier.ports[aligning_port_name]
-                    rel_align_port.width = rel_align_port.width / interfinger_rmult
-                y_align_via = width/2
-                alignment_port = ('c', 't')
-                sdvia_extension = +(sdroute_minsep + (sdmet_height)/2)
-                sd_route_extension_temp = self.pdk.snap_to_2xgrid(sd_route_extension)
-            elif check_port_4:
-                aligning_port_name = f"row0_col{finger-1}_rightsd_array_row{number_sd_rows}_col0_top_met_N"
-                rel_align_port = multiplier.ports[aligning_port_name]
-                y_align_via = width/2
-                alignment_port = ('c', 't')
-                sdvia_extension = +(sdroute_minsep + sdroute_minsep + (sdmet_height/2 + sdmet_height))
-                sd_route_extension_temp = self.pdk.snap_to_2xgrid(sd_route_extension)
-            
-            # Create diffusion port
-            diff_top_port = multiplier.add_port(
-                center=(rel_align_port.center[0], y_align_via),
-                width=rel_align_port.width,
-                orientation=90,
-                layer=rel_align_port.layer,
-                name=f"diffusion_port_to_align_sd_{finger}"
-            )
-            
-            # Route SD connections
-            sd_track_y_displacement = sdvia_extension + sd_route_extension_temp
-            sdvia_ref = align_comp_to_port(sdvia, diff_top_port, alignment=alignment_port)
-            multiplier.add(sdvia_ref.movey(sd_track_y_displacement))
-            multiplier << straight_route(self.pdk, diff_top_port, sdvia_ref.ports["bottom_met_N"])
-            sdvia_ports += [sdvia_ref.ports["top_met_W"], sdvia_ref.ports["top_met_E"]]
-            
-            if finger == 4*fingers:
-                break
             
             # Gate routing
             check_gate_LO = (finger % 2 == 0)
@@ -1053,12 +1007,12 @@ if __name__ == "__main__":
         inter_finger_topmet="met1",
         sd_route_extension=0.0,
         gate_route_extension=0,
-        sdlayer = "p+s/d",
+        sdlayer = "n+s/d",
         routing=True,
         with_dummies=False,
         with_tie=True,
         with_substrate_tap=False,
-        with_dnwell = True
+        with_dnwell = False
     )
     
     # Create current mirror instance
