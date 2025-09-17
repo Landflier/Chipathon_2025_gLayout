@@ -10,7 +10,7 @@ from gdsfactory.cell import cell
 from gdsfactory.component import copy
 
 from glayout import gf180, MappedPDK
-from glayout import nmos, pmos, tapring
+from glayout import nmos, pmos, tapring, mimcap
 from glayout.routing.straight_route import straight_route
 from glayout.routing.c_route import c_route
 from glayout.routing.L_route import L_route
@@ -49,6 +49,7 @@ class CMirrorConfig:
     with_dummies: bool = False
     with_tie: bool = True
     with_dnwell: bool = False
+    with_decap: bool = False
 
 class CmirrorWithDecap:
     """
@@ -574,7 +575,6 @@ class CmirrorWithDecap:
                 is_gate_routing=True
             )
         # Place horizontal gate routes
-
         gate_width = multiplier.ports[f"diffusion_port_to_align_sd_{self.fingers_ref + self.fingers_mir - 1}"].center[0] \
                 - multiplier.ports["leftsd_top_met_N"].center[0] \
                 + multiplier.ports["leftsd_top_met_N"].width
@@ -588,7 +588,7 @@ class CmirrorWithDecap:
         gate_ref = align_comp_to_port(gate_route.copy(), multiplier.ports[f"bottom_track_1_top_met_E_{self.fingers_ref + self.fingers_mir - 1}"], alignment=('l', 'b'), layer=self.pdk.get_glayer("poly"))
         multiplier.add(gate_ref)
         
-        multiplier.add_ports(gate_ref.get_ports_list(), prefix="common_gate_")
+        # multiplier.add_ports(gate_ref.get_ports_list(), prefix="ref_drain_")
         
         # Horizontal route s/d 
         # Get unique y-coordinates for SD ports
@@ -600,28 +600,53 @@ class CmirrorWithDecap:
         for unique_y in unique_y_coords:
             first_index = next(i for i, y in enumerate(y_coords) if y == unique_y)
             y_coord_indices.append(first_index)
-        
         # Place SD route metal
+        # port_0 is common_gate / ref_drain
+        # port_1 is top_track_1 (E, W), and port_2 is top_track_2 (E,W)
+        # port_1 -> mirror_drain (Md)
+        # port_2 -> source, mirror_source, or common_source (Rs, Ms)
+        port_0_sd_index = y_coord_indices[0]
         port_1_sd_index = y_coord_indices[1]
         port_2_sd_index = y_coord_indices[-1]
         
         sd_width = sdvia_ports[-1].center[0] - sdvia_ports[0].center[0]
+        # sd_width_gate = gate_ref.width
         sd_route = rectangle(size=(sd_width, sdmet_height), layer=self.pdk.get_glayer(sd_route_topmet), centered=True)
+        sd_route_top = rectangle(size=(sd_width, sdmet_height), layer=self.pdk.get_glayer(sd_route_topmet), centered=True)
+        sd_route_bot = rectangle(size=(sd_width, sdmet_height), layer=self.pdk.get_glayer("met1"), centered=True)
         
         # Update port widths
         sdvia_ports[port_1_sd_index].width = sdmet_height
         sdvia_ports[port_2_sd_index].width = sdmet_height
         
         # Add SD routes
+        # TODO: this is a bit cluncky, adding met2 on top of the gate via array. Since the array is very dificult to use as a single slab, and has 100s of ports
+
+        # need two metal layers for port_0, since the gate vias and the sd vias can give DRC errors for met1 spacing.
+        # So we lay met1 and met2 entirely over the gate port (bottom_track_1)
+        port_0_sd_route_top_met = align_comp_to_port(sd_route_top.copy(), sdvia_ports[port_0_sd_index], alignment=(None, 'b'))
+        port_0_sd_route_bot_met = align_comp_to_port(sd_route_bot.copy(), sdvia_ports[port_0_sd_index], alignment=(None, 'b'))
         port_1_sd_route = align_comp_to_port(sd_route.copy(), sdvia_ports[port_1_sd_index], alignment=(None, 'c'))
         port_2_sd_route = align_comp_to_port(sd_route.copy(), sdvia_ports[port_2_sd_index], alignment=(None, 'c'))
         
+        port_2_sd_route = rename_ports_by_orientation(port_2_sd_route)
+        multiplier.add(port_0_sd_route_top_met)
+        multiplier.add(port_0_sd_route_bot_met)
         multiplier.add(port_1_sd_route)
         multiplier.add(port_2_sd_route)
         
+
         # Add ports
-        multiplier.add_ports(port_1_sd_route.get_ports_list(), prefix="port_1_")
-        multiplier.add_ports(port_2_sd_route.get_ports_list(), prefix="port_2_")
+        multiplier.add_ports(port_0_sd_route_top_met.get_ports_list(), prefix="ref_drain_")
+        multiplier.add_ports(port_1_sd_route.get_ports_list(), prefix="mir_drain_")
+        multiplier.add_ports(port_2_sd_route.get_ports_list(), prefix="common_source_")
+
+        # route top_track_2 (common source) to the tapring
+        filtered_ports = [name for name, port in multiplier.ports.items() if "tie_" in name]
+        print(f"DEBUG: {filtered_ports}")
+        filtered_ports = [name for name, port in multiplier.ports.items() if "common_source_" in name]
+        print(f"DEBUG: {filtered_ports}")
+        multiplier << straight_route(self.pdk, multiplier.ports["tie_N_top_met_S"], multiplier.ports["common_source_top_met_N"])
 
     def _create_cmirror_vias_outside_tapring_and_route(self) -> Tuple:
         """
@@ -634,68 +659,45 @@ class CmirrorWithDecap:
         cmirror_ref = self.cmirror_ref
         
         # Get current mirror I/O ports
-        try:
-            vref_port = cmirror_ref.ports["CM_Mref_drain_N"]  # Reference drain (VREF/IREF input)
-            vcopy_port = cmirror_ref.ports["CM_Mmirror_drain_N"]  # Mirror drain (ICOPY output)
-            vss_port = cmirror_ref.ports["CM_Mref_source_S"]  # Common sources (VSS)
-            vb_port = cmirror_ref.ports["CM_Mref_tie_S_top_met_S"]  # Body/substrate connection
-        except KeyError as e:
-            print(f"Warning: Could not find current mirror port: {e}")
-            # Use fallback port names
-            vref_port = list(cmirror_ref.ports.values())[0]
-            vcopy_port = list(cmirror_ref.ports.values())[1]
-            vss_port = list(cmirror_ref.ports.values())[2]
-            vb_port = list(cmirror_ref.ports.values())[3]
+        vref_port = cmirror_ref.ports["ref_drain_W"]  # Reference drain (VREF/IREF input)
+        vmir_port = cmirror_ref.ports["mir_drain_W"]  # Mirror drain (ICOPY output)
+        vss_port = cmirror_ref.ports["common_source_W"]  # Common sources (VSS)
 
         # Standard via size for current mirror connections
-        via_width = max(vref_port.width, vcopy_port.width, vss_port.width)
+        via_width = max(vref_port.width, vmir_port.width, vss_port.width)
         
         # Create vias for each signal
         via_vref = via_array(self.pdk, "met3", "met2", 
                             size=(via_width, via_width),
                             fullbottom=True)
-        via_vcopy = via_array(self.pdk, "met3", "met2", 
+        via_vmir = via_array(self.pdk, "met3", "met2", 
                             size=(via_width, via_width),
                             fullbottom=True)
         via_vss = via_array(self.pdk, "met3", "met2", 
                             size=(via_width, via_width),
                             fullbottom=True)
-        via_vb = via_array(self.pdk, "met3", "met2", 
-                            size=(via_width, via_width),
-                            fullbottom=True)
 
         # Add vias to component
         via_vref_ref = comp << via_vref
-        via_vcopy_ref = comp << via_vcopy
+        via_vmir_ref = comp << via_vmir
         via_vss_ref = comp << via_vss
-        via_vb_ref = comp << via_vb
-
         # Position vias aligned to their respective ports
         align_comp_to_port(via_vref_ref, vref_port, alignment=('c', 'c'))
-        align_comp_to_port(via_vcopy_ref, vcopy_port, alignment=('c', 'c'))
+        align_comp_to_port(via_vmir_ref, vmir_port, alignment=('c', 'c'))
         align_comp_to_port(via_vss_ref, vss_port, alignment=('c', 'c'))
-        align_comp_to_port(via_vb_ref, vb_port, alignment=('c', 'c'))
 
         # Move vias outside the tapring with displacement
-        try:
-            # Calculate displacement to move vias outside tapring
-            tie_w_port = cmirror_ref.ports["CM_Mref_tie_W_bottom_lay_W"]
-            tie_e_port = cmirror_ref.ports["CM_Mmirror_tie_E_bottom_lay_E"]
+        # Calculate displacement to move vias outside tapring
+        tie_w_port = cmirror_ref.ports["tie_W_bottom_lay_W"]
+        tie_e_port = cmirror_ref.ports["tie_E_bottom_lay_E"]
+        
+        # Move VREF and VSS to the left
+        via_vref_ref.movex(-abs(vref_port.center[0] - tie_w_port.center[0]) - via_width - self.extra_port_vias_x_displacement)
+        via_vss_ref.movex(-abs(vss_port.center[0] - tie_w_port.center[0]) - via_width - self.extra_port_vias_x_displacement)
+        
+        # Move VCOPY and VB to the right  
+        via_vmir_ref.movex(abs(vmir_port.center[0] - tie_e_port.center[0]) + via_width + self.extra_port_vias_x_displacement)
             
-            # Move VREF and VSS to the left
-            via_vref_ref.movex(-abs(vref_port.center[0] - tie_w_port.center[0]) - via_width - self.extra_port_vias_x_displacement)
-            via_vss_ref.movex(-abs(vss_port.center[0] - tie_w_port.center[0]) - via_width - self.extra_port_vias_x_displacement)
-            
-            # Move VCOPY and VB to the right  
-            via_vcopy_ref.movex(abs(vcopy_port.center[0] - tie_e_port.center[0]) + via_width + self.extra_port_vias_x_displacement)
-            via_vb_ref.movex(abs(vb_port.center[0] - tie_e_port.center[0]) + via_width + self.extra_port_vias_x_displacement)
-            
-        except KeyError:
-            # Fallback positioning if tie ports not found
-            via_vref_ref.movex(-self.extra_port_vias_x_displacement)
-            via_vcopy_ref.movex(self.extra_port_vias_x_displacement)
-            via_vss_ref.movex(-self.extra_port_vias_x_displacement)
-            via_vb_ref.movex(self.extra_port_vias_x_displacement)
 
         # Route vias to their corresponding ports
         try:
@@ -703,18 +705,15 @@ class CmirrorWithDecap:
                     via_vref_ref.ports["bottom_lay_W"], 
                     vref_port)
             comp << straight_route(self.pdk, 
-                    via_vcopy_ref.ports["bottom_lay_W"], 
-                    vcopy_port)
+                    via_vmir_ref.ports["bottom_lay_W"], 
+                    vmir_port)
             comp << straight_route(self.pdk, 
                     via_vss_ref.ports["bottom_lay_W"], 
                     vss_port)
-            comp << straight_route(self.pdk, 
-                    via_vb_ref.ports["bottom_lay_W"], 
-                    vb_port)
         except Exception as e:
             print(f"Warning: Could not route via connections: {e}")
 
-        return via_vref_ref, via_vcopy_ref, via_vss_ref, via_vb_ref
+        return via_vref_ref, via_vmir_ref, via_vss_ref
 
     def create_cmirror_interdigitized(self) -> Component:
         """
@@ -744,16 +743,7 @@ class CmirrorWithDecap:
         
         multiplier = component_snap_to_grid(rename_ports_by_orientation(multiplier))
 
-        # Add routing
-        if config.routing:
-            self._add_source_drain_gate_routing(
-                multiplier,
-                config.sd_rmult, config.sd_route_topmet, config.sd_route_extension,
-                config.gate_route_topmet, config.gate_rmult, config.gate_route_extension,
-                config.interfinger_rmult
-            )
-
-        # Add tap ring if requested
+                # Add tap ring if requested
         # sdlayer == n+s/d is NMOS, p+s/d is PMOS
         tie_well = "pwell" if config.sdlayer == "n+s/d" else "nwell"
         sdlayer_tiering = "p+s/d" if config.sdlayer == "n+s/d" else "n+s/d"
@@ -776,6 +766,15 @@ class CmirrorWithDecap:
                 vertical_glayer=config.tie_layers[1],
             )
             multiplier.add_ports(tiering_ref.get_ports_list(), prefix="tie_")
+
+        # Add routing
+        if config.routing:
+            self._add_source_drain_gate_routing(
+                multiplier,
+                config.sd_rmult, config.sd_route_topmet, config.sd_route_extension,
+                config.gate_route_topmet, config.gate_rmult, config.gate_route_extension,
+                config.interfinger_rmult
+            )
 
         # Add pwell or nwell
         multiplier.add_padding(
@@ -815,85 +814,27 @@ class CmirrorWithDecap:
         
         return cmirror_interdigitized
 
-    def _add_cmirror_routing(self, 
-            cm_component: Component
-            ) -> Component:
+
+    def _create_decap_capacitor(self) -> Component:
         """
-        Add proper current mirror routing connections:
-        1. Connect sources together (VSS)
-        2. Connect gates together (to form bias network)
-        3. Connect gate of reference to its drain (for diode connection)
-        
-        Args:
-            cm_component: Component containing the interdigitized current mirror
+        Create a decoupling capacitor using MIM capacitor.
         
         Returns:
-            Component: Component with routing added
+            Component: The decap capacitor component
         """
-        cm_component.unlock()
+        # Use default size if not specified, or use provided decap_size
+        if self.decap_size is not None:
+            cap_size = self.decap_size
+        else:
+            # Default decap size - can be adjusted based on requirements
+            cap_size = (1.0, 1.0)  # 1um x 1um
         
-        # Route sources together (VSS connection)
-        try:
-            source_route = straight_route(
-                self.pdk, 
-                cm_component.ports["CM_Mref_source_W"], 
-                cm_component.ports["CM_Mmirror_source_W"]
-            )
-            cm_component << source_route
-        except KeyError as e:
-            print(f"Warning: Could not find source ports for VSS connection: {e}")
-            # Try alternative port names from multiplier
-            try:
-                source_route = straight_route(
-                    self.pdk, 
-                    cm_component.ports["CM_Mref_source_E"], 
-                    cm_component.ports["CM_Mmirror_source_E"]
-                )
-                cm_component << source_route
-            except KeyError:
-                print("Warning: Could not find any source ports for VSS connection")
+        # Create MIM capacitor
+        decap = mimcap(self.pdk, size=cap_size)
+
+        # align with the vias
         
-        # Route gates together (bias network)
-        try:
-            gate_route = straight_route(
-                self.pdk, 
-                cm_component.ports["CM_Mref_gate_E"], 
-                cm_component.ports["CM_Mmirror_gate_E"]
-            )
-            cm_component << gate_route
-            
-            # Connect reference transistor gate to its drain (diode connection)
-            gate_drain_route = c_route(
-                self.pdk, 
-                cm_component.ports["CM_Mref_gate_W"], 
-                cm_component.ports["CM_Mref_drain_W"],
-                extension=self.pdk.util_max_metal_seperation()
-            )
-            cm_component << gate_drain_route
-            
-        except KeyError as e:
-            print(f"Warning: Could not find gate/drain ports for bias connection: {e}")
-            # Try alternative approach with different orientations
-            try:
-                gate_route = straight_route(
-                    self.pdk, 
-                    cm_component.ports["CM_Mref_gate_S"], 
-                    cm_component.ports["CM_Mmirror_gate_S"]
-                )
-                cm_component << gate_route
-                
-                # Connect reference transistor gate to its drain (diode connection)
-                gate_drain_route = c_route(
-                    self.pdk, 
-                    cm_component.ports["CM_Mref_gate_N"], 
-                    cm_component.ports["CM_Mref_drain_N"],
-                    extension=self.pdk.util_max_metal_seperation()
-                )
-                cm_component << gate_drain_route
-            except KeyError:
-                print("Warning: Could not find any gate/drain ports for bias connection")
-        
-        return cm_component
+        return decap
 
     def build(self) -> Component:
         """
@@ -910,28 +851,34 @@ class CmirrorWithDecap:
         
         # Create current mirror
         cmirror = self.create_cmirror_interdigitized()
-        
+
         # Place component
         self.cmirror_ref = self.top_level << cmirror
-        
-        """
-        # Add routing
-        self._add_cmirror_routing(cmirror)
-        
+
         # Create vias outside tapring
-        (via_vref_ref, via_vcopy_ref, 
-         via_vss_ref, via_vb_ref) = self._create_cmirror_vias_outside_tapring_and_route()
+        (via_vref_ref, via_vcopy_ref, via_vss_ref) = self._create_cmirror_vias_outside_tapring_and_route()
         
         # Add pins and labels
-        self._add_pin_and_label_to_via(self.top_level, via_vref_ref, "VREF")
-        self._add_pin_and_label_to_via(self.top_level, via_vcopy_ref, "VCOPY")
-        self._add_pin_and_label_to_via(self.top_level, via_vss_ref, "VSS")
-        self._add_pin_and_label_to_via(self.top_level, via_vb_ref, "VB")
+        self._add_pin_and_label_to_via(self.top_level, via_vref_ref, "I_BIAS")
+        self._add_pin_and_label_to_via(self.top_level, via_vcopy_ref, "I_OUT")
+        via_vss_label = "VSS" if self.cmirror_config.sdlayer == "n+s/d" else "VDD"
+        self._add_pin_and_label_to_via(self.top_level, via_vss_ref, via_vss_label)
         
-        # TODO: Add decoupling capacitor
-        # This would typically be a MOM capacitor or MIM capacitor
-        # Implementation depends on PDK capabilities
-        """
+        # Create and add decap capacitor
+        if self.cmirror_config.with_decap == True:
+            decap = self._create_decap_capacitor()
+            self.decap_ref = align_comp_to_port(decap, via_vss_ref.ports["top_met_W"], alignment=('l', 'c'))
+            self.top_level.add(self.decap_ref) 
+            
+            # Route connections
+            # Route decap to VSS via (straight route)
+            vss_route = straight_route(self.pdk, self.decap_ref.ports["bottom_met_E"], via_vss_ref.ports["bottom_lay_W"])
+            self.top_level << vss_route
+        
+            # Route decap to VREF via (L-route from S of mimcap to W of via_vref_ref)
+            vref_route = L_route(self.pdk, self.decap_ref.ports["bottom_met_S"], via_vref_ref.ports["bottom_lay_W"])
+            self.top_level << vref_route
+
         return self.top_level
     
     def write_gds(self, filename: str = 'Cmirror_with_decap.gds') -> None:
@@ -993,7 +940,8 @@ if __name__ == "__main__":
         routing=True,
         with_dummies=False,
         with_tie=True,
-        with_dnwell = False
+        with_dnwell = False,
+        with_decap = True
     )
     
     # Create current mirror instance
