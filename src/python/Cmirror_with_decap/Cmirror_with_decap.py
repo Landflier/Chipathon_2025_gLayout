@@ -610,10 +610,11 @@ class CmirrorWithDecap:
         port_2_sd_index = y_coord_indices[-1]
         
         sd_width = sdvia_ports[-1].center[0] - sdvia_ports[0].center[0]
-        # sd_width_gate = gate_ref.width
+        sd_width_gate = abs (multiplier.ports[f"leftsd_top_met_N"].center[0] - multiplier.ports[f"diffusion_port_to_align_sd_{self.fingers_ref + self.fingers_mir - 1}"].center[0]) + multiplier.ports[f"leftsd_top_met_N"].width
+
         sd_route = rectangle(size=(sd_width, sdmet_height), layer=self.pdk.get_glayer(sd_route_topmet), centered=True)
         sd_route_top = rectangle(size=(sd_width, sdmet_height), layer=self.pdk.get_glayer(sd_route_topmet), centered=True)
-        sd_route_bot = rectangle(size=(sd_width, sdmet_height), layer=self.pdk.get_glayer("met1"), centered=True)
+        sd_route_bot = rectangle(size=(sd_width_gate, sdmet_height), layer=self.pdk.get_glayer("met1"), centered=True)
         
         # Update port widths
         sdvia_ports[port_1_sd_index].width = sdmet_height
@@ -945,9 +946,9 @@ if __name__ == "__main__":
     # Create current mirror instance
     cmirror = CmirrorWithDecap(
         pdk=pdk_choice,
-        width_ref=3,
-        width_mir=1,
-        fingers_ref=3,
+        width_ref=7.5,
+        width_mir=1.5,
+        fingers_ref=5,
         fingers_mir=1,
         length=0.28,
         cmirror_config=cmirror_config
@@ -959,7 +960,7 @@ if __name__ == "__main__":
     
     # Write GDS
     print("✓ Writing GDS files...")
-    cmirror.write_gds('lvs/gds/Cmirror_with_decap.gds')
+    cmirror.write_gds('lvs/gds/nmos_Cmirror_with_decap.gds')
     print("  - Hierarchical GDS: Cmirror_with_decap.gds")
     
     # Run DRC

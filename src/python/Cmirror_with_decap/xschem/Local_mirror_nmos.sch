@@ -17,7 +17,7 @@ lab=VSS}
 N 760 -1100 780 -1100 {
 lab=I_BIAS}
 N 800 -1190 800 -1130 {
-lab=I_out}
+lab=I_OUT}
 N 660 -1160 660 -1130 {
 lab=I_BIAS}
 N 660 -1070 660 -980 {
@@ -78,9 +78,9 @@ value="
 .endc
 "}
 C {symbols/nfet_03v3.sym} 780 -1100 0 0 {name=M2
-L=l_mir
-W=w_mir
-nf=1
+L=0.28
+W=7.5
+nf=5
 m=1
 ad="'int((nf+1)/2) * W/nf * 0.18u'"
 pd="'2*int((nf+1)/2) * (W/nf + 0.18u)'"
@@ -92,10 +92,10 @@ model=nfet_03v3
 spiceprefix=X
 }
 C {iopin.sym} 600 -980 0 1 {name=p1 lab=VSS}
-C {iopin.sym} 800 -1190 3 0 {name=p7 lab=I_out}
+C {iopin.sym} 800 -1190 3 0 {name=p7 lab=I_OUT}
 C {symbols/nfet_03v3.sym} 680 -1100 0 1 {name=M6
-L=l_ref
-W=w_ref
+L=0.28
+W=1.5
 nf=1
 m=1
 ad="'int((nf+1)/2) * W/nf * 0.18u'"
