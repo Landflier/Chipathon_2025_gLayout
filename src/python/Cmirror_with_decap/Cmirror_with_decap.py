@@ -925,7 +925,7 @@ if __name__ == "__main__":
     pdk_choice = gf180
     
     # Configure current mirror FETs
-    cmirror_config = CMirrorConfig(
+    cmirror_nmos_config = CMirrorConfig(
         sd_rmult=2,
         sd_route_topmet="met2",
         gate_route_topmet="met2",
@@ -944,28 +944,28 @@ if __name__ == "__main__":
     )
     
     # Create current mirror instance
-    cmirror = CmirrorWithDecap(
+    cmirror_nmos = CmirrorWithDecap(
         pdk=pdk_choice,
         width_ref=7.5,
         width_mir=1.5,
         fingers_ref=5,
         fingers_mir=1,
         length=0.28,
-        cmirror_config=cmirror_config
+        cmirror_config=cmirror_nmos_config
     )
     
     # Build the current mirror
     print("Building current mirror...")
-    component = cmirror.build()
+    component = cmirror_nmos.build()
     
     # Write GDS
     print("✓ Writing GDS files...")
-    cmirror.write_gds('lvs/gds/nmos_Cmirror_with_decap.gds')
+    cmirror_nmos.write_gds('lvs/gds/nmos_Cmirror_with_decap.gds')
     print("  - Hierarchical GDS: Cmirror_with_decap.gds")
     
     # Run DRC
     print("\n...Running DRC...")
-    drc_result = cmirror.run_drc()
+    drc_result = cmirror_nmos.run_drc()
     if drc_result:
         print(f"✓ Magic DRC result: {drc_result}")
     
