@@ -769,12 +769,10 @@ class CmirrorWithDecap:
             )
             multiplier.add_ports(tiering_ref.get_ports_list(), prefix="tie_")
 
+        # make sure correct names by orientation, since routing adds some ports
+        multiplier = rename_ports_by_orientation(multiplier)
         # route top_track_2 (common source) to the tapring
-        filtered_ports = [port for name, port in multiplier.ports.items() if "tie_" in name]
-        print(f"DEBUG: {filtered_ports}")
-        filtered_ports = [port for name, port in multiplier.ports.items() if "common_source_" in name]
-        print(f"DEBUG: {filtered_ports}")
-        multiplier << straight_route(self.pdk, multiplier.ports["tie_N_top_met_S"], multiplier.ports["common_source_e4"])
+        multiplier << straight_route(self.pdk, multiplier.ports["tie_N_top_met_N"], multiplier.ports["common_source_N"])
 
         # Add pwell or nwell
         multiplier.add_padding(
