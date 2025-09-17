@@ -1,0 +1,25 @@
+* NGSPICE file created from Gilbert_cell_layout.ext - technology: gf180mcuD
+
+.subckt LO_diff_pairs_interdigitized a_n2222_n400# a_n2878_n1500# a_n2578_n448# a_n2822_n400#
++ a_n3106_n400# a_n2522_n400# a_n3316_n1664#
+X0 a_n2522_n400# a_n2578_n448# a_n2822_n400# a_n3316_n1664# nfet_03v3 ad=2.44p pd=5.22u as=2.44p ps=5.22u w=4u l=0.28u M=5
+X1 a_n3106_n400# a_n2578_n448# a_n2222_n400# a_n3316_n1664# nfet_03v3 ad=2.44p pd=5.22u as=2.44p ps=5.22u w=4u l=0.28u M=5
+X2 a_n2822_n400# a_n2878_n1500# a_n3106_n400# a_n3316_n1664# nfet_03v3 ad=2.44p pd=5.22u as=2.44p ps=5.22u w=4u l=0.28u M=5
+X3 a_n2222_n400# a_n2878_n1500# a_n2522_n400# a_n3316_n1664# nfet_03v3 ad=2.44p pd=5.22u as=2.44p ps=5.22u w=4u l=0.28u M=5
+.ends
+
+.subckt RF_diff_pair$1 a_n628_n749# a_n572_n221# a_2756_n221# a_n856_n221# a_n1750_n913#
++ a_3040_n221# a_2984_n749# a_1862_n913#
+X0 a_3040_n221# a_2984_n749# a_2756_n221# a_n1750_n913# nfet_03v3 ad=2.28p pd=6.28u as=1.22p ps=3.22u w=2u l=0.28u M=5
+X1 a_n1750_n913# a_n1750_n913# a_n1750_n913# a_n1750_n913# nfet_03v3 ad=2.28p pd=6.28u as=18.24p ps=50.24u w=2u l=0.28u M=4
+X2 a_n856_n221# a_n628_n749# a_n572_n221# a_n1750_n913# nfet_03v3 ad=1.22p pd=3.22u as=1.22p ps=3.22u w=2u l=0.28u M=5
+.ends
+
+.subckt Gilbert_cell_layout VSS I_bias_pos I_bias_neg V_out_p V_out_n V_LO V_LO_b
++ V_RF V_RF_b
+XLO_diff_pairs_interdigitized_0 RF_diff_pair$1_0/a_2756_n221# V_LO V_LO_b RF_diff_pair$1_0/a_n856_n221#
++ V_out_p V_out_n VSS LO_diff_pairs_interdigitized
+XRF_diff_pair$1_0 V_RF I_bias_pos RF_diff_pair$1_0/a_2756_n221# RF_diff_pair$1_0/a_n856_n221#
++ VSS I_bias_neg V_RF_b VSS RF_diff_pair$1
+.ends
+
