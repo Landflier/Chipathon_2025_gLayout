@@ -641,13 +641,6 @@ class CmirrorWithDecap:
         multiplier.add_ports(port_1_sd_route.get_ports_list(), prefix="mir_drain_")
         multiplier.add_ports(port_2_sd_route.get_ports_list(), prefix="common_source_")
 
-        # route top_track_2 (common source) to the tapring
-        filtered_ports = [name for name, port in multiplier.ports.items() if "tie_" in name]
-        print(f"DEBUG: {filtered_ports}")
-        filtered_ports = [name for name, port in multiplier.ports.items() if "common_source_" in name]
-        print(f"DEBUG: {filtered_ports}")
-        multiplier << straight_route(self.pdk, multiplier.ports["tie_N_top_met_S"], multiplier.ports["common_source_top_met_N"])
-
     def _create_cmirror_vias_outside_tapring_and_route(self) -> Tuple:
         """
         Create vias for routing the current mirror I/O outside the tapring.
@@ -743,7 +736,16 @@ class CmirrorWithDecap:
         
         multiplier = component_snap_to_grid(rename_ports_by_orientation(multiplier))
 
-                # Add tap ring if requested
+        # Add routing
+        if config.routing:
+            self._add_source_drain_gate_routing(
+                multiplier,
+                config.sd_rmult, config.sd_route_topmet, config.sd_route_extension,
+                config.gate_route_topmet, config.gate_rmult, config.gate_route_extension,
+                config.interfinger_rmult
+            )
+
+        # Add tap ring if requested
         # sdlayer == n+s/d is NMOS, p+s/d is PMOS
         tie_well = "pwell" if config.sdlayer == "n+s/d" else "nwell"
         sdlayer_tiering = "p+s/d" if config.sdlayer == "n+s/d" else "n+s/d"
@@ -767,14 +769,12 @@ class CmirrorWithDecap:
             )
             multiplier.add_ports(tiering_ref.get_ports_list(), prefix="tie_")
 
-        # Add routing
-        if config.routing:
-            self._add_source_drain_gate_routing(
-                multiplier,
-                config.sd_rmult, config.sd_route_topmet, config.sd_route_extension,
-                config.gate_route_topmet, config.gate_rmult, config.gate_route_extension,
-                config.interfinger_rmult
-            )
+        # route top_track_2 (common source) to the tapring
+        filtered_ports = [port for name, port in multiplier.ports.items() if "tie_" in name]
+        print(f"DEBUG: {filtered_ports}")
+        filtered_ports = [port for name, port in multiplier.ports.items() if "common_source_" in name]
+        print(f"DEBUG: {filtered_ports}")
+        multiplier << straight_route(self.pdk, multiplier.ports["tie_N_top_met_S"], multiplier.ports["common_source_e4"])
 
         # Add pwell or nwell
         multiplier.add_padding(
