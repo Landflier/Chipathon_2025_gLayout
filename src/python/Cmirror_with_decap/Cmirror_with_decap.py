@@ -324,6 +324,7 @@ class CmirrorWithDecap:
         sdmet_height = sd_rmult * evaluate_bbox(sdvia)[1]
         sdroute_minsep = self.pdk.get_grule(sd_route_topmet)["min_separation"]
         sdvia_ports = list()
+        gatevia_ports = list()
         
         # Define routing configuration dictionary
         """
@@ -390,8 +391,9 @@ class CmirrorWithDecap:
             if is_gate_routing:
                 # For gate routing, just create vertical route and snap to grid
                 port_to_route.y = self.pdk.snap_to_2xgrid(port_to_route.y)
+                sdvia_ref = align_comp_to_port(sdvia, port_to_route, alignment=config["alignment_port"])
                 multiplier << straight_route(self.pdk, rel_align_port, port_to_route)
-                return []
+                return [sdvia_ref.ports["top_met_W"], sdvia_ref.ports["top_met_E"]]
             else:
                 # For SD routing, there is a via at the end of the route. 
                 displacement = config['sdvia_extension'](sdroute_minsep, sdmet_height) + config['sd_route_extension_sign'] * self.pdk.snap_to_2xgrid(sd_route_extension)
@@ -419,7 +421,7 @@ class CmirrorWithDecap:
               finger_array
         ---   bottom_track_1  --- drain R(eference) FET / gates (Rd)
         """
-        # Route fingers in the following manner: s(Xd Xs)*nf_r/4 (Yd Ys)*nf_m/2 (Xd Xs)*nf_r/4 
+        # Route fingers in the following manner: s(Xd Xs)*nf_x/4 (Yd Ys)*nf_m/2 (Xd Xs)*nf_r/4 
         if self.fingers_ref % 4 == 0 or self.fingers_mir % 4 == 0:
             # Determine which case we're in for config selection. ref stands for reference fet, and check if it has fingers divisible by 4
             ref_case = self.fingers_ref % 4 == 0
@@ -452,7 +454,7 @@ class CmirrorWithDecap:
                 sdvia_ports += create_and_route_finger(
                     config_key='top_track_2',
                     port_name=f"row0_col{2*finger_couple+1}_rightsd_array_row{number_sd_rows}_col0_top_met_N",
-                    port_suffix=f"{finger_couple*2+1}"
+                    port_suffix=f"{2*finger_couple+1}"
                 )
             
                 # route the initial s, before all repeated structures Rs or Ms
@@ -568,28 +570,45 @@ class CmirrorWithDecap:
             gate_port_name = f"row0_col{finger}_gate_S"
 
             # Route gate to Rd drain connection 
-            create_and_route_finger(
+            gatevia_ports += create_and_route_finger(
                 config_key=config_key,
                 port_name=gate_port_name,
                 port_suffix=f"{finger}",
                 is_gate_routing=True
             )
+        filtered_ports = [port for name, port in multiplier.ports.items() if "bottom_track_1" in name]
+        print(f"DEBUG: {filtered_ports}")
+
+        # there are two styles: 
+        # style 1 is: s(Xd Xs)*nf_x/4 (Yd Ys)*nf_m/2 (Xd Xs)*nf_r/4 , interfingering_style=1
+        # style 2 is: d(Xs Xd)*abs(nf_x-nf_y)/4 (Xs Yd Ys Xd)*min(nf_y, nf_x) /2 (Xs Xd)*abs(nf_x-nf_y)/4, interfingering_style=0
+
         # Place horizontal gate routes
-        gate_width = multiplier.ports[f"diffusion_port_to_align_sd_{self.fingers_ref + self.fingers_mir - 1}"].center[0] \
-                - multiplier.ports["leftsd_top_met_N"].center[0] \
-                + multiplier.ports["leftsd_top_met_N"].width
+        gate_width = multiplier.ports[f"row0_col{self.fingers_ref + self.fingers_mir - 1}_rightsd_array_row{number_sd_rows}_col0_top_met_E"].center[0] \
+                - multiplier.ports["leftsd_top_met_E"].center[0] \
+                + multiplier.ports["leftsd_top_met_E"].width
         gate_route = rename_ports_by_list(
             via_array(self.pdk, "poly", gate_route_topmet, size=(gate_width, None), num_vias=(None, gate_rmult), no_exception=True, fullbottom=True),
             [("top_met_", "gate_top_")]
         )
         
-        # Horizontal gate routes
-        # gate_ref = align_comp_to_port(gate_route.copy(), multiplier.ports[f"diffusion_port_to_align_sd_special_0"], alignment=('r', 'b'), layer=self.pdk.get_glayer("poly"))
-        gate_ref = align_comp_to_port(gate_route.copy(), multiplier.ports[f"bottom_track_1_top_met_E_{self.fingers_ref + self.fingers_mir - 1}"], alignment=('l', 'b'), layer=self.pdk.get_glayer("poly"))
+        # Get unique y-coordinates for gate finger ports
+        """
+        x_coords = [port.center[1] for port in gatevia_ports]
+        unique_x_coords = list(set(x_coords))
+        unique_x_coords.sort()
+        
+        x_coord_indices = []
+        for unique_x in unique_x_coords:
+            first_index = next(i for i, x in enumerate(x_coords) if x == unique_x)
+            x_coord_indices.append(first_index)
+        port_0_gatevia_index = x_coord_indices[0]
+        gate_ref = align_comp_to_port(gate_route.copy(), gatevia_ports[port_0_gatevia_index] , alignment=('l', 'b'), layer=self.pdk.get_glayer("poly"))
+        # gate_ref = align_comp_to_port(gate_route.copy(), multiplier.ports[f"row0_col{self.fingers_ref + self.fingers_mir - 1}_rightsd_array_row{number_sd_rows}_col0_top_met_N"], alignment=('l', 'b'), layer=self.pdk.get_glayer("poly"))
         multiplier.add(gate_ref)
-        
+        """ 
         # multiplier.add_ports(gate_ref.get_ports_list(), prefix="ref_drain_")
-        
+
         # Horizontal route s/d 
         # Get unique y-coordinates for SD ports
         y_coords = [port.center[1] for port in sdvia_ports]
@@ -616,6 +635,7 @@ class CmirrorWithDecap:
         sd_route_top = rectangle(size=(sd_width, sdmet_height), layer=self.pdk.get_glayer(sd_route_topmet), centered=True)
         sd_route_bot = rectangle(size=(sd_width_gate, sdmet_height), layer=self.pdk.get_glayer("met1"), centered=True)
         
+        
         # Update port widths
         sdvia_ports[port_1_sd_index].width = sdmet_height
         sdvia_ports[port_2_sd_index].width = sdmet_height
@@ -629,7 +649,11 @@ class CmirrorWithDecap:
         port_0_sd_route_bot_met = align_comp_to_port(sd_route_bot.copy(), sdvia_ports[port_0_sd_index], alignment=(None, 'b'))
         port_1_sd_route = align_comp_to_port(sd_route.copy(), sdvia_ports[port_1_sd_index], alignment=(None, 'c'))
         port_2_sd_route = align_comp_to_port(sd_route.copy(), sdvia_ports[port_2_sd_index], alignment=(None, 'c'))
-        
+
+        gate_ref = align_comp_to_port(gate_route.copy(), sdvia_ports[port_0_sd_index] , alignment=(None, 'b'), layer=self.pdk.get_glayer("poly"))
+        # gate_ref = align_comp_to_port(gate_route.copy(), multiplier.ports[f"row0_col{self.fingers_ref + self.fingers_mir - 1}_rightsd_array_row{number_sd_rows}_col0_top_met_N"], alignment=('l', 'b'), layer=self.pdk.get_glayer("poly"))
+        multiplier.add(gate_ref)
+
         port_2_sd_route = rename_ports_by_orientation(port_2_sd_route)
         multiplier.add(port_0_sd_route_top_met)
         multiplier.add(port_0_sd_route_bot_met)
@@ -946,10 +970,14 @@ if __name__ == "__main__":
     # Create current mirror instance
     cmirror_nmos = CmirrorWithDecap(
         pdk=pdk_choice,
-        width_ref=7.5,
-        width_mir=1.5,
-        fingers_ref=5,
-        fingers_mir=1,
+        width_ref = 2,
+        width_mir = 1,
+        fingers_ref = 4,
+        fingers_mir =2,
+        # width_ref=7.5,
+        # width_mir=1.5,
+        # fingers_ref=5,
+        # fingers_mir=1,
         length=0.28,
         cmirror_config=cmirror_nmos_config
     )
@@ -961,15 +989,55 @@ if __name__ == "__main__":
     # Write GDS
     print("✓ Writing GDS files...")
     cmirror_nmos.write_gds('lvs/gds/nmos_Cmirror_with_decap.gds')
-    print("  - Hierarchical GDS: Cmirror_with_decap.gds")
+    print("  - Hierarchical GDS: nmos_Cmirror_with_decap.gds")
     
+    # Configure current mirror FETs
+    """
+    cmirror_pmos_config = CMirrorConfig(
+        sd_rmult=2,
+        sd_route_topmet="met2",
+        gate_route_topmet="met2",
+        gate_rmult=2,
+        interfinger_rmult=2,
+        tie_layers=("met2", "met1"),
+        inter_finger_topmet="met1",
+        sd_route_extension=0.0,
+        gate_route_extension=0,
+        sdlayer = "p+s/d",
+        routing=True,
+        with_dummies=False,
+        with_tie=True,
+        with_dnwell = False,
+        with_decap = True
+    )
+    
+    # Create current mirror instance
+    cmirror_pmos = CmirrorWithDecap(
+        pdk=pdk_choice,
+        width_ref=2,
+        width_mir=4,
+        fingers_ref=4,
+        fingers_mir=8,
+        length=0.28,
+        cmirror_config=cmirror_pmos_config
+    )
+    
+    # Build the current mirror
+    print("Building current mirror...")
+    component_2 = cmirror_pmos.build()
+    
+    # Write GDS
+    print("✓ Writing GDS files...")
+    cmirror_pmos.write_gds('lvs/gds/pmos_Cmirror_with_decap.gds')
+    print("  - Hierarchical GDS: Cmirror_with_decap.gds")
     # Run DRC
     print("\n...Running DRC...")
-    drc_result = cmirror_nmos.run_drc()
+    drc_result = cmirror_pmos.run_drc()
     if drc_result:
         print(f"✓ Magic DRC result: {drc_result}")
     
     print("\n" + "="*60)
     print("CURRENT MIRROR DESIGN COMPLETED!")
     print("="*60)
+    """
    
