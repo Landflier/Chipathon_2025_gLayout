@@ -1,0 +1,140 @@
+
+Circuit 1 cell cap_mim_2f0_m4m5_noshield and Circuit 2 cell cap_mim_2f0fF are black boxes.
+Warning: Equate pins:  cell cap_mim_2f0_m4m5_noshield is a placeholder, treated as a black box.
+Warning: Equate pins:  cell cap_mim_2f0fF is a placeholder, treated as a black box.
+
+Subcircuit pins:
+Circuit 1: cap_mim_2f0_m4m5_noshield       |Circuit 2: cap_mim_2f0fF                   
+-------------------------------------------|-------------------------------------------
+1                                          |1                                          
+2                                          |2                                          
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes cap_mim_2f0_m4m5_noshield and cap_mim_2f0fF are equivalent.
+
+Circuit 1 cell pfet_03v3 and Circuit 2 cell pfet_03v3 are black boxes.
+Warning: Equate pins:  cell pfet_03v3 is a placeholder, treated as a black box.
+Warning: Equate pins:  cell pfet_03v3 is a placeholder, treated as a black box.
+
+Subcircuit pins:
+Circuit 1: pfet_03v3                       |Circuit 2: pfet_03v3                       
+-------------------------------------------|-------------------------------------------
+1                                          |1                                          
+2                                          |2                                          
+3                                          |3                                          
+4                                          |4                                          
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes pfet_03v3 and pfet_03v3 are equivalent.
+
+Circuit 1 cell nfet_03v3 and Circuit 2 cell nfet_03v3 are black boxes.
+Warning: Equate pins:  cell nfet_03v3 is a placeholder, treated as a black box.
+Warning: Equate pins:  cell nfet_03v3 is a placeholder, treated as a black box.
+
+Subcircuit pins:
+Circuit 1: nfet_03v3                       |Circuit 2: nfet_03v3                       
+-------------------------------------------|-------------------------------------------
+1                                          |1                                          
+2                                          |2                                          
+3                                          |3                                          
+4                                          |4                                          
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes nfet_03v3 and nfet_03v3 are equivalent.
+Flattening unmatched subcell pmos_Cmirror_with_decap$1 in circuit Biasing_network_layout (1)(1 instance)
+Flattening unmatched subcell Unnamed_e3a0da27 in circuit Biasing_network_layout (1)(1 instance)
+Flattening unmatched subcell cmirror_interdigitized in circuit Biasing_network_layout (1)(1 instance)
+Flattening unmatched subcell nmos2_Cmirror_with_decap in circuit Biasing_network_layout (1)(1 instance)
+Flattening unmatched subcell Unnamed_ba8f6150 in circuit Biasing_network_layout (1)(1 instance)
+Flattening unmatched subcell cmirror_interdigitized$2 in circuit Biasing_network_layout (1)(1 instance)
+Flattening unmatched subcell nmos1_Cmirror_with_decap in circuit Biasing_network_layout (1)(1 instance)
+Flattening unmatched subcell Unnamed_40a499cb in circuit Biasing_network_layout (1)(1 instance)
+Flattening unmatched subcell cmirror_interdigitized$1 in circuit Biasing_network_layout (1)(1 instance)
+Flattening unmatched subcell nmos3_Cmirror_with_decap in circuit Biasing_network_layout (1)(1 instance)
+Flattening unmatched subcell Unnamed_2e9f948d in circuit Biasing_network_layout (1)(1 instance)
+Flattening unmatched subcell cmirror_interdigitized$3 in circuit Biasing_network_layout (1)(1 instance)
+Flattening unmatched subcell Local_mirror_pmos in circuit Biasing_network_schematic (2)(1 instance)
+Flattening unmatched subcell Local_mirror_nmos in circuit Biasing_network_schematic (2)(3 instances)
+
+Class Biasing_network_layout (1):  Merged 6 parallel devices.
+Class Biasing_network_schematic (2):  Merged 4 parallel devices.
+Subcircuit summary:
+Circuit 1: Biasing_network_layout          |Circuit 2: Biasing_network_schematic       
+-------------------------------------------|-------------------------------------------
+cap_mim_2f0_m4m5_noshield (4->2)           |cap_mim_2f0fF (4->2)                       
+pfet_03v3 (16->2)                          |pfet_03v3 (2)                              
+nfet_03v3 (28->2)                          |nfet_03v3 (6->4) **Mismatch**              
+Number of devices: 6 **Mismatch**          |Number of devices: 8 **Mismatch**          
+Number of nets: 5 **Mismatch**             |Number of nets: 7 **Mismatch**             
+---------------------------------------------------------------------------------------
+NET mismatches: Class fragments follow (with fanout counts):
+Circuit 1: Biasing_network_layout          |Circuit 2: Biasing_network_schematic       
+
+---------------------------------------------------------------------------------------
+Net: m3_n4674_n6121#                       |Net: I_out_1                               
+  pfet_03v3/(1|3) = 1                      |  nfet_03v3/(1|3) = 1                      
+  cap_mim_2f0_m4m5_noshield/2 = 1          |                                           
+  nfet_03v3/2 = 2                          |                                           
+  nfet_03v3/(1|3) = 1                      |                                           
+                                           |                                           
+Net: VSUBS                                 |Net: I_out_2                               
+  cap_mim_2f0_m4m5_noshield/1 = 1          |  nfet_03v3/(1|3) = 1                      
+  nfet_03v3/(1|3) = 2                      |                                           
+  nfet_03v3/4 = 2                          |                                           
+                                           |                                           
+Net: nmos2_Cmirror_with_decap_0/I_out_2    |Net: I_out_3                               
+  nfet_03v3/(1|3) = 1                      |  nfet_03v3/(1|3) = 1                      
+                                           |                                           
+(no matching net)                          |Net: net1                                  
+                                           |  pfet_03v3/(1|3) = 1                      
+                                           |  nfet_03v3/2 = 4                          
+                                           |  nfet_03v3/(1|3) = 1                      
+                                           |  cap_mim_2f0fF/2 = 1                      
+                                           |                                           
+(no matching net)                          |Net: VSS                                   
+                                           |  nfet_03v3/(1|3) = 4                      
+                                           |  nfet_03v3/4 = 4                          
+                                           |  cap_mim_2f0fF/1 = 1                      
+---------------------------------------------------------------------------------------
+DEVICE mismatches: Class fragments follow (with node fanout counts):
+Circuit 1: Biasing_network_layout          |Circuit 2: Biasing_network_schematic       
+
+---------------------------------------------------------------------------------------
+Instance: nmos2_Cmirror_with_decap_0//cmir |Instance: Local_mirror_nmos:_NMOS_mirror_1 
+  (1,3) = (5,1)                            |  (1,3) = (9,1)                            
+  2 = 5                                    |  2 = 7                                    
+  4 = 5                                    |  4 = 9                                    
+                                           |                                           
+Instance: nmos2_Cmirror_with_decap_0//cmir |Instance: Local_mirror_nmos:_NMOS_mirror_1 
+  (1,3) = (5,5)                            |  (1,3) = (9,7)                            
+  2 = 5                                    |  2 = 7                                    
+  4 = 5                                    |  4 = 9                                    
+                                           |                                           
+(no matching instance)                     |Instance: Local_mirror_nmos:_NMOS_mirror_2 
+                                           |  (1,3) = (9,1)                            
+                                           |  2 = 7                                    
+                                           |  4 = 9                                    
+                                           |                                           
+                                           |                                           
+(no matching instance)                     |Instance: Local_mirror_nmos:_NMOS_mirror_3 
+                                           |  (1,3) = (9,1)                            
+                                           |  2 = 7                                    
+                                           |  4 = 9                                    
+                                           |                                           
+---------------------------------------------------------------------------------------
+Netlists do not match.
+
+Subcircuit pins:
+Circuit 1: Biasing_network_layout          |Circuit 2: Biasing_network_schematic       
+-------------------------------------------|-------------------------------------------
+VDD                                        |VDD                                        
+(no matching pin)                          |I_out_1                                    
+(no matching pin)                          |I_out_2                                    
+(no matching pin)                          |I_out_3                                    
+(no matching pin)                          |I_BIAS                                     
+(no matching pin)                          |VSS                                        
+---------------------------------------------------------------------------------------
+Cell pin lists for Biasing_network_layout and Biasing_network_schematic altered to match.
+Device classes Biasing_network_layout and Biasing_network_schematic are equivalent.
+
+Final result: Top level cell failed pin matching.
