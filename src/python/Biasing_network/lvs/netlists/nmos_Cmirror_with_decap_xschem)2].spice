@@ -1,9 +1,0 @@
-** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/python/Cmirror_with_decap/xschem/nmos_Cmirror_with_decap.sch
-.subckt nmos_Cmirror_with_decap_xschem I_OUT I_BIAS VSS
-*.PININFO VSS:B I_OUT:B I_BIAS:B
-XM2 I_OUT I_BIAS VSS VSS nfet_03v3 L=0.28u W=7.5u nf=10 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
-+ ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
-XM6 I_BIAS I_BIAS VSS VSS nfet_03v3 L=0.28u W=1.5u nf=2 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
-+ ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
-XC1 I_BIAS VSS cap_mim_1f0fF c_width=5e-6 c_length=5e-6 m=1
-

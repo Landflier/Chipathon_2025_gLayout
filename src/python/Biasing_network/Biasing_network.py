@@ -14,8 +14,6 @@ from glayout import nmos, pmos, tapring, mimcap
 from glayout.routing.straight_route import straight_route
 from glayout.routing.c_route import c_route
 from glayout.routing.L_route import L_route
-from glayout import via_stack, via_array
-from glayout.primitives.via_gen import via_array, via_stack
 from glayout.util.comp_utils import (
     evaluate_bbox, to_float, to_decimal, prec_array, 
     prec_center, prec_ref_center, movey, align_comp_to_port
@@ -52,7 +50,7 @@ if __name__ == "__main__":
     print("\n🔧 Creating PMOS Current Mirror with Decap...")
     
     pmos_config = CMirrorConfig(
-        sd_rmult=2,
+        sd_rmult=4,
         sd_route_topmet="met2",
         gate_route_topmet="met2",
         gate_rmult=2,
@@ -222,7 +220,7 @@ if __name__ == "__main__":
     
     # Add spacing between components
     x_spacing = 20.0  # 20um spacing
-    y_spacing = 20.0  # 20um spacing
+    y_spacing = 10.0  # 20um spacing
     
     # Position PMOS at top-left (reference position)
     pmos_ref.movex(0)
@@ -233,6 +231,7 @@ if __name__ == "__main__":
     nmos1_ref.movey(0)
     
     # Position NMOS2 at bottom-right
+    nmos2_ref.mirror_x()
     nmos2_ref.movex(max(pmos_bbox[0], nmos1_bbox[0]) + x_spacing)
     nmos2_ref.movey(0)
     
@@ -270,24 +269,5 @@ if __name__ == "__main__":
     # =================================================================
     print("\n" + "="*60)
     print("✅ BIASING NETWORK WITH LOCAL MIRRORS COMPLETED!")
-    print("="*60)
-    print("Generated single GDS file: Biasing_network_with_local_mirrors.gds")
-    print("\nContains 4 current mirrors:")
-    print("  1. PMOS Current Mirror with Decap (top-left)")
-    print("  2. NMOS Current Mirror 1 with Decap (bottom-left)") 
-    print("  3. NMOS Current Mirror 2 with Decap (bottom-right)")
-    print("  4. NMOS Current Mirror 3 with Decap (top-right)")
-    print("\nAll components include:")
-    print("  - Interdigitized layout")
-    print("  - Decoupling capacitors")
-    print("  - Tap rings")
-    print("  - Proper routing")
-    print("  - Organized in 2x2 grid layout")
-    print("\nComponent ports are prefixed as:")
-    print("  - PMOS_*")
-    print("  - NMOS1_*") 
-    print("  - NMOS2_*")
-    print("  - NMOS3_*")
-    print("\nReady for interconnection!")
     print("="*60)
    

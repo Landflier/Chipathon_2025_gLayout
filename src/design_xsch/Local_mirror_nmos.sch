@@ -108,11 +108,11 @@ model=nfet_03v3
 spiceprefix=X
 }
 C {iopin.sym} 660 -1190 1 1 {name=p2 lab=I_BIAS}
-C {symbols/cap_mim_1f0fF.sym} 730 -1040 0 0 {name=C1
-W=1e-6
-L=1e-6
-model=cap_mim_1f0fF
-spiceprefix=X
-m=1}
 C {lab_pin.sym} 820 -1100 0 1 {name=p3 sig_type=std_logic lab=VSS}
 C {lab_pin.sym} 640 -1100 0 0 {name=p4 sig_type=std_logic lab=VSS}
+C {symbols/cap_mim_2f0fF.sym} 730 -1040 2 1 {name=C1
+W=5e-6
+L=5e-6
+model=cap_mim_2f0fF
+spiceprefix=X
+m=1}

@@ -73,12 +73,6 @@ value="
 C {iopin.sym} 390 -1130 3 1 {name=p2 lab=I_BIAS}
 C {iopin.sym} 350 -1340 0 1 {name=p3 lab=VDD}
 C {iopin.sym} 550 -1130 3 1 {name=p1 lab=I_out}
-C {symbols/cap_mim_1f0fF.sym} 470 -1280 0 0 {name=C1
-W=1e-6
-L=1e-6
-model=cap_mim_1f0fF
-spiceprefix=X
-m=1}
 C {symbols/pfet_03v3.sym} 410 -1220 0 1 {name=M_ref
 L=l_ref
 W=w_ref
@@ -109,3 +103,9 @@ spiceprefix=X
 }
 C {lab_pin.sym} 370 -1220 0 0 {name=p4 sig_type=std_logic lab=VDD}
 C {lab_pin.sym} 570 -1220 0 1 {name=p5 sig_type=std_logic lab=VDD}
+C {symbols/cap_mim_2f0fF.sym} 470 -1280 0 0 {name=C1
+W=5e-6
+L=5e-6
+model=cap_mim_2f0fF
+spiceprefix=X
+m=1}
