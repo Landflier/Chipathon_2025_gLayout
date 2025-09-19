@@ -101,18 +101,24 @@ w_mir=6u}
 C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Local_mirror_nmos.sym} 720 -900 0 0 {name=x_NMOS_mirror_1
 l_ref=1u
 w_ref=1.5u
+nf_ref=1
 l_mir=1u
-w_mir=7.5u}
+w_mir=7.5u
+nf_mir=5}
 C {lab_pin.sym} 610 -860 0 0 {name=p4 sig_type=std_logic lab=VSS}
 C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Local_mirror_nmos.sym} 1060 -900 0 0 {name=x_NMOS_mirror_2
 l_ref=1u
 w_ref=1.5u
+nf_ref=1
 l_mir=1u
-w_mir=7.5u}
+w_mir=7.5u
+nf_mir=5}
 C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Local_mirror_nmos.sym} 1480 -900 0 0 {name=x_NMOS_mirror_3
 l_ref=1u
 w_ref=1.5u
+nf_ref=1
 l_mir=1u
-w_mir=1.5u}
+w_mir=1.5u
+nf_mir=1}
 C {lab_pin.sym} 950 -860 0 0 {name=p5 sig_type=std_logic lab=VSS}
 C {lab_pin.sym} 1370 -860 0 0 {name=p6 sig_type=std_logic lab=VSS}

@@ -80,7 +80,7 @@ value="
 C {symbols/nfet_03v3.sym} 780 -1100 0 0 {name=M2
 L=l_mir
 W=w_mir
-nf=1
+nf=nf_mir
 m=1
 ad="'int((nf+1)/2) * W/nf * 0.18u'"
 pd="'2*int((nf+1)/2) * (W/nf + 0.18u)'"
@@ -96,7 +96,7 @@ C {iopin.sym} 800 -1190 3 0 {name=p7 lab=I_out}
 C {symbols/nfet_03v3.sym} 680 -1100 0 1 {name=M6
 L=l_ref
 W=w_ref
-nf=1
+nf=nf_ref
 m=1
 ad="'int((nf+1)/2) * W/nf * 0.18u'"
 pd="'2*int((nf+1)/2) * (W/nf + 0.18u)'"
