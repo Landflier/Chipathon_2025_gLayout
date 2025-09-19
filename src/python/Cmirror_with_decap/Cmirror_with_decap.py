@@ -567,6 +567,7 @@ class CmirrorWithDecap:
                     finger_couple += 1
 
         for finger in range(self.fingers_ref + self.fingers_mir):
+            config_key = 'bottom_track_1'
             gate_port_name = f"row0_col{finger}_gate_S"
 
             # Route gate to Rd drain connection 
@@ -576,7 +577,7 @@ class CmirrorWithDecap:
                 port_suffix=f"{finger}",
                 is_gate_routing=True
             )
-        filtered_ports = [port for name, port in multiplier.ports.items() if "bottom_track_1" in name]
+        # filtered_ports = [port for name, port in multiplier.ports.items() if "bottom_track_1" in name]
 
         # there are two styles: 
         # style 1 is: s(Xd Xs)*nf_x/4 (Yd Ys)*nf_m/2 (Xd Xs)*nf_r/4 , interfingering_style=1

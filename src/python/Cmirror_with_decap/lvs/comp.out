@@ -26,35 +26,71 @@ Circuit 1: nfet_03v3                       |Circuit 2: nfet_03v3
 ---------------------------------------------------------------------------------------
 Cell pin lists are equivalent.
 Device classes nfet_03v3 and nfet_03v3 are equivalent.
-Flattening unmatched subcell Unnamed_29840ebf in circuit nmos_Cmirror_with_decap_layout (0)(1 instance)
+Flattening unmatched subcell Unnamed_278d0711 in circuit nmos_Cmirror_with_decap_layout (0)(1 instance)
 Flattening unmatched subcell cmirror_interdigitized in circuit nmos_Cmirror_with_decap_layout (0)(1 instance)
 
+Class nmos_Cmirror_with_decap_layout (0):  Merged 10 parallel devices.
 Subcircuit summary:
 Circuit 1: nmos_Cmirror_with_decap_layout  |Circuit 2: nmos_Cmirror_with_decap_xschem  
 -------------------------------------------|-------------------------------------------
 cap_mim_2f0_m4m5_noshield (1)              |cap_mim_2f0fF (1)                          
 nfet_03v3 (12->2)                          |nfet_03v3 (2)                              
 Number of devices: 3                       |Number of devices: 3                       
-Number of nets: 3                          |Number of nets: 3                          
+Number of nets: 5 **Mismatch**             |Number of nets: 3 **Mismatch**             
 ---------------------------------------------------------------------------------------
-Netlists match uniquely with property errors.
-cmirror_interdigitized_0/nfet_03v3:1 vs. nfet_03v3:M2:
- w circuit1: 1.5e-06   circuit2: 7.5e-06   (delta=133%, cutoff=1%)
-cmirror_interdigitized_0/nfet_03v3:0 vs. nfet_03v3:M6:
- w circuit1: 7.5e-06   circuit2: 1.5e-06   (delta=133%, cutoff=1%)
+NET mismatches: Class fragments follow (with fanout counts):
+Circuit 1: nmos_Cmirror_with_decap_layout  |Circuit 2: nmos_Cmirror_with_decap_xschem  
+
+---------------------------------------------------------------------------------------
+Net: I_BIAS                                |Net: I_BIAS                                
+  cap_mim_2f0_m4m5_noshield/2 = 1          |  nfet_03v3/2 = 2                          
+  nfet_03v3/(1|3) = 1                      |  nfet_03v3/(1|3) = 1                      
+                                           |  cap_mim_2f0fF/2 = 1                      
+---------------------------------------------------------------------------------------
+
+---------------------------------------------------------------------------------------
+Net: /cmirror_interdigitized_0/a_n178_n123 |(no matching net)                          
+  nfet_03v3/2 = 1                          |                                           
+                                           |                                           
+Net: /cmirror_interdigitized_0/a_1322_n123 |(no matching net)                          
+  nfet_03v3/2 = 1                          |                                           
+---------------------------------------------------------------------------------------
+
+---------------------------------------------------------------------------------------
+Net: I_OUT                                 |Net: I_OUT                                 
+  nfet_03v3/(1|3) = 1                      |  nfet_03v3/(1|3) = 1                      
+---------------------------------------------------------------------------------------
+
+---------------------------------------------------------------------------------------
+Net: VSS                                   |Net: VSS                                   
+  cap_mim_2f0_m4m5_noshield/1 = 1          |  cap_mim_2f0fF/1 = 1                      
+  nfet_03v3/(1|3) = 2                      |  nfet_03v3/(1|3) = 2                      
+  nfet_03v3/4 = 2                          |  nfet_03v3/4 = 2                          
+---------------------------------------------------------------------------------------
+DEVICE mismatches: Class fragments follow (with node fanout counts):
+Circuit 1: nmos_Cmirror_with_decap_layout  |Circuit 2: nmos_Cmirror_with_decap_xschem  
+
+---------------------------------------------------------------------------------------
+Instance: cmirror_interdigitized_0/nfet_03 |Instance: nfet_03v3:M2                     
+  (1,3) = (5,1)                            |  (1,3) = (5,1)                            
+  2 = 1                                    |  2 = 4                                    
+  4 = 5                                    |  4 = 5                                    
+                                           |                                           
+Instance: cmirror_interdigitized_0/nfet_03 |Instance: nfet_03v3:M6                     
+  (1,3) = (5,2)                            |  (1,3) = (5,4)                            
+  2 = 1                                    |  2 = 4                                    
+  4 = 5                                    |  4 = 5                                    
+---------------------------------------------------------------------------------------
+Netlists do not match.
 
 Subcircuit pins:
 Circuit 1: nmos_Cmirror_with_decap_layout  |Circuit 2: nmos_Cmirror_with_decap_xschem  
 -------------------------------------------|-------------------------------------------
+I_BIAS                                     |I_BIAS                                     
 I_OUT                                      |I_OUT                                      
 VSS                                        |VSS                                        
-I_BIAS                                     |I_BIAS                                     
 ---------------------------------------------------------------------------------------
 Cell pin lists are equivalent.
 Device classes nmos_Cmirror_with_decap_layout and nmos_Cmirror_with_decap_xschem are equivalent.
 
-Final result: Circuits match uniquely.
-Property errors were found.
-
-The following cells had property errors:
- nmos_Cmirror_with_decap_layout
+Final result: Netlists do not match.
