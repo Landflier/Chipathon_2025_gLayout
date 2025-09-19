@@ -18,8 +18,8 @@ cellname rename nmos_Cmirror_with_decap nmos_Cmirror_with_decap_layout
 extract all
 ext2spice short resistor
 ext2spice lvs
-ext2spice cthresh 15
-ext2spice rthresh inf
+ext2spice cthresh 2
+ext2spice rthresh 10
 ext2spice format ngspice
 ext2spice subcircuit top auto
 ext2spice hierarchy on
@@ -27,7 +27,7 @@ ext2spice scale off
 ext2spice blackbox on
 ext2spice merge conservative
 ext2spice global off
-ext2spice -o netlists/nmos_Cmirror_with_decap_layout.spice
+ext2spice -o netlists/PEX_nmos_Cmirror_with_decap.spice
 quit
 EOF
 
@@ -47,8 +47,8 @@ cellname rename pmos_Cmirror_with_decap pmos_Cmirror_with_decap_layout
 extract all
 ext2spice short resistor
 ext2spice lvs
-ext2spice cthresh inf
-ext2spice rthresh inf
+ext2spice cthresh 2
+ext2spice rthresh 10 
 ext2spice format ngspice
 ext2spice subcircuit top auto
 ext2spice hierarchy on
@@ -56,7 +56,7 @@ ext2spice scale off
 ext2spice blackbox on
 ext2spice merge conservative
 ext2spice global off
-ext2spice -o netlists/pmos_Cmirror_with_decap_layout.spice
+ext2spice -o netlists/PEX_pmos_Cmirror_with_decap.spice
 quit
 EOF
 

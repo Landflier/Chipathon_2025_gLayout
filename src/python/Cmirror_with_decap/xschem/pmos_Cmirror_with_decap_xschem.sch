@@ -103,7 +103,7 @@ spiceprefix=X
 }
 C {lab_pin.sym} 370 -1220 0 0 {name=p4 sig_type=std_logic lab=VDD}
 C {lab_pin.sym} 570 -1220 0 1 {name=p5 sig_type=std_logic lab=VDD}
-C {symbols/cap_mim_2f0fF.sym} 470 -1280 2 1 {name=C1
+C {symbols/cap_mim_2f0fF.sym} 470 -1280 0 0 {name=C1
 W=5e-6
 L=5e-6
 model=cap_mim_2f0fF

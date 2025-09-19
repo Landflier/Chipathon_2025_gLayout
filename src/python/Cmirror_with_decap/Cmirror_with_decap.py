@@ -584,9 +584,7 @@ class CmirrorWithDecap:
         # style 2 is: d(Xs Xd)*abs(nf_x-nf_y)/4 (Xs Yd Ys Xd)*min(nf_y, nf_x) /2 (Xs Xd)*abs(nf_x-nf_y)/4, interfingering_style=0
 
         # Place horizontal gate routes
-        track_width = multiplier.ports[f"row0_col{self.fingers_ref + self.fingers_mir - 1}_rightsd_array_row{number_sd_rows}_col0_top_met_E"].center[0] \
-                - multiplier.ports["leftsd_top_met_E"].center[0] \
-                + multiplier.ports["leftsd_top_met_E"].width
+        track_width = abs (multiplier.ports[f"leftsd_top_met_N"].center[0] - multiplier.ports[f"diffusion_port_to_align_sd_{self.fingers_ref + self.fingers_mir - 1}"].center[0]) + multiplier.ports[f"leftsd_top_met_N"].width + 0.1
         gate_route = rename_ports_by_list(
             via_array(self.pdk, "poly", gate_route_topmet, size=(track_width, None), num_vias=(None, gate_rmult), no_exception=True, fullbottom=True),
             [("top_met_", "gate_top_")]
@@ -612,8 +610,8 @@ class CmirrorWithDecap:
         port_1_sd_index = y_coord_indices[1]
         port_2_sd_index = y_coord_indices[-1]
         
+        sd_width_gate = track_width
         sd_width = track_width
-        sd_width_gate = abs (multiplier.ports[f"leftsd_top_met_N"].center[0] - multiplier.ports[f"diffusion_port_to_align_sd_{self.fingers_ref + self.fingers_mir - 1}"].center[0]) + multiplier.ports[f"leftsd_top_met_N"].width
 
         sd_route = rectangle(size=(sd_width, sdmet_height), layer=self.pdk.get_glayer(sd_route_topmet), centered=True)
         sd_route_top = rectangle(size=(sd_width, sdmet_height), layer=self.pdk.get_glayer(sd_route_topmet), centered=True)
@@ -937,6 +935,7 @@ if __name__ == "__main__":
     pdk_choice = gf180
     
     # Configure current mirror FETs
+    """
     cmirror_nmos_config = CMirrorConfig(
         sd_rmult=2,
         sd_route_topmet="met2",
@@ -1016,7 +1015,8 @@ if __name__ == "__main__":
         fingers_ref=4,
         fingers_mir=8,
         length=0.28,
-        cmirror_config=cmirror_pmos_config
+        cmirror_config=cmirror_pmos_config,
+        component_name="pmos_Cmirror_with_decap"
     )
     
     # Build the current mirror
@@ -1026,7 +1026,7 @@ if __name__ == "__main__":
     # Write GDS
     print("✓ Writing GDS files...")
     cmirror_pmos.write_gds('lvs/gds/pmos_Cmirror_with_decap.gds')
-    print("  - Hierarchical GDS: Cmirror_with_decap.gds")
+    print("  - Hierarchical GDS: pmos_Cmirror_with_decap.gds")
     # Run DRC
     print("\n...Running DRC...")
     drc_result = cmirror_pmos.run_drc()
@@ -1036,5 +1036,4 @@ if __name__ == "__main__":
     print("\n" + "="*60)
     print("CURRENT MIRROR DESIGN COMPLETED!")
     print("="*60)
-    """
    
