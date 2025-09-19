@@ -683,7 +683,7 @@ class GilbertMixerInterdigited:
         # Get ports
         port_1 = LO_diff_pairs_ref.ports["port_1_W"]
         port_2 = LO_diff_pairs_ref.ports["port_2_E"]
-        port_3 = LO_diff_pairs_ref.ports["port_3_W"]
+        port_3 = LO_diff_pairs_ref.ports["port_3_E"]
         port_4 = LO_diff_pairs_ref.ports["port_4_E"]
         
         via_width = port_1.width
@@ -714,8 +714,8 @@ class GilbertMixerInterdigited:
         # Calculate displacements
         port_1_x_displacement = 1.5*(LO_diff_pairs_ref.ports["tie_W_bottom_lay_W"].center[0] - port_1.center[0]) - port_1.width - self.extra_port_vias_x_displacement
         port_2_x_displacement = 1.5*(LO_diff_pairs_ref.ports["tie_E_bottom_lay_E"].center[0] - port_2.center[0]) + port_2.width + self.extra_port_vias_x_displacement
-        port_3_x_displacement = 2.5*(LO_diff_pairs_ref.ports["tie_W_bottom_lay_W"].center[0] - port_3.center[0]) - port_3.width - self.extra_port_vias_x_displacement
-        port_4_x_displacement = 2.5*(LO_diff_pairs_ref.ports["tie_E_bottom_lay_E"].center[0] - port_4.center[0]) + port_4.width + self.extra_port_vias_x_displacement
+        port_3_x_displacement = 0.5*(LO_diff_pairs_ref.ports["tie_E_bottom_lay_E"].center[0] - port_3.center[0]) + port_3.width + self.extra_port_vias_x_displacement
+        port_4_x_displacement = 0.5*(LO_diff_pairs_ref.ports["tie_E_bottom_lay_E"].center[0] - port_4.center[0]) + port_4.width + self.extra_port_vias_x_displacement
         
         # Snap to grid and move
         port_1_x_displacement = self.pdk.snap_to_2xgrid(port_1_x_displacement)
@@ -749,7 +749,7 @@ class GilbertMixerInterdigited:
         align_comp_to_port(via_port_LO_ref, port_LO, alignment=('c', 'c'))
         align_comp_to_port(via_port_LO_b_ref, port_LO_b, alignment=('c', 'c'))
         
-        via_LO_x_displacement = port_3_x_displacement - 2*port_LO.width
+        via_LO_x_displacement = -port_4_x_displacement - 2*port_LO.width
         via_LO_b_x_displacement = port_4_x_displacement + 2*port_LO_b.width
         
         via_LO_x_displacement = self.pdk.snap_to_2xgrid(via_LO_x_displacement)
@@ -802,8 +802,8 @@ class GilbertMixerInterdigited:
         align_comp_to_port(via_M2_source_ref, M2_source, alignment=('c', 'c'))
         
         # Move vias outside tapring
-        via_M1_source_ref.movex(-abs(RF_diff_pair_ref.ports["RF_M1_source_W"].center[0] - RF_diff_pair_ref.ports["RF_M1_tie_W_bottom_lay_W"].center[0]) - source_via_width)
-        via_M2_source_ref.movex(abs(RF_diff_pair_ref.ports["RF_M2_source_W"].center[0] - RF_diff_pair_ref.ports["RF_M2_tie_W_bottom_lay_W"].center[0]) + source_via_width)
+        via_M1_source_ref.movex(2*(-abs(RF_diff_pair_ref.ports["RF_M1_source_W"].center[0] - RF_diff_pair_ref.ports["RF_M1_tie_W_bottom_lay_W"].center[0]) - source_via_width))
+        via_M2_source_ref.movex(2*abs(RF_diff_pair_ref.ports["RF_M2_source_W"].center[0] - RF_diff_pair_ref.ports["RF_M2_tie_W_bottom_lay_W"].center[0]) + source_via_width)
         
         via_RF_gate_ref.movex(-abs(RF_gate.center[0] - RF_diff_pair_ref.ports["RF_M1_tie_W_bottom_lay_W"].center[0]) - gate_via_width)
         via_RF_b_gate_ref.movex(abs(RF_b_gate.center[0] - RF_diff_pair_ref.ports["RF_M2_tie_W_bottom_lay_W"].center[0]) + gate_via_width)
@@ -1011,7 +1011,7 @@ if __name__ == "__main__":
         with_dnwell=False,
         sd_route_topmet="met2",
         gate_route_topmet="met2",
-        sd_rmult=2,
+        sd_rmult=3,
         gate_rmult=3,
         interfinger_rmult=2,
         tie_layers=("met2", "met1"),
