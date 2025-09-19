@@ -583,11 +583,11 @@ class CmirrorWithDecap:
         # style 2 is: d(Xs Xd)*abs(nf_x-nf_y)/4 (Xs Yd Ys Xd)*min(nf_y, nf_x) /2 (Xs Xd)*abs(nf_x-nf_y)/4, interfingering_style=0
 
         # Place horizontal gate routes
-        gate_width = multiplier.ports[f"row0_col{self.fingers_ref + self.fingers_mir - 1}_rightsd_array_row{number_sd_rows}_col0_top_met_E"].center[0] \
+        track_width = multiplier.ports[f"row0_col{self.fingers_ref + self.fingers_mir - 1}_rightsd_array_row{number_sd_rows}_col0_top_met_E"].center[0] \
                 - multiplier.ports["leftsd_top_met_E"].center[0] \
                 + multiplier.ports["leftsd_top_met_E"].width
         gate_route = rename_ports_by_list(
-            via_array(self.pdk, "poly", gate_route_topmet, size=(gate_width, None), num_vias=(None, gate_rmult), no_exception=True, fullbottom=True),
+            via_array(self.pdk, "poly", gate_route_topmet, size=(track_width, None), num_vias=(None, gate_rmult), no_exception=True, fullbottom=True),
             [("top_met_", "gate_top_")]
         )
         
@@ -611,7 +611,7 @@ class CmirrorWithDecap:
         port_1_sd_index = y_coord_indices[1]
         port_2_sd_index = y_coord_indices[-1]
         
-        sd_width = sdvia_ports[-1].center[0] - sdvia_ports[0].center[0]
+        sd_width = track_width
         sd_width_gate = abs (multiplier.ports[f"leftsd_top_met_N"].center[0] - multiplier.ports[f"diffusion_port_to_align_sd_{self.fingers_ref + self.fingers_mir - 1}"].center[0]) + multiplier.ports[f"leftsd_top_met_N"].width
 
         sd_route = rectangle(size=(sd_width, sdmet_height), layer=self.pdk.get_glayer(sd_route_topmet), centered=True)
@@ -957,10 +957,10 @@ if __name__ == "__main__":
     # Create current mirror instance
     cmirror_nmos = CmirrorWithDecap(
         pdk=pdk_choice,
-        width_ref = 7.5,
-        width_mir = 1.5,
-        fingers_ref = 10,
-        fingers_mir = 2,
+        width_ref = 1.5,
+        width_mir = 7.5,
+        fingers_ref = 1,
+        fingers_mir = 5,
         # width_ref=7.5,
         # width_mir=1.5,
         # fingers_ref=5,
