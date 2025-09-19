@@ -658,12 +658,14 @@ class GilbertMixerInterdigited:
         M1 = swap_drain_source_ports(M1_temp)
         M2 = M2_temp
         
-        # Place transistors
+        # Place transistors with 2um separation
         M1_ref = top_level << M1
         M2_ref = top_level << M2
         
         M2_ref.mirror_x()
-        M2_ref.movex(M1_ref.xmax + evaluate_bbox(M2)[0]/2)
+        # Add 2um separation between RF differential pair NMOS instances
+        rf_separation = 2.0  # 2um separation
+        M2_ref.movex(M1_ref.xmax + evaluate_bbox(M2)[0]/2 + rf_separation)
         
         # Add ports
         top_level.add_ports(M1_ref.get_ports_list(), prefix="RF_M1_")
@@ -838,12 +840,15 @@ class GilbertMixerInterdigited:
         self.lo_diff_pairs_ref = self.top_level << lo_diff_pairs
         self.rf_diff_pair_ref = self.top_level << rf_diff_pair
         
-        # Align RF pair to southern side of LO guardring
+        # Align RF pair to southern side of LO guardring with 2um Y-separation
         align_comp_to_port(
             self.rf_diff_pair_ref,
             self.lo_diff_pairs_ref.ports["well_S"],
             alignment=('c', 'b')
         )
+        # Add 2um Y-separation between RF and LO differential pairs
+        rf_lo_y_separation = 2.0  # 2um separation
+        self.rf_diff_pair_ref.movey(-rf_lo_y_separation)
         
         # Connect guard rings
         comp = self.top_level
