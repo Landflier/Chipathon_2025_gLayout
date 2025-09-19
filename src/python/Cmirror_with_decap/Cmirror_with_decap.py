@@ -471,7 +471,7 @@ class CmirrorWithDecap:
         # Route fingers in the following manner: d(Xs Xd)*abs(nf_x-nf_y)/4 (Xs Yd Ys Xd)*min(nf_y, nf_x) /2 (Xs Xd)*abs(nf_x-nf_y)/4
         else:
             # Determine which FET has more fingers. ref stands for reference fet.
-            # Note if =, is covered in the check below
+            # Note if fingers_ref = fingers_mir, ref_case = 0 
             ref_case = self.fingers_ref > self.fingers_mir
             # ref_case = 1: X=ref, Y=mir (X=R, Y=M)
             # ref_case = 0: X=mir, Y=ref (X=M, Y=R)
@@ -521,12 +521,26 @@ class CmirrorWithDecap:
                         port_suffix=f"{2*finger_couple + 2}"
                     )
 
+                    # this is a special case if fingers_ref = fingers_mir, and thus everything is middle region
+                    if finger_couple == 0 and self.fingers_ref == self.fingers_mir:
+                        # Manual width adjustment for initial d
+                        rel_align_port = multiplier.ports['leftsd_top_met_N']
+                        rel_align_port.width = rel_align_port.width / interfinger_rmult
+
+                        # Determine config key based on ref_case, dR or dM
+                        config_key = 'bottom_track_1' if ref_case else 'top_track_1'
+                        
+                        sdvia_ports += create_and_route_finger(
+                            config_key=config_key,
+                            port_name="leftsd_top_met_N",
+                            port_suffix="special_0"
+                        )
                     # Increment finger_couple by two, since we routed two couples of fingers
                     finger_couple += 2
 
                 elif not in_middle_region:
                     # route the initial d, before all repeated structures
-                    # ref_case: routing dR -> top_track_2
+                    # ref_case: routing dR -> bottom_track_1
                     # not ref_case: routing dM -> top_track_1
                     if finger_couple == 0:
                         # Manual width adjustment for initial d
@@ -935,7 +949,6 @@ if __name__ == "__main__":
     pdk_choice = gf180
     
     # Configure current mirror FETs
-    """
     cmirror_nmos_config = CMirrorConfig(
         sd_rmult=2,
         sd_route_topmet="met2",
@@ -958,14 +971,14 @@ if __name__ == "__main__":
     cmirror_nmos = CmirrorWithDecap(
         pdk=pdk_choice,
         width_ref = 1.5,
-        width_mir = 7.5,
+        width_mir = 1.5,
         fingers_ref = 1,
-        fingers_mir = 5,
+        fingers_mir = 1,
         # width_ref=7.5,
         # width_mir=1.5,
         # fingers_ref=5,
         # fingers_mir=1,
-        length=0.28,
+        length=1,
         cmirror_config=cmirror_nmos_config,
         component_name="nmos_Cmirror_with_decap"
     )
@@ -1037,3 +1050,4 @@ if __name__ == "__main__":
     print("CURRENT MIRROR DESIGN COMPLETED!")
     print("="*60)
    
+    """
