@@ -7,48 +7,41 @@ S {}
 E {}
 T {Desription
 
-The biasing circuit for the Gilbert cell,
-providing constant 50uA current at both its
-outputs} 2880 -2390 0 0 0.4 0.4 {}
-N 600 -980 780 -980 {
-lab=VSS}
-N 800 -1070 800 -980 {
-lab=VSS}
-N 760 -1100 780 -1100 {
+PMOS mirror used in the input of the 
+I_bias. This component is used in
+Biasing_network_with_local_mirrors } 2880 -2390 0 0 0.4 0.4 {}
+N 390 -1190 390 -1130 {
 lab=I_BIAS}
-N 800 -1190 800 -1130 {
+N 550 -1320 550 -1250 {
+lab=VDD}
+N 350 -1340 550 -1340 {
+lab=VDD}
+N 550 -1340 550 -1320 {
+lab=VDD}
+N 470 -1340 470 -1310 {
+lab=VDD}
+N 550 -1190 550 -1130 {
 lab=I_OUT}
-N 660 -1160 660 -1130 {
+N 430 -1220 510 -1220 {
 lab=I_BIAS}
-N 660 -1070 660 -980 {
-lab=VSS}
-N 700 -1100 780 -1100 {
+N 390 -1340 390 -1250 {
+lab=VDD}
+N 370 -1220 390 -1220 {
+lab=VDD}
+N 470 -1250 470 -1220 {
 lab=I_BIAS}
-N 660 -1160 710 -1160 {
+N 470 -1220 470 -1160 {
 lab=I_BIAS}
-N 660 -1190 660 -1160 {
+N 390 -1160 470 -1160 {
 lab=I_BIAS}
-N 730 -1010 730 -980 {
-lab=VSS}
-N 730 -1100 730 -1070 {
-lab=I_BIAS}
-N 730 -1160 730 -1100 {
-lab=I_BIAS}
-N 710 -1160 730 -1160 {
-lab=I_BIAS}
-N 780 -980 800 -980 {
-lab=VSS}
-N 800 -1100 820 -1100 {
-lab=VSS}
-N 640 -1100 660 -1100 {
-lab=VSS}
+N 550 -1220 570 -1220 {
+lab=VDD}
 C {title-2.sym} 0 0 0 0 {name=l9 author="Time Transcenders" lock=true rev=1.0 page=1}
-C {code.sym} 50 -190 0 0 {name=MODELS only_toplevel=true
+C {code.sym} 60 -190 0 0 {name=MODELS only_toplevel=true
 format="tcleval( @value )"
 value="
 .include $::180MCU_MODELS/design.ngspice
 .lib $::180MCU_MODELS/sm141064.ngspice typical
-.lib $::180MCU_MODELS/sm141064.ngspice mimcap_typical
 .lib $::180MCU_MODELS/sm141064.ngspice cap_mim
 .lib $::180MCU_MODELS/sm141064.ngspice res_typical
 
@@ -77,10 +70,13 @@ value="
 
 .endc
 "}
-C {symbols/nfet_03v3.sym} 780 -1100 0 0 {name=M2
+C {iopin.sym} 390 -1130 3 1 {name=p2 lab=I_BIAS}
+C {iopin.sym} 350 -1340 0 1 {name=p3 lab=VDD}
+C {iopin.sym} 550 -1130 3 1 {name=p1 lab=I_OUT}
+C {symbols/pfet_03v3.sym} 410 -1220 0 1 {name=M_ref
 L=0.28u
-W=7.5u
-nf=5
+W=2u
+nf=4
 m=1
 ad="'int((nf+1)/2) * W/nf * 0.18u'"
 pd="'2*int((nf+1)/2) * (W/nf + 0.18u)'"
@@ -88,15 +84,13 @@ as="'int((nf+2)/2) * W/nf * 0.18u'"
 ps="'2*int((nf+2)/2) * (W/nf + 0.18u)'"
 nrd="'0.18u / W'" nrs="'0.18u / W'"
 sa=0 sb=0 sd=0
-model=nfet_03v3
+model=pfet_03v3
 spiceprefix=X
 }
-C {iopin.sym} 600 -980 0 1 {name=p1 lab=VSS}
-C {iopin.sym} 800 -1190 3 0 {name=p7 lab=I_OUT}
-C {symbols/nfet_03v3.sym} 680 -1100 0 1 {name=M6
+C {symbols/pfet_03v3.sym} 530 -1220 0 0 {name=M_mir
 L=0.28u
-W=1.5u
-nf=1
+W=4u
+nf=8
 m=1
 ad="'int((nf+1)/2) * W/nf * 0.18u'"
 pd="'2*int((nf+1)/2) * (W/nf + 0.18u)'"
@@ -104,15 +98,14 @@ as="'int((nf+2)/2) * W/nf * 0.18u'"
 ps="'2*int((nf+2)/2) * (W/nf + 0.18u)'"
 nrd="'0.18u / W'" nrs="'0.18u / W'"
 sa=0 sb=0 sd=0
-model=nfet_03v3
+model=pfet_03v3
 spiceprefix=X
 }
-C {iopin.sym} 660 -1190 1 1 {name=p2 lab=I_BIAS}
-C {symbols/cap_mim_1f0fF.sym} 730 -1040 0 0 {name=C1
-W=1e-6
-L=1e-6
-model=cap_mim_1f0fF
+C {lab_pin.sym} 370 -1220 0 0 {name=p4 sig_type=std_logic lab=VDD}
+C {lab_pin.sym} 570 -1220 0 1 {name=p5 sig_type=std_logic lab=VDD}
+C {symbols/cap_mim_2f0fF.sym} 470 -1280 2 1 {name=C1
+W=5e-6
+L=5e-6
+model=cap_mim_2f0fF
 spiceprefix=X
 m=1}
-C {lab_pin.sym} 820 -1100 0 1 {name=p3 sig_type=std_logic lab=VSS}
-C {lab_pin.sym} 640 -1100 0 0 {name=p4 sig_type=std_logic lab=VSS}

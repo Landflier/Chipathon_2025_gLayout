@@ -7,6 +7,6 @@ source /usr/local/share/pdk/gf180mcuD/libs.tech/netgen/gf180mcuD_setup.tcl
 EOF
 
 # Run netgen with the custom setup
-netgen -batch lvs "spice/Gilbert_mixer_extracted_layout.spice Gilbert_cell_layout" "spice/Gilbert_mixer_extracted_xschem.spice Gilbert_cell_xschem" custom_netgen_setup.tcl comp.out
+netgen -batch lvs "netlists/nmos_Cmirror_with_decap_layout.spice nmos_Cmirror_with_decap_layout" "netlists/nmos_Cmirror_with_decap_xschem.spice nmos_Cmirror_with_decap_xschem" custom_netgen_setup.tcl comp.out
 
 
