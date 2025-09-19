@@ -5,8 +5,22 @@ X0 m4_n500_n500# m4_n620_n620# cap_mim_2f0_m4m5_noshield c_width=5u c_length=5u
 .ends
 
 .subckt cmirror_interdigitized a_n1412_n50# w_n2485_n1240# a_n2168_n570#
-X0 a_n1412_n50# a_n2168_n570# w_n2485_n1240# w_n2485_n1240# pfet_03v3 ad=0.23p pd=1.42u as=0.23p ps=1.42u w=0.5u l=0.4u M=12
-X1 w_n2485_n1240# a_n2168_n570# a_n2168_n570# w_n2485_n1240# pfet_03v3 ad=0.495p pd=2.98u as=0.23p ps=1.42u w=0.5u l=0.4u M=4
+X0 a_n1412_n50# a_n2168_n570# w_n2485_n1240# w_n2485_n1240# pfet_03v3 ad=0.23p pd=1.42u as=0.23p ps=1.42u w=0.5u l=0.4u
+X1 w_n2485_n1240# a_n2168_n570# a_n2168_n570# w_n2485_n1240# pfet_03v3 ad=0.495p pd=2.98u as=0.23p ps=1.42u w=0.5u l=0.4u
+X2 a_n1412_n50# a_n2168_n570# w_n2485_n1240# w_n2485_n1240# pfet_03v3 ad=0.23p pd=1.42u as=0.23p ps=1.42u w=0.5u l=0.4u
+X3 w_n2485_n1240# a_n2168_n570# a_n2168_n570# w_n2485_n1240# pfet_03v3 ad=0.23p pd=1.42u as=0.23p ps=1.42u w=0.5u l=0.4u
+X4 w_n2485_n1240# a_n2168_n570# a_n1412_n50# w_n2485_n1240# pfet_03v3 ad=0.23p pd=1.42u as=0.23p ps=1.42u w=0.5u l=0.4u
+X5 a_n2168_n570# a_n2168_n570# w_n2485_n1240# w_n2485_n1240# pfet_03v3 ad=0.23p pd=1.42u as=0.23p ps=1.42u w=0.5u l=0.4u
+X6 a_n1412_n50# a_n2168_n570# w_n2485_n1240# w_n2485_n1240# pfet_03v3 ad=0.23p pd=1.42u as=0.23p ps=1.42u w=0.5u l=0.4u
+X7 a_n1412_n50# a_n2168_n570# w_n2485_n1240# w_n2485_n1240# pfet_03v3 ad=0.23p pd=1.42u as=0.23p ps=1.42u w=0.5u l=0.4u
+X8 w_n2485_n1240# a_n2168_n570# a_n1412_n50# w_n2485_n1240# pfet_03v3 ad=0.23p pd=1.42u as=0.23p ps=1.42u w=0.5u l=0.4u
+X9 a_n1412_n50# a_n2168_n570# w_n2485_n1240# w_n2485_n1240# pfet_03v3 ad=0.23p pd=1.42u as=0.23p ps=1.42u w=0.5u l=0.4u
+X10 w_n2485_n1240# a_n2168_n570# a_n1412_n50# w_n2485_n1240# pfet_03v3 ad=0.23p pd=1.42u as=0.23p ps=1.42u w=0.5u l=0.4u
+X11 a_n2168_n570# a_n2168_n570# w_n2485_n1240# w_n2485_n1240# pfet_03v3 ad=0.23p pd=1.42u as=0.495p ps=2.98u w=0.5u l=0.4u
+X12 w_n2485_n1240# a_n2168_n570# a_n1412_n50# w_n2485_n1240# pfet_03v3 ad=0.23p pd=1.42u as=0.23p ps=1.42u w=0.5u l=0.4u
+X13 w_n2485_n1240# a_n2168_n570# a_n1412_n50# w_n2485_n1240# pfet_03v3 ad=0.23p pd=1.42u as=0.23p ps=1.42u w=0.5u l=0.4u
+X14 a_n1412_n50# a_n2168_n570# w_n2485_n1240# w_n2485_n1240# pfet_03v3 ad=0.23p pd=1.42u as=0.23p ps=1.42u w=0.5u l=0.4u
+X15 w_n2485_n1240# a_n2168_n570# a_n1412_n50# w_n2485_n1240# pfet_03v3 ad=0.23p pd=1.42u as=0.23p ps=1.42u w=0.5u l=0.4u
 .ends
 
 .subckt pmos_Cmirror_with_decap$1 I_BIAS cmirror_interdigitized_0/a_n1412_n50# Unnamed_e3a0da27_0/m4_n500_n500#
@@ -20,8 +34,18 @@ X0 m4_n500_n500# m4_n620_n620# cap_mim_2f0_m4m5_noshield c_width=5u c_length=5u
 .ends
 
 .subckt cmirror_interdigitized$2 a_n2410_n75# a_n2360_n495# a_n2620_n809#
-X0 a_n2620_n809# a_n2360_n495# a_n2410_n75# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u M=10
-X1 a_n2360_n495# a_n2360_n495# a_n2620_n809# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u M=2
+X0 a_n2620_n809# a_n2360_n495# a_n2410_n75# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
+X1 a_n2620_n809# a_n2360_n495# a_n2410_n75# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.7425p ps=3.48u w=0.75u l=1u
+X2 a_n2410_n75# a_n2360_n495# a_n2620_n809# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
+X3 a_n2410_n75# a_n2360_n495# a_n2620_n809# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
+X4 a_n2620_n809# a_n2360_n495# a_n2410_n75# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
+X5 a_n2620_n809# a_n2360_n495# a_n2410_n75# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
+X6 a_n2410_n75# a_n2360_n495# a_n2620_n809# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
+X7 a_n2410_n75# a_n2360_n495# a_n2620_n809# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
+X8 a_n2360_n495# a_n2360_n495# a_n2620_n809# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
+X9 a_n2620_n809# a_n2360_n495# a_n2410_n75# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
+X10 a_n2620_n809# a_n2360_n495# a_n2360_n495# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
+X11 a_n2410_n75# a_n2360_n495# a_n2620_n809# a_n2620_n809# nfet_03v3 ad=0.7425p pd=3.48u as=0.345p ps=1.67u w=0.75u l=1u
 .ends
 
 .subckt nmos2_Cmirror_with_decap I_out_2 Unnamed_ba8f6150_0/m4_n620_n620# VSUBS
@@ -34,8 +58,18 @@ X0 m4_n500_n500# m4_n620_n620# cap_mim_2f0_m4m5_noshield c_width=5u c_length=5u
 .ends
 
 .subckt cmirror_interdigitized$1 a_n2410_n75# a_n2360_n495# a_n2620_n809#
-X0 a_n2620_n809# a_n2360_n495# a_n2410_n75# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u M=10
-X1 a_n2360_n495# a_n2360_n495# a_n2620_n809# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u M=2
+X0 a_n2620_n809# a_n2360_n495# a_n2410_n75# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
+X1 a_n2620_n809# a_n2360_n495# a_n2410_n75# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.7425p ps=3.48u w=0.75u l=1u
+X2 a_n2410_n75# a_n2360_n495# a_n2620_n809# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
+X3 a_n2410_n75# a_n2360_n495# a_n2620_n809# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
+X4 a_n2620_n809# a_n2360_n495# a_n2410_n75# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
+X5 a_n2620_n809# a_n2360_n495# a_n2410_n75# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
+X6 a_n2410_n75# a_n2360_n495# a_n2620_n809# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
+X7 a_n2410_n75# a_n2360_n495# a_n2620_n809# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
+X8 a_n2360_n495# a_n2360_n495# a_n2620_n809# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
+X9 a_n2620_n809# a_n2360_n495# a_n2410_n75# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
+X10 a_n2620_n809# a_n2360_n495# a_n2360_n495# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
+X11 a_n2410_n75# a_n2360_n495# a_n2620_n809# a_n2620_n809# nfet_03v3 ad=0.7425p pd=3.48u as=0.345p ps=1.67u w=0.75u l=1u
 .ends
 
 .subckt nmos1_Cmirror_with_decap I_out_1 VSS Unnamed_40a499cb_0/m4_n620_n620# VSUBS
@@ -48,8 +82,10 @@ X0 m4_n500_n500# m4_n620_n620# cap_mim_2f0_m4m5_noshield c_width=5u c_length=5u
 .ends
 
 .subckt cmirror_interdigitized$3 a_n824_n495# a_n1084_n809# a_n874_n75#
-X0 a_n874_n75# a_n824_n495# a_n1084_n809# a_n1084_n809# nfet_03v3 ad=0.7425p pd=3.48u as=0.345p ps=1.67u w=0.75u l=1u M=2
-X1 a_n824_n495# a_n824_n495# a_n1084_n809# a_n1084_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u M=2
+X0 a_n874_n75# a_n824_n495# a_n1084_n809# a_n1084_n809# nfet_03v3 ad=0.7425p pd=3.48u as=0.345p ps=1.67u w=0.75u l=1u
+X1 a_n824_n495# a_n824_n495# a_n1084_n809# a_n1084_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
+X2 a_n1084_n809# a_n824_n495# a_n874_n75# a_n1084_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.7425p ps=3.48u w=0.75u l=1u
+X3 a_n1084_n809# a_n824_n495# a_n824_n495# a_n1084_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
 .ends
 
 .subckt nmos3_Cmirror_with_decap I_out_3 Unnamed_2e9f948d_0/m4_n620_n620# VSUBS

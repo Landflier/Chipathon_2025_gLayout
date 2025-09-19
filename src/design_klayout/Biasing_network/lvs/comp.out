@@ -56,73 +56,34 @@ Flattening unmatched subcell cmirror_interdigitized$3 in circuit Biasing_network
 Flattening unmatched subcell Local_mirror_pmos in circuit Biasing_network_schematic (2)(1 instance)
 Flattening unmatched subcell Local_mirror_nmos in circuit Biasing_network_schematic (2)(3 instances)
 
-Class Biasing_network_layout (1):  Merged 6 parallel devices.
+Class Biasing_network_layout (1):  Merged 40 parallel devices.
 Class Biasing_network_schematic (2):  Merged 4 parallel devices.
 Subcircuit summary:
 Circuit 1: Biasing_network_layout          |Circuit 2: Biasing_network_schematic       
 -------------------------------------------|-------------------------------------------
 cap_mim_2f0_m4m5_noshield (4->2)           |cap_mim_2f0fF (4->2)                       
 pfet_03v3 (16->2)                          |pfet_03v3 (2)                              
-nfet_03v3 (28->2)                          |nfet_03v3 (6->4) **Mismatch**              
-Number of devices: 6 **Mismatch**          |Number of devices: 8 **Mismatch**          
-Number of nets: 5 **Mismatch**             |Number of nets: 7 **Mismatch**             
+nfet_03v3 (28->4)                          |nfet_03v3 (6->4)                           
+Number of devices: 8                       |Number of devices: 8                       
+Number of nets: 7                          |Number of nets: 7                          
 ---------------------------------------------------------------------------------------
-NET mismatches: Class fragments follow (with fanout counts):
-Circuit 1: Biasing_network_layout          |Circuit 2: Biasing_network_schematic       
-
----------------------------------------------------------------------------------------
-Net: m3_n4674_n6121#                       |Net: I_out_1                               
-  pfet_03v3/(1|3) = 1                      |  nfet_03v3/(1|3) = 1                      
-  cap_mim_2f0_m4m5_noshield/2 = 1          |                                           
-  nfet_03v3/2 = 2                          |                                           
-  nfet_03v3/(1|3) = 1                      |                                           
-                                           |                                           
-Net: VSUBS                                 |Net: I_out_2                               
-  cap_mim_2f0_m4m5_noshield/1 = 1          |  nfet_03v3/(1|3) = 1                      
-  nfet_03v3/(1|3) = 2                      |                                           
-  nfet_03v3/4 = 2                          |                                           
-                                           |                                           
-Net: nmos2_Cmirror_with_decap_0/I_out_2    |Net: I_out_3                               
-  nfet_03v3/(1|3) = 1                      |  nfet_03v3/(1|3) = 1                      
-                                           |                                           
-(no matching net)                          |Net: net1                                  
-                                           |  pfet_03v3/(1|3) = 1                      
-                                           |  nfet_03v3/2 = 4                          
-                                           |  nfet_03v3/(1|3) = 1                      
-                                           |  cap_mim_2f0fF/2 = 1                      
-                                           |                                           
-(no matching net)                          |Net: VSS                                   
-                                           |  nfet_03v3/(1|3) = 4                      
-                                           |  nfet_03v3/4 = 4                          
-                                           |  cap_mim_2f0fF/1 = 1                      
----------------------------------------------------------------------------------------
-DEVICE mismatches: Class fragments follow (with node fanout counts):
-Circuit 1: Biasing_network_layout          |Circuit 2: Biasing_network_schematic       
-
----------------------------------------------------------------------------------------
-Instance: nmos2_Cmirror_with_decap_0//cmir |Instance: Local_mirror_nmos:_NMOS_mirror_1 
-  (1,3) = (5,1)                            |  (1,3) = (9,1)                            
-  2 = 5                                    |  2 = 7                                    
-  4 = 5                                    |  4 = 9                                    
-                                           |                                           
-Instance: nmos2_Cmirror_with_decap_0//cmir |Instance: Local_mirror_nmos:_NMOS_mirror_1 
-  (1,3) = (5,5)                            |  (1,3) = (9,7)                            
-  2 = 5                                    |  2 = 7                                    
-  4 = 5                                    |  4 = 9                                    
-                                           |                                           
-(no matching instance)                     |Instance: Local_mirror_nmos:_NMOS_mirror_2 
-                                           |  (1,3) = (9,1)                            
-                                           |  2 = 7                                    
-                                           |  4 = 9                                    
-                                           |                                           
-                                           |                                           
-(no matching instance)                     |Instance: Local_mirror_nmos:_NMOS_mirror_3 
-                                           |  (1,3) = (9,1)                            
-                                           |  2 = 7                                    
-                                           |  4 = 9                                    
-                                           |                                           
----------------------------------------------------------------------------------------
-Netlists do not match.
+Resolving symmetries by property value.
+Resolving symmetries by pin name.
+Netlists match with 2 symmetries with property errors.
+nmos2_Cmirror_with_decap_0//cmirror_interdigitized$2_0/nfet_03v3:8 vs. Local_mirror_nmos:_NMOS_mirror_1/nfet_03v3:M6:
+ w circuit1: 4.5e-06   circuit2: 3e-06   (delta=40%, cutoff=1%)
+nmos3_Cmirror_with_decap_0//cmirror_interdigitized$3_0/nfet_03v3:0 vs. Local_mirror_nmos:_NMOS_mirror_3/nfet_03v3:M2:
+ w circuit1: 1.5e-06   circuit2: 1e-06   (delta=40%, cutoff=1%)
+nmos2_Cmirror_with_decap_0//cmirror_interdigitized$2_0/nfet_03v3:0 vs. Local_mirror_nmos:_NMOS_mirror_1/nfet_03v3:M2:
+ w circuit1: 7.5e-06   circuit2: 1e-06   (delta=153%, cutoff=1%)
+nmos1_Cmirror_with_decap_0//cmirror_interdigitized$1_0/nfet_03v3:0 vs. Local_mirror_nmos:_NMOS_mirror_2/nfet_03v3:M2:
+ w circuit1: 7.5e-06   circuit2: 1e-06   (delta=153%, cutoff=1%)
+pmos_Cmirror_with_decap$1_0//cmirror_interdigitized_0/pfet_03v3:1 vs. Local_mirror_pmos:_PMOS_mirror/pfet_03v3:M_ref:
+ l circuit1: 4e-07   circuit2: 2.8e-07   (delta=35.3%, cutoff=1%)
+ w circuit1: 2e-06   circuit2: 2.2e-07   (delta=160%, cutoff=1%)
+pmos_Cmirror_with_decap$1_0//cmirror_interdigitized_0/pfet_03v3:0 vs. Local_mirror_pmos:_PMOS_mirror/pfet_03v3:M_mir:
+ l circuit1: 4e-07   circuit2: 2.8e-07   (delta=35.3%, cutoff=1%)
+ w circuit1: 6e-06   circuit2: 2.2e-07   (delta=186%, cutoff=1%)
 
 Subcircuit pins:
 Circuit 1: Biasing_network_layout          |Circuit 2: Biasing_network_schematic       
