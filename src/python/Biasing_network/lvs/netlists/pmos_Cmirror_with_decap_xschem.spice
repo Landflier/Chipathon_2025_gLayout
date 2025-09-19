@@ -1,0 +1,43 @@
+** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/python/Cmirror_with_decap/xschem/pmos_Cmirror_with_decap_xschem.sch
+.subckt pmos_Cmirror_with_decap_xschem VDD I_OUT I_BIAS
+*.PININFO I_BIAS:B VDD:B I_OUT:B
+XM_ref I_BIAS I_BIAS VDD VDD pfet_03v3 L=0.28u W=2u nf=4 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
++ ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
+XM_mir I_OUT I_BIAS VDD VDD pfet_03v3 L=0.28u W=4u nf=8 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
++ ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
+XC1 VDD I_BIAS cap_mim_2f0fF c_width=5e-6 c_length=5e-6 m=1
+**** begin user architecture code
+
+.include /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/design.ngspice
+.lib /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/sm141064.ngspice typical
+.lib /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/sm141064.ngspice cap_mim
+.lib /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/sm141064.ngspice res_typical
+
+
+
+
+* let sets vectors to a plot, while set sets a variable, globally accessible in .control
+.control
+
+    * Set frequency and amplitude variables to proper values from within the control sequence
+    save all
+
+    op
+    show
+
+    write Biasing_network_sim.raw
+
+    set appendwrite
+
+    * Transient analysis to observe mixing operation
+    tran 1p 10n
+
+
+    write Biasing_network_sim.raw
+
+.endc
+
+
+**** end user architecture code
+.ends
+.end
