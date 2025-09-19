@@ -398,7 +398,12 @@ class CmirrorWithDecap:
                 # For SD routing, there is a via at the end of the route. 
                 displacement = config['sdvia_extension'](sdroute_minsep, sdmet_height) + config['sd_route_extension_sign'] * self.pdk.snap_to_2xgrid(sd_route_extension)
                 sdvia_ref = align_comp_to_port(sdvia, port_to_route, alignment=config['alignment_port'])
-                multiplier.add(sdvia_ref.movey(displacement))
+                sdvia_ref.movey(displacement)
+                # placing the vias on the bottom track can cause drc errors. So dont palce vias, the entire track is covered in metal
+                if config_key == "bottom_track_1":
+                    pass
+                else:
+                    multiplier.add(sdvia_ref)
                 multiplier << straight_route(self.pdk, port_to_route, sdvia_ref.ports["bottom_met_N"])
 
                 # Rename ports within sdvia_ref with config_key prefix and port_suffix suffix
