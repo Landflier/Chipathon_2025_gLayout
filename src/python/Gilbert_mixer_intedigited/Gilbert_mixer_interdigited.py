@@ -287,96 +287,159 @@ class GilbertMixerInterdigited:
         sdroute_minsep = self.pdk.get_grule(sd_route_topmet)["min_separation"]
         sdvia_ports = []
 
-        # Route fingers
-        for finger in range(4*fingers+1):
-            # Determine port assignments
-            check_port_1 = (finger % 4 == 1)
-            check_port_2 = (finger % 4 == 3)
-            check_port_3 = (finger % 4 == 0)
-            check_port_4 = (finger % 4 == 2)
+        # Define routing configuration dictionary for Gilbert mixer (4-port pattern)
+        LO_tracks_config = {
+            # Bottom track 2: finger % 4 == 1
+            'bottom_track_2': {
+                'y_align_via': lambda width: -width/2,
+                'alignment_port': ('c', 'b'),
+                'sdvia_extension': lambda sdroute_minsep, sdmet_height: -(sdroute_minsep + sdroute_minsep + (sdmet_height/2 + sdmet_height)),
+                'sd_route_extension_sign': -1,
+                'port_name_template': 'row0_col{finger_minus_1}_rightsd_array_row0_col0_top_met_N'
+            },
+            # Bottom track 1: finger % 4 == 3  
+            'bottom_track_1': {
+                'y_align_via': lambda width: -width/2,
+                'alignment_port': ('c', 'b'),
+                'sdvia_extension': lambda sdroute_minsep, sdmet_height: -(sdroute_minsep + (sdmet_height)/2),
+                'sd_route_extension_sign': -1,
+                'port_name_template': 'row0_col{finger_minus_1}_rightsd_array_row0_col0_top_met_N'
+            },
+            # Top track 1: finger % 4 == 0
+            'top_track_1': {
+                'y_align_via': lambda width: width/2,
+                'alignment_port': ('c', 't'),
+                'sdvia_extension': lambda sdroute_minsep, sdmet_height: +(sdroute_minsep + (sdmet_height)/2),
+                'sd_route_extension_sign': +1,
+                'port_name_template': 'row0_col{finger_minus_1}_rightsd_array_row{number_sd_rows}_col0_top_met_N',
+                'special_finger_0_port': 'leftsd_top_met_N'
+            },
+            # Top track 2: finger % 4 == 2
+            'top_track_2': {
+                'y_align_via': lambda width: width/2,
+                'alignment_port': ('c', 't'),
+                'sdvia_extension': lambda sdroute_minsep, sdmet_height: +(sdroute_minsep + sdroute_minsep + (sdmet_height/2 + sdmet_height)),
+                'sd_route_extension_sign': +1,
+                'port_name_template': 'row0_col{finger_minus_1}_rightsd_array_row{number_sd_rows}_col0_top_met_N'
+            }
+        }
 
-            # Configure routing based on port type
-            if check_port_1:
-                aligning_port_name = f"row0_col{finger-1}_rightsd_array_row0_col0_top_met_N"
-                rel_align_port = multiplier.ports[aligning_port_name]
-                y_align_via = -width/2
-                alignment_port = ('c', 'b')
-                sdvia_extension = -(sdroute_minsep + sdroute_minsep + (sdmet_height/2 + sdmet_height))
-                sd_route_extension_temp = -self.pdk.snap_to_2xgrid(sd_route_extension)
-            elif check_port_2:
-                aligning_port_name = f"row0_col{finger-1}_rightsd_array_row0_col0_top_met_N"
-                rel_align_port = multiplier.ports[aligning_port_name]
-                y_align_via = -width/2
-                alignment_port = ('c', 'b')
-                sdvia_extension = -(sdroute_minsep + (sdmet_height)/2)
-                sd_route_extension_temp = -self.pdk.snap_to_2xgrid(sd_route_extension)
-            elif check_port_3:
-                if finger != 0:
-                    aligning_port_name = f"row0_col{finger-1}_rightsd_array_row{number_sd_rows}_col0_top_met_N"
-                    rel_align_port = multiplier.ports[aligning_port_name]
-                else:
-                    aligning_port_name = f"leftsd_top_met_N"
-                    rel_align_port = multiplier.ports[aligning_port_name]
-                    rel_align_port.width = rel_align_port.width / interfinger_rmult
-                y_align_via = width/2
-                alignment_port = ('c', 't')
-                sdvia_extension = +(sdroute_minsep + (sdmet_height)/2)
-                sd_route_extension_temp = self.pdk.snap_to_2xgrid(sd_route_extension)
-            elif check_port_4:
-                aligning_port_name = f"row0_col{finger-1}_rightsd_array_row{number_sd_rows}_col0_top_met_N"
-                rel_align_port = multiplier.ports[aligning_port_name]
-                y_align_via = width/2
-                alignment_port = ('c', 't')
-                sdvia_extension = +(sdroute_minsep + sdroute_minsep + (sdmet_height/2 + sdmet_height))
-                sd_route_extension_temp = self.pdk.snap_to_2xgrid(sd_route_extension)
+        def get_finger_config(finger):
+            """Get routing configuration for a finger based on modulo pattern."""
+            finger_mod = finger % 4
+            if finger_mod == 1:
+                return 'bottom_track_2'
+            elif finger_mod == 3:
+                return 'bottom_track_1'
+            elif finger_mod == 0:
+                return 'top_track_1'
+            elif finger_mod == 2:
+                return 'top_track_2'
 
+        def create_and_route_sd_finger(finger, config_key):
+            """Create and route source/drain connection for a finger using config."""
+            config = LO_tracks_config[config_key]
+            
+            # Get port name based on finger position and config
+            if config_key == 'top_track_1' and finger == 0:
+                aligning_port_name = config['special_finger_0_port']
+            else:
+                aligning_port_name = config['port_name_template'].format(
+                    finger_minus_1=finger-1, 
+                    number_sd_rows=number_sd_rows
+                )
+            
+            rel_align_port = multiplier.ports[aligning_port_name]
+            
+            # Special width adjustment for finger 0
+            if config_key == 'top_track_1' and finger == 0:
+                rel_align_port.width = rel_align_port.width / interfinger_rmult
+            
+            # Calculate routing parameters using config functions
+            y_align_via = config['y_align_via'](width)
+            alignment_port = config['alignment_port']
+            sdvia_extension = config['sdvia_extension'](sdroute_minsep, sdmet_height)
+            sd_route_extension_temp = config['sd_route_extension_sign'] * self.pdk.snap_to_2xgrid(sd_route_extension)
+            
             # Create diffusion port
             diff_top_port = multiplier.add_port(
-                    center=(rel_align_port.center[0], y_align_via),
-                    width=rel_align_port.width,
-                    orientation=90,
-                    layer=rel_align_port.layer,
-                    name=f"diffusion_port_to_align_sd_{finger}"
-                    )
+                center=(rel_align_port.center[0], y_align_via),
+                width=rel_align_port.width,
+                orientation=90,
+                layer=rel_align_port.layer,
+                name=f"diffusion_port_to_align_sd_{finger}"
+            )
 
             # Route SD connections
             sd_track_y_displacement = sdvia_extension + sd_route_extension_temp
             sdvia_ref = align_comp_to_port(sdvia, diff_top_port, alignment=alignment_port)
             multiplier.add(sdvia_ref.movey(sd_track_y_displacement))
             multiplier << straight_route(self.pdk, diff_top_port, sdvia_ref.ports["bottom_met_N"])
-            sdvia_ports += [sdvia_ref.ports["top_met_W"], sdvia_ref.ports["top_met_E"]]
+            
+            return [sdvia_ref.ports["top_met_W"], sdvia_ref.ports["top_met_E"]]
+
+        # Define gate routing configuration dictionary (2-port pattern)
+        gate_routing_configs = {
+            'gate_LO': {  # finger % 2 == 0
+                'gate_port_suffix': 'S',
+                'gate_extension': lambda sdroute_minsep, sdmet_height, sd_route_extension, gate_route_extension: -(3 * sdroute_minsep + 5/2 * sdmet_height + sd_route_extension + gate_route_extension),
+                'y_base': lambda width: -width/2
+            },
+            'gate_LO_b': {  # finger % 2 == 1
+                'gate_port_suffix': 'N', 
+                'gate_extension': lambda sdroute_minsep, sdmet_height, sd_route_extension, gate_route_extension: 3 * sdroute_minsep + 5/2 * sdmet_height + sd_route_extension + gate_route_extension,
+                'y_base': lambda width: width/2
+            }
+        }
+
+        def get_gate_config(finger):
+            """Get gate routing configuration based on modulo pattern."""
+            return 'gate_LO' if finger % 2 == 0 else 'gate_LO_b'
+
+        def create_and_route_gate_finger(finger, config_key):
+            """Create and route gate connection for a finger using config."""
+            config = gate_routing_configs[config_key]
+            
+            # Get gate port
+            aligning_gate_port_name = f"row0_col{finger}_gate_{config['gate_port_suffix']}"
+            rel_gate_aligning_port = multiplier.ports[aligning_gate_port_name]
+            
+            # Calculate y position
+            gate_extension = config['gate_extension'](sdroute_minsep, sdmet_height, sd_route_extension, gate_route_extension)
+            y_align_via = config['y_base'](width) + gate_extension
+            
+            # Route gates vertically
+            psuedo_Ngateroute = multiplier.add_port(
+                center=(rel_gate_aligning_port.center[0], y_align_via),
+                width=rel_gate_aligning_port.width,
+                orientation=90,
+                layer=rel_gate_aligning_port.layer,
+                name=f"gate_port_vroute_{finger}"
+            )
+            psuedo_Ngateroute.y = self.pdk.snap_to_2xgrid(psuedo_Ngateroute.y)
+            multiplier << straight_route(self.pdk, rel_gate_aligning_port, psuedo_Ngateroute)
+            
+            return rel_gate_aligning_port
+
+        # Route fingers using config-based approach
+        last_gate_port = None
+        for finger in range(4*fingers+1):
+            # Route source/drain
+            config_key = get_finger_config(finger)
+            sdvia_ports += create_and_route_sd_finger(finger, config_key)
 
             if finger == 4*fingers:
                 break
 
-            # Gate routing
-            check_gate_LO = (finger % 2 == 0)
-            check_gate_LO_b = (finger % 2 == 1)
-
-            if check_gate_LO:
-                aligning_gate_port_name = f"row0_col{finger}_gate_S"
-                rel_gate_aligning_port = multiplier.ports[aligning_gate_port_name]
-                gate_extension = -(3 * sdroute_minsep + 5/2 * sdmet_height + sd_route_extension + gate_route_extension)
-                y_align_via = -width/2 + gate_extension
-            elif check_gate_LO_b:
-                aligning_gate_port_name = f"row0_col{finger}_gate_N"
-                rel_gate_aligning_port = multiplier.ports[aligning_gate_port_name]
-                gate_extension = 3 * sdroute_minsep + 5/2 * sdmet_height + sd_route_extension + gate_route_extension
-                y_align_via = width/2 + gate_extension
-
-            # Route gates vertically
-            psuedo_Ngateroute = multiplier.add_port(
-                    center=(rel_gate_aligning_port.center[0], y_align_via),
-                    width=rel_gate_aligning_port.width,
-                    orientation=90,
-                    layer=rel_gate_aligning_port.layer,
-                    name=f"gate_port_vroute_{finger}"
-                    )
-            psuedo_Ngateroute.y = self.pdk.snap_to_2xgrid(psuedo_Ngateroute.y)
-            multiplier << straight_route(self.pdk, rel_gate_aligning_port, psuedo_Ngateroute)
+            # Route gates
+            gate_config_key = get_gate_config(finger)
+            last_gate_port = create_and_route_gate_finger(finger, gate_config_key)
 
         # Place horizontal gate routes
-        gate_width = multiplier.ports[f"gate_port_vroute_{4*fingers-2}"].center[0] - multiplier.ports["gate_port_vroute_0"].center[0] + rel_gate_aligning_port.width
+        # Get the width of a gate port for calculating gate route width
+        last_gate_port_vroute = multiplier.ports[f"gate_port_vroute_{4*fingers-2}"]
+        first_gate_port_vroute = multiplier.ports["gate_port_vroute_0"]
+        gate_width = last_gate_port_vroute.center[0] - first_gate_port_vroute.center[0] + last_gate_port.width
         gate_route = rename_ports_by_list(
                 via_array(self.pdk, "poly", gate_route_topmet, size=(gate_width, None), num_vias=(None, gate_rmult), no_exception=True, fullbottom=True),
                 [("top_met_", "gate_top_")]
