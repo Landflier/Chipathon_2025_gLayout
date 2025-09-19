@@ -1,23 +1,29 @@
 magic
 tech gf180mcuD
-timestamp 1758012324
+magscale 1 5
+timestamp 1758212431
 << metal2 >>
-rect 0 1463 9569 1615
-rect 1191 113 9569 266
+rect 47664 8075 57557 8080
+rect 0 7315 57557 8075
+rect 5955 565 57557 1330
 use io_secondary_5p0  io_secondary_5p0_0 ~/Downloads/SSCS_PICO_2025/src/design_mag/io_secondary_5p0/mag
 timestamp 1758012324
-transform 0 1 483 -1 0 776
-box -947 -483 853 1224
+transform 0 1 2415 -1 0 3866
+box -4735 -2415 4265 6120
 use io_secondary_5p0  io_secondary_5p0_1
 timestamp 1758012324
-transform 0 1 2283 -1 0 776
-box -947 -483 853 1224
+transform 0 1 11415 -1 0 3880
+box -4735 -2415 4265 6120
 use io_secondary_5p0  io_secondary_5p0_2
 timestamp 1758012324
-transform 0 1 6283 -1 0 776
-box -947 -483 853 1224
+transform 0 1 31415 -1 0 3880
+box -4735 -2415 4265 6120
 use io_secondary_5p0  io_secondary_5p0_3
 timestamp 1758012324
-transform 0 1 8283 -1 0 776
-box -947 -483 853 1224
+transform 0 1 41415 -1 0 3880
+box -4735 -2415 4265 6120
+use io_secondary_5p0  io_secondary_5p0_4
+timestamp 1758012324
+transform 0 1 51415 -1 0 3880
+box -4735 -2415 4265 6120
 << end >>
