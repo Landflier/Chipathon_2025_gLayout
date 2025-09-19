@@ -1,0 +1,64 @@
+#!/bin/bash
+
+# ext2spice cthresh 0.01
+
+# NMOS cmirror
+magic -rcfile $PDK_ROOT/$PDK/libs.tech/magic/$PDK.magicrc -dnull -noconsole << 'EOF'
+gds readonly false
+gds rescale true
+gds read gds/nmos_Cmirror_with_decap.gds
+
+# Check what cells are available and load the flattened one
+cellname list allcells
+load nmos_Cmirror_with_decap
+cellname rename nmos_Cmirror_with_decap nmos_Cmirror_with_decap_layout
+
+# Extract with more detailed options
+# extract unique # disable port merging. Just for cmirror topology with decap (VSS/VDD and I_BIAS should remain separate)
+extract all
+ext2spice short resistor
+ext2spice lvs
+ext2spice cthresh 2
+ext2spice rthresh 10
+ext2spice format ngspice
+ext2spice subcircuit top auto
+ext2spice hierarchy on
+ext2spice scale off
+ext2spice blackbox on
+ext2spice merge conservative
+ext2spice global off
+ext2spice -o netlists/PEX_nmos_Cmirror_with_decap.spice
+quit
+EOF
+
+# PMOS cmirror
+magic -rcfile $PDK_ROOT/$PDK/libs.tech/magic/$PDK.magicrc -dnull -noconsole << 'EOF'
+gds readonly false
+gds rescale true
+gds read gds/pmos_Cmirror_with_decap.gds
+
+# Check what cells are available and load the flattened one
+cellname list allcells
+load pmos_Cmirror_with_decap
+cellname rename pmos_Cmirror_with_decap pmos_Cmirror_with_decap_layout
+
+# Extract with more detailed options
+# extract unique # disable port merging. Just for cmirror topology with decap (VSS/VDD and I_BIAS should remain separate)
+extract all
+ext2spice short resistor
+ext2spice lvs
+ext2spice cthresh 2
+ext2spice rthresh 10 
+ext2spice format ngspice
+ext2spice subcircuit top auto
+ext2spice hierarchy on
+ext2spice scale off
+ext2spice blackbox on
+ext2spice merge conservative
+ext2spice global off
+ext2spice -o netlists/PEX_pmos_Cmirror_with_decap.spice
+quit
+EOF
+
+# cleanup
+rm *.ext
