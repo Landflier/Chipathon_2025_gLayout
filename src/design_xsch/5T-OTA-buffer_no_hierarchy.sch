@@ -51,7 +51,7 @@ lab=#net1}
 N 1100 -1240 1100 -1180 {
 lab=#net1}
 N 1240 -1240 1270 -1240 {
-lab=#net2}
+lab=VDD}
 N 1210 -1120 1240 -1120 {
 lab=VSS}
 N 1020 -1120 1050 -1120 {
@@ -72,8 +72,8 @@ value="
 }
 C {symbols/nfet_03v3.sym} 1000 -1120 0 0 {name=M3
 L=0.28u
-W=0.22u
-nf=1
+W=7u
+nf=4
 m=1
 ad="'int((nf+1)/2) * W/nf * 0.18u'"
 pd="'2*int((nf+1)/2) * (W/nf + 0.18u)'"
@@ -86,8 +86,8 @@ spiceprefix=X
 }
 C {symbols/nfet_03v3.sym} 1260 -1120 0 1 {name=M4
 L=0.28u
-W=0.22u
-nf=1
+W=7u
+nf=4
 m=1
 ad="'int((nf+1)/2) * W/nf * 0.18u'"
 pd="'2*int((nf+1)/2) * (W/nf + 0.18u)'"
@@ -107,8 +107,8 @@ C {opin.sym} 1360 -1180 0 0 {name=p4 lab=Vout}
 C {iopin.sym} 1130 -940 1 0 {name=p5 lab=I_bias}
 C {symbols/pfet_03v3.sym} 1040 -1240 0 1 {name=M1
 L=0.28u
-W=0.22u
-nf=1
+W=17u
+nf=5
 m=1
 ad="'int((nf+1)/2) * W/nf * 0.18u'"
 pd="'2*int((nf+1)/2) * (W/nf + 0.18u)'"
@@ -121,8 +121,8 @@ spiceprefix=X
 }
 C {symbols/pfet_03v3.sym} 1220 -1240 0 0 {name=M2
 L=0.28u
-W=0.22u
-nf=1
+W=17u
+nf=5
 m=1
 ad="'int((nf+1)/2) * W/nf * 0.18u'"
 pd="'2*int((nf+1)/2) * (W/nf + 0.18u)'"

@@ -5,9 +5,9 @@ K {}
 V {}
 S {}
 E {}
-B 2 1780 -1200 2580 -800 {flags=graph,unlocked
-y1=1.1
-y2=4.1
+B 2 2260 -1200 3060 -800 {flags=graph,unlocked
+y1=-1.2
+y2=3
 ypos1=0
 ypos2=2
 divy=5
@@ -26,24 +26,25 @@ unitx=1
 logx=0
 logy=0
 rainbow=1
-color="4 8 6"
+color="4 8 6 7"
 node="v_rf
 v_lo
-v_out"
+\\"diff_output; v_out_p v_out_n -\\"
+v_out_p"
 
 sim_type=tran
 autoload=1
 rawfile=$netlist_dir/Gilbert_cell_hierarchal_sim.raw}
-B 2 1780 -1650 2580 -1250 {flags=graph,unlocked
-y1=2.2e-17
-y2=3.1
+B 2 2260 -1650 3060 -1250 {flags=graph,unlocked
+y1=8.3e-14
+y2=0.8
 ypos1=0
 ypos2=2
 divy=5
 subdivy=1
 unity=1
-x1=-38496718
-x2=1.1908998e+08
+x1=-7260061.4
+x2=2.408058e+08
 divx=5
 subdivx=1
 xlabmag=1.0
@@ -59,7 +60,7 @@ logy=0
 rawfile=$netlist_dir/Gilbert_cell_hierarchal_sim.raw
 sim_type=sp
 autoload=1}
-P 4 5 860 -1230 1000 -1230 1000 -1120 860 -1120 860 -1230 {}
+P 4 5 1340 -1230 1480 -1230 1480 -1120 1340 -1120 1340 -1230 {}
 T {Desription
 
 Gilbert cell mixer for FM radio receiver, 
@@ -72,8 +73,8 @@ T {f_LO = 100 MHz
 f_RF = 89.7 MHz
 
 f_IF = f_LO - f_RF 
-       = 10.7 MHz} 2580 -1200 0 0 0.4 0.4 {}
-T {Degeneration} 880 -1220 0 0 0.3 0.3 {}
+       = 10.7 MHz} 3060 -1200 0 0 0.4 0.4 {}
+T {Degeneration} 1360 -1220 0 0 0.3 0.3 {}
 N 120 -2270 120 -2250 {
 lab=GND}
 N 120 -2350 120 -2330 {lab=V_LO}
@@ -93,117 +94,165 @@ N 120 -2100 120 -2080 {
 lab=GND}
 N 120 -2170 120 -2160 {
 lab=VDD}
-N 670 -1350 670 -1300 {
+N 1150 -1350 1150 -1300 {
 lab=GND}
-N 910 -1320 910 -1280 {
+N 1390 -1320 1390 -1280 {
 lab=#net1}
-N 910 -1280 910 -1260 {
+N 1390 -1280 1390 -1260 {
 lab=#net1}
-N 950 -1320 950 -1260 {
+N 1430 -1320 1430 -1260 {
 lab=#net2}
-N 830 -1790 830 -1690 {
+N 1310 -1790 1310 -1690 {
+lab=V_out_p}
+N 1510 -1790 1510 -1690 {
+lab=V_out_n}
+N 1140 -1940 1140 -1910 {
+lab=VDD}
+N 1140 -1910 1230 -1910 {
+lab=VDD}
+N 1120 -1490 1210 -1490 {
 lab=#net3}
-N 1030 -1790 1030 -1690 {
+N 1120 -1540 1210 -1540 {
 lab=#net4}
-N 660 -1940 660 -1910 {
-lab=VDD}
-N 660 -1910 750 -1910 {
-lab=VDD}
-N 640 -1490 730 -1490 {
-lab=V_LO_b}
-N 640 -1540 730 -1540 {
-lab=V_LO}
-N 640 -1440 730 -1440 {
-lab=V_RF}
-N 640 -1380 730 -1380 {
-lab=V_RF_b}
-N 670 -1350 730 -1350 {
+N 1120 -1440 1210 -1440 {
+lab=#net5}
+N 1120 -1380 1210 -1380 {
+lab=#net6}
+N 1150 -1350 1210 -1350 {
 lab=GND}
-N 910 -1260 910 -1230 {
+N 1510 -1720 1640 -1720 {
+lab=V_out_n}
+N 1310 -1760 1640 -1760 {
+lab=V_out_p}
+N 1390 -1260 1390 -1230 {
 lab=#net1}
-N 950 -1260 950 -1230 {
+N 1430 -1260 1430 -1230 {
 lab=#net2}
-N 930 -1160 930 -1140 {
+N 1410 -1160 1410 -1140 {
 lab=VDD}
-N 900 -1180 900 -1120 {
+N 1380 -1180 1380 -1120 {
 lab=#net1}
-N 960 -1180 960 -1130 {
+N 1440 -1180 1440 -1130 {
 lab=#net2}
-N 900 -1230 900 -1180 {
+N 1380 -1230 1380 -1180 {
 lab=#net1}
-N 900 -1230 910 -1230 {
+N 1380 -1230 1390 -1230 {
 lab=#net1}
-N 960 -1230 960 -1180 {
+N 1440 -1230 1440 -1180 {
 lab=#net2}
-N 950 -1230 960 -1230 {
+N 1430 -1230 1440 -1230 {
 lab=#net2}
-N 960 -1130 960 -1120 {
+N 1440 -1130 1440 -1120 {
 lab=#net2}
-N 820 -930 820 -870 {
-lab=#net5}
-N 820 -930 900 -930 {
-lab=#net5}
-N 1060 -930 1060 -870 {
-lab=#net6}
-N 960 -930 1060 -930 {
-lab=#net6}
-N 1300 -920 1300 -870 {
+N 1950 -1850 2020 -1850 {
+lab=V_out_p}
+N 1950 -1630 2010 -1630 {
+lab=V_out_n}
+N 1640 -1630 1750 -1630 {
+lab=V_out_n}
+N 1640 -1720 1640 -1630 {
+lab=V_out_n}
+N 1640 -1850 1750 -1850 {
+lab=V_out_p}
+N 1640 -1850 1640 -1760 {
+lab=V_out_p}
+N 1750 -1850 1950 -1850 {
+lab=V_out_p}
+N 1300 -930 1300 -870 {
 lab=#net7}
-N 370 -830 400 -830 {
-lab=VDD}
-N 370 -860 370 -830 {
-lab=VDD}
-N 370 -570 400 -570 {
-lab=GND}
-N 370 -570 370 -540 {
-lab=GND}
-N 900 -1120 900 -1020 {
-lab=#net1}
-N 960 -1120 960 -1020 {
-lab=#net2}
-N 300 -670 300 -650 {
+N 1300 -930 1380 -930 {
+lab=#net7}
+N 1540 -930 1540 -870 {
 lab=#net8}
-N 300 -670 400 -670 {
+N 1440 -930 1540 -930 {
 lab=#net8}
-N 300 -570 370 -570 {
+N 1780 -920 1780 -870 {
 lab=GND}
-N 300 -590 300 -570 {
+N 1780 -920 1810 -920 {
 lab=GND}
-N 900 -960 900 -930 {
-lab=#net5}
-N 960 -960 960 -930 {
-lab=#net6}
-N 1190 -1940 1190 -1890 {
+N 1750 -1630 1950 -1630 {
+lab=V_out_n}
+N 850 -830 880 -830 {
 lab=VDD}
-N 1190 -1890 1250 -1890 {
+N 850 -860 850 -830 {
 lab=VDD}
-N 1190 -1690 1250 -1690 {
+N 850 -570 880 -570 {
 lab=GND}
-N 1190 -1690 1190 -1670 {
+N 850 -570 850 -540 {
 lab=GND}
-N 1300 -920 1370 -920 {
-lab=#net7}
-N 1540 -1800 1640 -1800 {
-lab=V_out}
-N 1390 -1660 1390 -1610 {
+N 1380 -1120 1380 -1020 {
+lab=#net1}
+N 1440 -1120 1440 -1020 {
+lab=#net2}
+N 780 -670 880 -670 {
 lab=#net9}
-N 1390 -1610 1390 -1570 {
-lab=#net9}
-N 1370 -920 1390 -920 {
+N 780 -570 850 -570 {
+lab=GND}
+N 1380 -960 1380 -930 {
 lab=#net7}
-N 1390 -1510 1390 -920 {
-lab=#net7}
-N 1030 -1720 1110 -1720 {
-lab=#net4}
-N 1170 -1720 1250 -1720 {
+N 1440 -960 1440 -930 {
+lab=#net8}
+N 580 -560 580 -530 {
+lab=GND}
+N 580 -670 580 -620 {
 lab=#net10}
-N 1170 -1760 1250 -1760 {
-lab=#net11}
-N 830 -1760 1110 -1760 {
+N 700 -600 700 -570 {
+lab=GND}
+N 700 -570 780 -570 {
+lab=GND}
+N 700 -610 700 -600 {
+lab=GND}
+N 610 -1680 640 -1680 {
+lab=V_LO}
+N 610 -1510 640 -1510 {
+lab=V_LO_b}
+N 610 -1320 640 -1320 {
+lab=V_RF}
+N 610 -1140 640 -1140 {
+lab=V_RF_b}
+N 1120 -1680 1120 -1540 {
+lab=#net4}
+N 840 -1680 1120 -1680 {
+lab=#net4}
+N 840 -1510 1120 -1510 {
 lab=#net3}
+N 1120 -1510 1120 -1490 {
+lab=#net3}
+N 840 -1320 1080 -1320 {
+lab=#net5}
+N 1080 -1440 1080 -1320 {
+lab=#net5}
+N 1080 -1440 1120 -1440 {
+lab=#net5}
+N 840 -1140 1110 -1140 {
+lab=#net6}
+N 1110 -1380 1110 -1140 {
+lab=#net6}
+N 1110 -1380 1120 -1380 {
+lab=#net6}
+N 700 -740 700 -730 {
+lab=VDD}
+N 760 -1210 760 -1200 {
+lab=VDD}
+N 760 -1390 760 -1380 {
+lab=VDD}
+N 760 -1580 760 -1570 {
+lab=VDD}
+N 760 -1750 760 -1740 {
+lab=VDD}
+N 760 -1080 760 -1070 {
+lab=GND}
+N 760 -1260 760 -1250 {
+lab=GND}
+N 760 -1450 760 -1440 {
+lab=GND}
+N 760 -1620 760 -1610 {
+lab=GND}
 C {code.sym} 50 -190 0 0 {name=MODELS only_toplevel=true
 format="tcleval( @value )"
 value="
+.include $::PROJECT_ROOT/src/design_padring/Chipathon2025_pads/xschem/gf180mcu_fd_io.spice
+.include $::PROJECT_ROOT/src/design_padring/Chipathon2025_pads/xschem/gf180mcu_fd_io__asig_5p0_extracted.spice
 .include $::180MCU_MODELS/design.ngspice
 .lib $::180MCU_MODELS/sm141064.ngspice typical
 .lib $::180MCU_MODELS/sm141064.ngspice mimcap_typical
@@ -212,11 +261,12 @@ value="
 .lib $::180MCU_MODELS/sm141064.ngspice diode_typical
 .lib $::180MCU_MODELS/sm141064.ngspice bjt_typical
 .lib $::180MCU_MODELS/sm141064.ngspice moscap_typical
+.lib $::180MCU_MODELS/sm141064.ngspice mimcap_typical
 "
 }
-C {code.sym} 2710 -2400 0 0 {name=SPICE only_toplevel=false
+C {code.sym} 2710 -2400 0 0 {name=SPICE only_toplevel=true 
 value="
-.op
+* let sets vectors to a plot, while set sets a variable, globally accessible in .control
 .control
 
     * Set frequency and amplitude variables to proper values from within the control sequence
@@ -248,17 +298,16 @@ value="
     op
     * show
 
-    write Gilbert_cell_hierarchal_sim.raw
+    write Gilbert_cell_hierarchal_with_pads_sim.raw
 
     set appendwrite
 
     * Transient analysis to observe mixing operation
     tran 3p 0.5u
-    write Gilbert_cell_hierarchal_sim.raw
+    write Gilbert_cell_hierarchal_with_pads_sim.raw
 
     * Calculate differential output for conversion gain measurement
-    * let v_out_diff = v(v_out_p)-v(v_out_n)
-    let v_out_diff = v(v_out)
+    let v_out_diff = v(v_out_p)-v(v_out_n)
     let v_rf_diff = v(v_rf)-v(v_rf_b)
     let v_lo_diff = v(v_lo)-v(v_lo_b)
 
@@ -332,17 +381,17 @@ value="
     let conversion_gain_db = 10*log10(if_power_total/rf_power_total)
     print conversion_gain_db
 
-    write Gilbert_cell_hierarchal_sim.raw
+    write Gilbert_cell_hierarchal_with_pads_sim.raw
 
 .endc
 "}
-C {devices/launcher.sym} 1830 -720 2 1 {name=h2
+C {devices/launcher.sym} 2310 -720 2 1 {name=h2
 descr="Run ngSpice simulation (ctrl+left-click)" 
 tclcommand="xschem save; xschem netlist; xschem simulate"
 }
-C {devices/launcher.sym} 1830 -680 0 0 {name=h1
+C {devices/launcher.sym} 2310 -680 0 0 {name=h1
 descr="Load ngSpice waveforms (ctrl+left-click)" 
-tclcommand="xschem raw_read $netlist_dir/Gilbert_cell_hierarchal_sim.raw tran"
+tclcommand="xschem raw_read $netlist_dir/Gilbert_cell_hierarchal_with_pads_sim.raw tran"
 }
 C {lab_wire.sym} 120 -2350 0 0 {name=p8 sig_type=std_logic lab=V_LO}
 C {lab_wire.sym} 200 -2350 0 0 {name=p9 sig_type=std_logic lab=V_LO_b
@@ -375,42 +424,55 @@ C {gnd.sym} 120 -2250 0 0 {name=l1 lab=GND}
 C {gnd.sym} 200 -2250 0 0 {name=l2 lab=GND}
 C {gnd.sym} 270 -2250 0 0 {name=l3 lab=GND}
 C {gnd.sym} 340 -2250 0 0 {name=l4 lab=GND}
-C {ipin.sym} 640 -1540 2 1 {name=p1 lab=V_LO}
-C {ipin.sym} 640 -1490 2 1 {name=p2 lab=V_LO_b
+C {ipin.sym} 610 -1680 2 1 {name=p1 lab=V_LO}
+C {ipin.sym} 610 -1510 2 1 {name=p2 lab=V_LO_b
 }
-C {ipin.sym} 640 -1440 0 0 {name=p3 lab=V_RF}
-C {ipin.sym} 640 -1380 2 1 {name=p4 lab=V_RF_b
+C {ipin.sym} 610 -1320 0 0 {name=p3 lab=V_RF}
+C {ipin.sym} 610 -1140 2 1 {name=p4 lab=V_RF_b
 }
-C {isource.sym} 300 -620 0 0 {name=I0 value=10u}
-C {gnd.sym} 670 -1300 0 0 {name=l11 lab=GND}
-C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Gilbert_cell_hierarchal_mixing_stage.sym} 930 -1490 0 0 {name=x1}
-C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Gilbert_cell_hierarchal_loading_stage.sym} 930 -1840 0 0 {name=x2}
-C {vdd.sym} 660 -1940 0 0 {name=l5 lab=VDD}
-C {lab_pin.sym} 930 -1140 3 0 {name=p15 sig_type=std_logic lab=VDD}
-C {symbols/pplus_u.sym} 930 -1180 1 1 {name=R_load_3
+C {opin.sym} 2020 -1850 0 0 {name=p5 lab=V_out_p}
+C {opin.sym} 2010 -1630 0 0 {name=p7 lab=V_out_n}
+C {isource.sym} 580 -590 0 0 {name=I0 value=10u}
+C {gnd.sym} 1150 -1300 0 0 {name=l11 lab=GND}
+C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Gilbert_cell_hierarchal_mixing_stage.sym} 1410 -1490 0 0 {name=x1}
+C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Gilbert_cell_hierarchal_loading_stage.sym} 1410 -1840 0 0 {name=x2}
+C {vdd.sym} 1140 -1940 0 0 {name=l5 lab=VDD}
+C {lab_pin.sym} 1410 -1140 3 0 {name=p15 sig_type=std_logic lab=VDD}
+C {symbols/pplus_u.sym} 1410 -1180 1 1 {name=R_load_3
 W=0.5e-6
 L=5e-6
 model=pplus_u
 spiceprefix=X
 m=1
 hide_texts=true}
-C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Biasing_network_with_local_mirros.sym} 660 -660 0 0 {name=x3}
-C {vdd.sym} 370 -860 0 0 {name=l12 lab=VDD}
-C {gnd.sym} 370 -540 0 0 {name=l13 lab=GND}
-C {ammeter.sym} 900 -990 0 0 {name=Vmeas savecurrent=true spice_ignore=0}
-C {ammeter.sym} 960 -990 0 0 {name=Vmeas1 savecurrent=true spice_ignore=0}
-C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/5T-OTA-buffer_no_hierarchy.sym} 1390 -1800 0 0 {name=x4}
-C {vdd.sym} 1190 -1940 0 0 {name=l6 lab=VDD}
-C {gnd.sym} 1190 -1670 0 0 {name=l14 lab=GND}
-C {opin.sym} 1640 -1800 0 0 {name=p5 lab=V_out}
-C {ammeter.sym} 1390 -1540 0 0 {name=Vmeas2 savecurrent=true spice_ignore=0}
-C {capa.sym} 1140 -1760 3 0 {name=C1
-m=1
-value=1f
-footprint=1206
-device="ceramic capacitor"}
-C {capa.sym} 1140 -1720 1 0 {name=C2
-m=1
-value=1f
-footprint=1206
-device="ceramic capacitor"}
+C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Biasing_network_with_local_mirros.sym} 1140 -660 0 0 {name=x3}
+C {gnd.sym} 1810 -920 0 0 {name=l10 lab=GND}
+C {vdd.sym} 850 -860 0 0 {name=l12 lab=VDD}
+C {gnd.sym} 580 -530 0 0 {name=l13 lab=GND}
+C {ammeter.sym} 1380 -990 0 0 {name=Vmeas savecurrent=true spice_ignore=0}
+C {ammeter.sym} 1440 -990 0 0 {name=Vmeas1 savecurrent=true spice_ignore=0}
+C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_padring/Chipathon2025_pads/xschem/symbols/io_secondary_5p0/io_secondary_5p0.sym} 840 -1600 0 1 {name=IO1
+spiceprefix=X
+}
+C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_padring/Chipathon2025_pads/xschem/symbols/io_secondary_5p0/io_secondary_5p0.sym} 780 -590 0 1 {name=IO2
+spiceprefix=X
+}
+C {gnd.sym} 850 -540 0 0 {name=l6 lab=GND}
+C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_padring/Chipathon2025_pads/xschem/symbols/io_secondary_5p0/io_secondary_5p0.sym} 840 -1430 0 1 {name=IO3
+spiceprefix=X
+}
+C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_padring/Chipathon2025_pads/xschem/symbols/io_secondary_5p0/io_secondary_5p0.sym} 840 -1240 0 1 {name=IO4
+spiceprefix=X
+}
+C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_padring/Chipathon2025_pads/xschem/symbols/io_secondary_5p0/io_secondary_5p0.sym} 840 -1060 0 1 {name=IO5
+spiceprefix=X
+}
+C {lab_pin.sym} 700 -740 0 0 {name=p6 sig_type=std_logic lab=VDD}
+C {lab_pin.sym} 760 -1210 0 0 {name=p12 sig_type=std_logic lab=VDD}
+C {lab_pin.sym} 760 -1390 0 0 {name=p13 sig_type=std_logic lab=VDD}
+C {lab_pin.sym} 760 -1580 0 0 {name=p14 sig_type=std_logic lab=VDD}
+C {lab_pin.sym} 760 -1750 0 0 {name=p16 sig_type=std_logic lab=VDD}
+C {gnd.sym} 760 -1070 0 0 {name=l14 lab=GND}
+C {gnd.sym} 760 -1250 0 0 {name=l15 lab=GND}
+C {gnd.sym} 760 -1440 0 0 {name=l16 lab=GND}
+C {gnd.sym} 760 -1610 0 0 {name=l17 lab=GND}
