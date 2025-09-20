@@ -1,0 +1,56 @@
+* NGSPICE file created from Gilbert_cell_hierarchal_mixing_stage.ext - technology: gf180mcuD
+
+.subckt LO_diff_pairs_interdigitized a_n2222_n400# a_n2878_n1500# a_n2578_n448# a_n2822_n400#
++ a_n3106_n400# a_n2522_n400# a_n3316_n1664#
+X0 a_n2522_n400# a_n2578_n448# a_n2822_n400# a_n3316_n1664# nfet_03v3 ad=2.44p pd=5.22u as=2.44p ps=5.22u w=4u l=0.28u M=5
+X1 a_n3106_n400# a_n2578_n448# a_n2222_n400# a_n3316_n1664# nfet_03v3 ad=2.44p pd=5.22u as=2.44p ps=5.22u w=4u l=0.28u M=5
+X2 a_n2822_n400# a_n2878_n1500# a_n3106_n400# a_n3316_n1664# nfet_03v3 ad=2.44p pd=5.22u as=2.44p ps=5.22u w=4u l=0.28u M=5
+X3 a_n2222_n400# a_n2878_n1500# a_n2522_n400# a_n3316_n1664# nfet_03v3 ad=2.44p pd=5.22u as=2.44p ps=5.22u w=4u l=0.28u M=5
+C0 a_n2522_n400# a_n2822_n400# 2.58132f
+C1 a_n2522_n400# a_n3106_n400# 3.55206f
+C2 a_n2822_n400# a_n3106_n400# 2.84107f
+C3 a_n2522_n400# a_n2578_n448# 2.48841f
+C4 a_n2522_n400# a_n2222_n400# 2.83963f
+C5 a_n2822_n400# a_n2222_n400# 3.52221f
+C6 a_n2222_n400# a_n3106_n400# 3.30692f
+C7 a_n2822_n400# a_n2878_n1500# 2.48841f
+C8 a_n2222_n400# a_n3316_n1664# 1.19605f
+C9 a_n2522_n400# a_n3316_n1664# 1.79261f
+C10 a_n2822_n400# a_n3316_n1664# 1.82217f
+C11 a_n3106_n400# a_n3316_n1664# 2.24444f
+C12 a_n2878_n1500# a_n3316_n1664# 19.4555f
+C13 a_n2578_n448# a_n3316_n1664# 19.4537f
+.ends
+
+.subckt RF_diff_pair$1 a_3384_n849# a_3440_n321# a_3156_n321# a_n628_n849# a_n572_n321#
++ a_n1750_n1013# a_n856_n321# a_2262_n1013#
+X0 a_n1750_n1013# a_n1750_n1013# a_n1750_n1013# a_n1750_n1013# nfet_03v3 ad=2.28p pd=6.28u as=18.24p ps=50.24u w=2u l=0.28u M=4
+X1 a_n856_n321# a_n628_n849# a_n572_n321# a_n1750_n1013# nfet_03v3 ad=1.22p pd=3.22u as=1.22p ps=3.22u w=2u l=0.28u M=5
+X2 a_3440_n321# a_3384_n849# a_3156_n321# a_n1750_n1013# nfet_03v3 ad=1.22p pd=3.22u as=2.28p ps=6.28u w=2u l=0.28u M=5
+C0 a_n572_n321# a_n856_n321# 3.11893f
+C1 a_3440_n321# a_3156_n321# 3.11893f
+C2 a_3156_n321# a_n1750_n1013# 2.06981f
+C3 a_3384_n849# a_n1750_n1013# 4.261509f
+C4 a_n572_n321# a_n1750_n1013# 2.06981f
+C5 a_n628_n849# a_n1750_n1013# 4.261509f
+.ends
+
+.subckt Gilbert_cell_hierarchal_mixing_stage VSS I_bias_pos I_bias_neg V_out_p V_out_n
++ V_LO V_LO_b V_RF V_RF_b
+XLO_diff_pairs_interdigitized_0 RF_diff_pair$1_0/a_3156_n321# V_LO V_LO_b RF_diff_pair$1_0/a_n856_n321#
++ V_out_p V_out_n VSS LO_diff_pairs_interdigitized
+XRF_diff_pair$1_0 V_RF_b I_bias_neg RF_diff_pair$1_0/a_3156_n321# V_RF I_bias_pos
++ VSS RF_diff_pair$1_0/a_n856_n321# VSS RF_diff_pair$1
+C0 RF_diff_pair$1_0/a_n856_n321# I_bias_pos 1.071187f
+C1 I_bias_pos VSS 3.381997f
+C2 V_RF_b VSS 5.793664f
+C3 I_bias_neg VSS 1.756341f
+C4 RF_diff_pair$1_0/a_n856_n321# VSS 4.204947f
+C5 RF_diff_pair$1_0/a_3156_n321# VSS 5.527071f
+C6 V_out_n VSS 2.043306f
+C7 V_out_p VSS 2.628024f
+C8 V_LO_b VSS 20.87427f
+C9 V_LO VSS 20.876942f
+C10 V_RF VSS 5.786502f
+.ends
+
