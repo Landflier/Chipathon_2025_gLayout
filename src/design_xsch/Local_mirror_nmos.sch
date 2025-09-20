@@ -82,10 +82,10 @@ L=l_mir
 W=w_mir
 nf=nf_mir
 m=1
-ad="'int((nf+1)/2) * W/nf * 0.18u'"
-pd="'2*int((nf+1)/2) * (W/nf + 0.18u)'"
-as="'int((nf+2)/2) * W/nf * 0.18u'"
-ps="'2*int((nf+2)/2) * (W/nf + 0.18u)'"
+ad="'int((nf_mir+1)/2) * W/nf_mir * 0.18u'"
+pd="'2*int((nf_mir+1)/2) * (W/nf_mir + 0.18u)'"
+as="'int((nf_mir+2)/2) * W/nf_mir * 0.18u'"
+ps="'2*int((nf_mir+2)/2) * (W/nf_mir + 0.18u)'"
 nrd="'0.18u / W'" nrs="'0.18u / W'"
 sa=0 sb=0 sd=0
 model=nfet_03v3
@@ -98,10 +98,10 @@ L=l_ref
 W=w_ref
 nf=nf_ref
 m=1
-ad="'int((nf+1)/2) * W/nf * 0.18u'"
-pd="'2*int((nf+1)/2) * (W/nf + 0.18u)'"
-as="'int((nf+2)/2) * W/nf * 0.18u'"
-ps="'2*int((nf+2)/2) * (W/nf + 0.18u)'"
+ad="'int((nf_ref+1)/2) * W/nf_ref * 0.18u'"
+pd="'2*int((nf_ref+1)/2) * (W/nf_ref + 0.18u)'"
+as="'int((nf_ref+2)/2) * W/nf_ref * 0.18u'"
+ps="'2*int((nf_ref+2)/2) * (W/nf_ref + 0.18u)'"
 nrd="'0.18u / W'" nrs="'0.18u / W'"
 sa=0 sb=0 sd=0
 model=nfet_03v3
