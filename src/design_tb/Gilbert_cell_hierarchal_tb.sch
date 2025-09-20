@@ -6,15 +6,15 @@ V {}
 S {}
 E {}
 B 2 1780 -1200 2580 -800 {flags=graph,unlocked
-y1=1.1
-y2=4.1
+y1=-1.2346793
+y2=2.9695862
 ypos1=0
 ypos2=2
 divy=5
 subdivy=1
 unity=1
-x1=-5.2133076e-09
-x2=1.995867e-07
+x1=1.1766669e-07
+x2=3.224667e-07
 divx=5
 subdivx=1
 xlabmag=1.0
@@ -35,15 +35,15 @@ sim_type=tran
 autoload=1
 rawfile=$netlist_dir/Gilbert_cell_hierarchal_sim.raw}
 B 2 1780 -1650 2580 -1250 {flags=graph,unlocked
-y1=2.2e-17
-y2=3.1
+y1=1.7e-13
+y2=1.6
 ypos1=0
 ypos2=2
 divy=5
 subdivy=1
 unity=1
-x1=-38496718
-x2=1.1908998e+08
+x1=-6979370.7
+x2=1.506073e+08
 divx=5
 subdivx=1
 xlabmag=1.0
@@ -193,14 +193,18 @@ N 1370 -920 1390 -920 {
 lab=#net7}
 N 1390 -1510 1390 -920 {
 lab=#net7}
-N 1030 -1720 1110 -1720 {
+N 1030 -1720 1040 -1720 {
 lab=#net4}
-N 1170 -1720 1250 -1720 {
-lab=#net10}
-N 1170 -1760 1250 -1760 {
-lab=#net11}
-N 830 -1760 1110 -1760 {
+N 830 -1760 1040 -1760 {
 lab=#net3}
+N 1040 -1760 1130 -1760 {
+lab=#net3}
+N 1040 -1720 1130 -1720 {
+lab=#net4}
+N 1190 -1720 1250 -1720 {
+lab=#net10}
+N 1190 -1760 1250 -1760 {
+lab=#net11}
 C {code.sym} 50 -190 0 0 {name=MODELS only_toplevel=true
 format="tcleval( @value )"
 value="
@@ -228,12 +232,13 @@ value="
     * alter @V_LO_b[sin] = [ $cm_lo $amp_lo $freq_lo 0 0 180 ]
 
     set freq_lo = 100Meg
+    * set freq_lo = 20Meg
     set cm_lo = 1.8
     set amp_lo = 0.4
 
     set cm_rf  = 1.2
     set freq_rf = 89.3Meg
-    * set freq_rf = 10.7Meg
+    * set freq_rf = 10.0Meg
     set amp_rf  = 0.1
 
     * set the parameters to the voltage sources
@@ -253,7 +258,7 @@ value="
     set appendwrite
 
     * Transient analysis to observe mixing operation
-    tran 3p 0.5u
+    tran 1p 0.5u
     write Gilbert_cell_hierarchal_sim.raw
 
     * Calculate differential output for conversion gain measurement
@@ -404,13 +409,15 @@ C {vdd.sym} 1190 -1940 0 0 {name=l6 lab=VDD}
 C {gnd.sym} 1190 -1670 0 0 {name=l14 lab=GND}
 C {opin.sym} 1640 -1800 0 0 {name=p5 lab=V_out}
 C {ammeter.sym} 1390 -1540 0 0 {name=Vmeas2 savecurrent=true spice_ignore=0}
-C {capa.sym} 1140 -1760 3 0 {name=C1
-m=1
-value=1f
-footprint=1206
-device="ceramic capacitor"}
-C {capa.sym} 1140 -1720 1 0 {name=C2
-m=1
-value=1f
-footprint=1206
-device="ceramic capacitor"}
+C {symbols/cap_pmos_03v3.sym} 1160 -1760 3 0 {name=C1
+W=10e-6
+L=1e-6
+model=cap_pmos_03v3
+spiceprefix=X
+m=1}
+C {symbols/cap_pmos_03v3.sym} 1160 -1720 3 1 {name=C2
+W=10e-6
+L=1e-6
+model=cap_pmos_03v3
+spiceprefix=X
+m=1}

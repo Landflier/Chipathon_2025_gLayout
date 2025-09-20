@@ -1,5 +1,5 @@
-** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_tb/Gilbert_cell_hierarchal_tb.sch
-**.subckt Gilbert_cell_hierarchal_tb V_LO V_LO_b V_RF V_RF_b V_out
+** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_tb/PEX/Gilbert_cell_hierarchal_tb_PEX.sch
+**.subckt Gilbert_cell_hierarchal_tb_PEX V_LO V_LO_b V_RF V_RF_b V_out
 *.ipin V_LO
 *.ipin V_LO_b
 *.ipin V_RF
@@ -16,7 +16,6 @@ V_RF V_RF GND sin( 1 1 1 0 )
 V_RF_b V_RF_b GND sin( 1 1 1 0 0 180 )
 .save i(v_rf_b)
 I0 net8 GND 10u
-x1 net4 net3 V_LO V_LO_b V_RF V_RF_b net1 net2 GND Gilbert_cell_hierarchal_mixing_stage
 x2 net3 net4 VDD Gilbert_cell_hierarchal_loading_stage
 XR_load_3 net1 net2 VDD pplus_u r_width=0.5e-6 r_length=5e-6 m=1
 x3 VDD net5 net6 net7 net8 GND Biasing_network_with_local_mirros
@@ -27,8 +26,9 @@ Vmeas1 net2 net6 0
 x4 VDD V_out net11 net10 net9 GND 5T-OTA-buffer_no_hierarchy
 Vmeas2 net9 net7 0
 .save i(vmeas2)
-XC1 net11 net3 cap_pmos_03v3 c_width=10e-6 c_length=1e-6 m=1
-XC2 net10 net4 cap_pmos_03v3 c_width=10e-6 c_length=1e-6 m=1
+XC1 net3 net11 cap_pmos_03v3 c_width=1e-6 c_length=1e-6 m=1
+XC2 net4 net10 cap_pmos_03v3 c_width=1e-6 c_length=1e-6 m=1
+x1 net4 net3 V_LO V_LO_b V_RF V_RF_b net1 net2 GND Gilbert_mixer_layout
 **** begin user architecture code
 
 .include /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/design.ngspice
@@ -54,13 +54,12 @@ XC2 net10 net4 cap_pmos_03v3 c_width=10e-6 c_length=1e-6 m=1
     * alter @V_LO_b[sin] = [ $cm_lo $amp_lo $freq_lo 0 0 180 ]
 
     set freq_lo = 100Meg
-    * set freq_lo = 20Meg
     set cm_lo = 1.8
     set amp_lo = 0.4
 
     set cm_rf  = 1.2
     set freq_rf = 89.3Meg
-    * set freq_rf = 10.0Meg
+    * set freq_rf = 10.7Meg
     set amp_rf  = 0.1
 
     * set the parameters to the voltage sources
@@ -80,7 +79,7 @@ XC2 net10 net4 cap_pmos_03v3 c_width=10e-6 c_length=1e-6 m=1
     set appendwrite
 
     * Transient analysis to observe mixing operation
-    tran 1p 0.5u
+    tran 3p 0.5u
     write Gilbert_cell_hierarchal_sim.raw
 
     * Calculate differential output for conversion gain measurement
@@ -166,34 +165,6 @@ XC2 net10 net4 cap_pmos_03v3 c_width=10e-6 c_length=1e-6 m=1
 
 **** end user architecture code
 **.ends
-
-* expanding   symbol:  /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Gilbert_cell_hierarchal_mixing_stage.sym # of pins=9
-** sym_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Gilbert_cell_hierarchal_mixing_stage.sym
-** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Gilbert_cell_hierarchal_mixing_stage.sch
-.subckt Gilbert_cell_hierarchal_mixing_stage V_out_n V_out_p V_LO V_LO_b V_RF V_RF_b I_bias_pos I_bias_neg VSS
-*.ipin V_LO
-*.ipin V_LO_b
-*.ipin V_RF
-*.ipin V_RF_b
-*.opin V_out_p
-*.opin V_out_n
-*.iopin I_bias_neg
-*.iopin I_bias_pos
-*.iopin VSS
-XM_dp_lo_pos V_out_p V_LO rf_diff_pair_pos_input VSS nfet_03v3 L=0.28u W=20u nf=5 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u'
-+ pd='2*int((nf+1)/2) * (W/nf + 0.18u)' ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
-XM_dp_lo_neg V_out_n V_LO_b rf_diff_pair_pos_input VSS nfet_03v3 L=0.28u W=20u nf=5 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u'
-+ pd='2*int((nf+1)/2) * (W/nf + 0.18u)' ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
-XM_dp_lo_b_pos V_out_p V_LO_b rf_diff_pair_neg_input VSS nfet_03v3 L=0.28u W=20u nf=5 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u'
-+ pd='2*int((nf+1)/2) * (W/nf + 0.18u)' ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
-XM_dp_lo_b_neg V_out_n V_LO rf_diff_pair_neg_input VSS nfet_03v3 L=0.28u W=20u nf=5 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u'
-+ pd='2*int((nf+1)/2) * (W/nf + 0.18u)' ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
-XM_rf_pos rf_diff_pair_pos_input V_RF I_bias_pos VSS nfet_03v3 L=0.28u W=10u nf=5 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u'
-+ pd='2*int((nf+1)/2) * (W/nf + 0.18u)' ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
-XM_rf_neg rf_diff_pair_neg_input V_RF_b I_bias_neg VSS nfet_03v3 L=0.28u W=10u nf=5 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u'
-+ pd='2*int((nf+1)/2) * (W/nf + 0.18u)' ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
-.ends
-
 
 * expanding   symbol:  /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Gilbert_cell_hierarchal_loading_stage.sym # of pins=3
 ** sym_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Gilbert_cell_hierarchal_loading_stage.sym

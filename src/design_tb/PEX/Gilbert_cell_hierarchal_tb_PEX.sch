@@ -5,16 +5,16 @@ K {}
 V {}
 S {}
 E {}
-B 2 2450 -1200 3250 -800 {flags=graph,unlocked
-y1=-1.2
-y2=3
+B 2 1780 -1200 2580 -800 {flags=graph,unlocked
+y1=1.1
+y2=4.1
 ypos1=0
 ypos2=2
 divy=5
 subdivy=1
 unity=1
-x1=-1.5e-08
-x2=2.85e-07
+x1=5.0266928e-09
+x2=2.098267e-07
 divx=5
 subdivx=1
 xlabmag=1.0
@@ -26,42 +26,40 @@ unitx=1
 logx=0
 logy=0
 rainbow=1
-color="4 8 6 7"
+color="4 8 6"
 node="v_rf
 v_lo
-\\"diff_output; v_out_p v_out_n -\\"
-v_out_p"
-rawfile=$netlist_dir/Gilbert_cell_tb_sim.raw
+v_out"
+
 sim_type=tran
-autoload=1}
-B 2 2450 -1630 3250 -1230 {flags=graph,unlocked
-y1=6e-14
+autoload=1
+rawfile=$netlist_dir/Gilbert_cell_hierarchal_sim.raw}
+B 2 1780 -1650 2580 -1250 {flags=graph,unlocked
+y1=4.8e-09
 y2=0.8
 ypos1=0
 ypos2=2
 divy=5
 subdivy=1
 unity=1
-x1=-25782827
-x2=2.9112984e+08
+x1=40296625
+x2=1.9788328e+08
 divx=5
 subdivx=1
 xlabmag=1.0
 ylabmag=1.0
 node="v_rf_diff
 v_out_diff
-
 v_lo_diff"
 color="4 6 8"
 dataset=-1
 unitx=1
 logx=0
 logy=0
-rainbow=1
-rawfile=$netlist_dir/Gilbert_cell_tb_sim.raw
+rawfile=$netlist_dir/Gilbert_cell_hierarchal_sim.raw
 sim_type=sp
-sweep=frequency
 autoload=1}
+P 4 5 860 -1230 1000 -1230 1000 -1120 860 -1120 860 -1230 {}
 T {Desription
 
 Gilbert cell mixer for FM radio receiver, 
@@ -74,7 +72,8 @@ T {f_LO = 100 MHz
 f_RF = 89.7 MHz
 
 f_IF = f_LO - f_RF 
-       = 10.7 MHz} 3250 -1200 0 0 0.4 0.4 {}
+       = 10.7 MHz} 2580 -1200 0 0 0.4 0.4 {}
+T {Degeneration} 880 -1220 0 0 0.3 0.3 {}
 N 120 -2270 120 -2250 {
 lab=GND}
 N 120 -2350 120 -2330 {lab=V_LO}
@@ -94,94 +93,118 @@ N 120 -2100 120 -2080 {
 lab=GND}
 N 120 -2170 120 -2160 {
 lab=VDD}
-N 200 -1240 210 -1240 {
-lab=V_RF_b}
-N 200 -1270 260 -1270 {
-lab=V_RF}
-N 210 -1240 250 -1240 {
-lab=V_RF_b}
-N 460 -1500 460 -1440 {
-lab=V_LO}
-N 510 -1500 510 -1440 {
-lab=V_LO_b}
-N 730 -1280 780 -1280 {
-lab=V_out_p}
-N 730 -1230 780 -1230 {
-lab=V_out_n}
-N 460 -1520 460 -1500 {
-lab=V_LO}
-N 510 -1520 510 -1500 {
-lab=V_LO_b}
-N 670 -1230 730 -1230 {
-lab=V_out_n}
-N 670 -1280 730 -1280 {
-lab=V_out_p}
-N 250 -1240 300 -1240 {
-lab=V_RF_b}
-N 260 -1270 300 -1270 {
-lab=V_RF}
-N 440 -1050 440 -930 {
-lab=VDD}
-N 530 -1050 530 -930 {
+N 670 -1350 670 -1300 {
 lab=GND}
-N 440 -930 440 -860 {
-lab=VDD}
-N 410 -860 440 -860 {
-lab=VDD}
-N 410 -880 410 -860 {
-lab=VDD}
-N 530 -930 530 -880 {
-lab=GND}
-N 470 -1070 470 -1030 {
-lab=I_bias_pos}
-N 440 -1080 440 -1050 {
-lab=VDD}
-N 530 -1080 530 -1050 {
-lab=GND}
-N 470 -1030 470 -1010 {
-lab=I_bias_pos}
-N 120 -1810 120 -1760 {
-lab=GND}
-N 120 -1760 140 -1760 {
-lab=GND}
-N 170 -1760 170 -1740 {
-lab=GND}
-N 120 -1910 120 -1870 {
-lab=I_BIAS}
-N 140 -1760 220 -1760 {
-lab=GND}
-N 220 -1810 220 -1760 {
-lab=GND}
-N 220 -1910 220 -1870 {
-lab=I_BIAS}
-N 350 -540 390 -550 {
-lab=GND}
-N 120 -1910 220 -1910 {
-lab=I_BIAS}
-N 170 -1980 170 -1910 {
-lab=I_BIAS}
-N 330 -720 400 -720 {
-lab=I_BIAS}
-N 460 -780 470 -1010 {
-lab=I_bias_pos}
-N 780 -1230 960 -1230 {
-lab=V_out_n}
-N 780 -1280 960 -1280 {
-lab=V_out_p}
-N 1020 -1390 1020 -1330 {
-lab=VDD}
-N 1050 -1190 1050 -1110 {
-lab=GND}
-N 1140 -1250 1260 -1250 {
+N 910 -1320 910 -1280 {
 lab=#net1}
-N 1860 -1540 1860 -1470 {
-lab=Oscilloscope_signal}
-N 490 -1070 490 -780 {
+N 910 -1280 910 -1260 {
+lab=#net1}
+N 950 -1320 950 -1260 {
 lab=#net2}
-N 460 -660 460 -640 {
-lab=GND}
-N 520 -780 1020 -1150 {
+N 830 -1790 830 -1690 {
 lab=#net3}
+N 1030 -1790 1030 -1690 {
+lab=#net4}
+N 660 -1940 660 -1910 {
+lab=VDD}
+N 660 -1910 750 -1910 {
+lab=VDD}
+N 640 -1490 730 -1490 {
+lab=V_LO_b}
+N 640 -1540 730 -1540 {
+lab=V_LO}
+N 640 -1440 730 -1440 {
+lab=V_RF}
+N 640 -1380 730 -1380 {
+lab=V_RF_b}
+N 670 -1350 730 -1350 {
+lab=GND}
+N 910 -1260 910 -1230 {
+lab=#net1}
+N 950 -1260 950 -1230 {
+lab=#net2}
+N 930 -1160 930 -1140 {
+lab=VDD}
+N 900 -1180 900 -1120 {
+lab=#net1}
+N 960 -1180 960 -1130 {
+lab=#net2}
+N 900 -1230 900 -1180 {
+lab=#net1}
+N 900 -1230 910 -1230 {
+lab=#net1}
+N 960 -1230 960 -1180 {
+lab=#net2}
+N 950 -1230 960 -1230 {
+lab=#net2}
+N 960 -1130 960 -1120 {
+lab=#net2}
+N 820 -930 820 -870 {
+lab=#net5}
+N 820 -930 900 -930 {
+lab=#net5}
+N 1060 -930 1060 -870 {
+lab=#net6}
+N 960 -930 1060 -930 {
+lab=#net6}
+N 1300 -920 1300 -870 {
+lab=#net7}
+N 370 -830 400 -830 {
+lab=VDD}
+N 370 -860 370 -830 {
+lab=VDD}
+N 370 -570 400 -570 {
+lab=GND}
+N 370 -570 370 -540 {
+lab=GND}
+N 900 -1120 900 -1020 {
+lab=#net1}
+N 960 -1120 960 -1020 {
+lab=#net2}
+N 300 -670 300 -650 {
+lab=#net8}
+N 300 -670 400 -670 {
+lab=#net8}
+N 300 -570 370 -570 {
+lab=GND}
+N 300 -590 300 -570 {
+lab=GND}
+N 900 -960 900 -930 {
+lab=#net5}
+N 960 -960 960 -930 {
+lab=#net6}
+N 1190 -1940 1190 -1890 {
+lab=VDD}
+N 1190 -1890 1250 -1890 {
+lab=VDD}
+N 1190 -1690 1250 -1690 {
+lab=GND}
+N 1190 -1690 1190 -1670 {
+lab=GND}
+N 1300 -920 1370 -920 {
+lab=#net7}
+N 1540 -1800 1640 -1800 {
+lab=V_out}
+N 1390 -1660 1390 -1610 {
+lab=#net9}
+N 1390 -1610 1390 -1570 {
+lab=#net9}
+N 1370 -920 1390 -920 {
+lab=#net7}
+N 1390 -1510 1390 -920 {
+lab=#net7}
+N 1030 -1720 1040 -1720 {
+lab=#net4}
+N 830 -1760 1040 -1760 {
+lab=#net3}
+N 1040 -1760 1130 -1760 {
+lab=#net3}
+N 1040 -1720 1130 -1720 {
+lab=#net4}
+N 1190 -1720 1250 -1720 {
+lab=#net10}
+N 1190 -1760 1250 -1760 {
+lab=#net11}
 C {code.sym} 50 -190 0 0 {name=MODELS only_toplevel=true
 format="tcleval( @value )"
 value="
@@ -190,12 +213,14 @@ value="
 .lib $::180MCU_MODELS/sm141064.ngspice mimcap_typical
 .lib $::180MCU_MODELS/sm141064.ngspice cap_mim
 .lib $::180MCU_MODELS/sm141064.ngspice res_typical
-
+.lib $::180MCU_MODELS/sm141064.ngspice diode_typical
+.lib $::180MCU_MODELS/sm141064.ngspice bjt_typical
+.lib $::180MCU_MODELS/sm141064.ngspice moscap_typical
 "
 }
-C {code.sym} 2705 -2395 0 0 {name=SPICE only_toplevel=true 
+C {code.sym} 2710 -2400 0 0 {name=SPICE only_toplevel=false
 value="
-* let sets vectors to a plot, while set sets a variable, globally accessible in .control
+.op
 .control
 
     * Set frequency and amplitude variables to proper values from within the control sequence
@@ -216,8 +241,6 @@ value="
     set amp_rf  = 0.1
 
     * set the parameters to the voltage sources
-    * alter @V_LO[pulse] = [ 2 2.5 0 0.5p 0.5p 5n 10n ]
-    * alter @V_LO_b[pulse] = [ 2 2.5 5n 0.5p 0.5p 5n 10n]
     alter @V_LO[sin] = [ $cm_lo $amp_lo $freq_lo 0 ]
     alter @V_LO_b[sin] = [ $cm_lo $amp_lo $freq_lo 0 0 180 ]
     alter @V_RF[sin] = [ $cm_rf $amp_rf $freq_rf 0 ]
@@ -227,61 +250,19 @@ value="
     
     * operating point
     op
-    show
+    * show
 
-    * save transistor op parameters
-    * diff_pair_1 transistors
-    save @m.xgilbert_mixer.xm_rf_pos.m0[vgs]
-    save @m.xgilbert_mixer.xm_rf_pos.m0[vds]
-    save @m.xgilbert_mixer.xm_rf_pos.m0[id]
-    save @m.xgilbert_mixer.xm_rf_pos.m0[gm]
-    save @m.xgilbert_mixer.xm_rf_pos.m0[vth]
-    save @m.xgilbert_mixer.xm_rf_pos.m0[cgg]
-    save @m.xgilbert_mixer.xm_rf_neg.m0[vgs]
-    save @m.xgilbert_mixer.xm_rf_neg.m0[vds]
-    save @m.xgilbert_mixer.xm_rf_neg.m0[id]
-    save @m.xgilbert_mixer.xm_rf_neg.m0[gm]
-    save @m.xgilbert_mixer.xm_rf_neg.m0[vth]
-    save @m.xgilbert_mixer.xm_rf_neg.m0[cgg]
-    
-    * diff_pair_2 transistors  
-    * save @m.xdiff_pair_2.xm1.m0[vgs]
-    * save @m.xdiff_pair_2.xm1.m0[vds]
-    * save @m.xdiff_pair_2.xm1.m0[id]
-    * save @m.xdiff_pair_2.xm1.m0[gm]
-    * save @m.xdiff_pair_2.xm1.m0[vth]
-    * save @m.xdiff_pair_2.xm1.m0[cgg]
-    * save @m.xdiff_pair_2.xm2.m0[vgs]
-    * save @m.xdiff_pair_2.xm2.m0[vds]
-    * save @m.xdiff_pair_2.xm2.m0[id]
-    * save @m.xdiff_pair_2.xm2.m0[gm]
-    * save @m.xdiff_pair_2.xm2.m0[vth]
-    * save @m.xdiff_pair_2.xm2.m0[cgg]
-    
-    * diff_pair_3 transistors
-    * save @m.xdiff_pair_3.xm1.m0[vgs]
-    * save @m.xdiff_pair_3.xm1.m0[vds]
-    * save @m.xdiff_pair_3.xm1.m0[id]
-    * save @m.xdiff_pair_3.xm1.m0[gm]
-    * save @m.xdiff_pair_3.xm1.m0[vth]
-    * save @m.xdiff_pair_3.xm1.m0[cgg]
-    * save @m.xdiff_pair_3.xm2.m0[vgs]
-    * save @m.xdiff_pair_3.xm2.m0[vds]
-    * save @m.xdiff_pair_3.xm2.m0[id]
-    * save @m.xdiff_pair_3.xm2.m0[gm]
-    * save @m.xdiff_pair_3.xm2.m0[vth]
-    * save @m.xdiff_pair_3.xm2.m0[cgg]
-
-    write Top_level_sim.raw
+    write Gilbert_cell_hierarchal_sim.raw
 
     set appendwrite
 
     * Transient analysis to observe mixing operation
-    tran 1p 0.1u
-    write Top_level_sim.raw
+    tran 3p 0.5u
+    write Gilbert_cell_hierarchal_sim.raw
 
     * Calculate differential output for conversion gain measurement
-    let v_out_diff = v(v_out_p)-v(v_out_n)
+    * let v_out_diff = v(v_out_p)-v(v_out_n)
+    let v_out_diff = v(v_out)
     let v_rf_diff = v(v_rf)-v(v_rf_b)
     let v_lo_diff = v(v_lo)-v(v_lo_b)
 
@@ -306,12 +287,21 @@ value="
 
     * Define bandwidth for power integration (10MHz around nominal frequencies).
     *  To improve resolution increase time of tran simulation, reduce time step, in order to reduce FFT resolution
-    let bandwidth = 10e6
+    let bandwidth = 15e6
     let bin_width = floor(bandwidth/freq_res + 0.5)
+    print bin_width
+
    
     * Find center bins for RF and IF frequencies
     let rf_center_bin = floor( $freq_rf/freq_res + 0.5 )
     let if_center_bin = floor( freq_if/freq_res + 0.5 )
+    print freq_if
+    print freq_res
+    print abs(v_out_diff[if_center_bin])
+    print abs(v_out_diff[if_center_bin-1])
+    print abs(v_out_diff[if_center_bin+1])
+
+
 
     * Calculate power by summing magnitude squared over the bandwidth
     * RF power integration (±10MHz around freq_rf)
@@ -333,8 +323,8 @@ value="
     while j <= if_center_bin + bin_width
         if j >= 0 & j < length(v_out_diff)
             let bin_freq = j * freq_res
-            * print bin_freq
-            * print abs(v_out_diff[j])
+            print bin_freq
+            print abs(v_out_diff[j])
             let if_power_total = if_power_total + abs(v_out_diff[j])^2
         end
         let j = j + 1
@@ -346,17 +336,17 @@ value="
     let conversion_gain_db = 10*log10(if_power_total/rf_power_total)
     print conversion_gain_db
 
-    write Top_level_sim.raw
+    write Gilbert_cell_hierarchal_sim.raw
 
 .endc
 "}
-C {devices/launcher.sym} 2497.5 -722.5 2 1 {name=h2
+C {devices/launcher.sym} 1830 -720 2 1 {name=h2
 descr="Run ngSpice simulation (ctrl+left-click)" 
 tclcommand="xschem save; xschem netlist; xschem simulate"
 }
-C {devices/launcher.sym} 2500 -680 0 0 {name=h1
+C {devices/launcher.sym} 1830 -680 0 0 {name=h1
 descr="Load ngSpice waveforms (ctrl+left-click)" 
-tclcommand="xschem raw_read $netlist_dir/Gilbert_cell_tb_sim.raw tran"
+tclcommand="xschem raw_read $netlist_dir/Gilbert_cell_hierarchal_sim.raw tran"
 }
 C {lab_wire.sym} 120 -2350 0 0 {name=p8 sig_type=std_logic lab=V_LO}
 C {lab_wire.sym} 200 -2350 0 0 {name=p9 sig_type=std_logic lab=V_LO_b
@@ -389,29 +379,44 @@ C {gnd.sym} 120 -2250 0 0 {name=l1 lab=GND}
 C {gnd.sym} 200 -2250 0 0 {name=l2 lab=GND}
 C {gnd.sym} 270 -2250 0 0 {name=l3 lab=GND}
 C {gnd.sym} 340 -2250 0 0 {name=l4 lab=GND}
-C {ipin.sym} 460 -1520 3 1 {name=p1 lab=V_LO}
-C {ipin.sym} 510 -1520 3 1 {name=p2 lab=V_LO_b
+C {ipin.sym} 640 -1540 2 1 {name=p1 lab=V_LO}
+C {ipin.sym} 640 -1490 2 1 {name=p2 lab=V_LO_b
 }
-C {ipin.sym} 200 -1270 0 0 {name=p3 lab=V_RF}
-C {ipin.sym} 200 -1240 2 1 {name=p4 lab=V_RF_b
+C {ipin.sym} 640 -1440 0 0 {name=p3 lab=V_RF}
+C {ipin.sym} 640 -1380 2 1 {name=p4 lab=V_RF_b
 }
-C {opin.sym} 780 -1280 0 0 {name=p5 lab=V_out_p}
-C {opin.sym} 780 -1230 0 0 {name=p7 lab=V_out_n}
-C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Gilbert_cell_no_hierarchy.sym} 480 -1260 2 1 {name=xGilbert_mixer}
-C {isource.sym} 120 -1840 0 0 {name=I0 value=50u}
-C {isource.sym} 220 -1840 0 0 {name=I1 value=50u}
-C {vdd.sym} 410 -880 0 0 {name=l10 lab=VDD}
-C {gnd.sym} 530 -880 0 0 {name=l11 lab=GND}
-C {gnd.sym} 170 -1740 0 0 {name=l6 lab=GND}
-C {lab_pin.sym} 470 -1010 3 0 {name=p6 sig_type=std_logic lab=I_bias_pos}
-C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/5T-OTA-buffer_no_hierarchy.sym} 1110 -1250 0 0 {name=x1}
-C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Dummy_devices_all.sym} 540 -550 0 0 {name=x3}
-C {gnd.sym} 350 -540 0 0 {name=l5 lab=GND}
-C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Biasing_network_no_hierarchy.sym} 490 -720 0 0 {name=x4}
-C {lab_pin.sym} 170 -1980 3 1 {name=p13 sig_type=std_logic lab=I_BIAS}
-C {lab_pin.sym} 330 -720 0 0 {name=p14 sig_type=std_logic lab=I_BIAS}
-C {vdd.sym} 1020 -1390 0 0 {name=l12 lab=VDD}
-C {gnd.sym} 1050 -1110 0 0 {name=l13 lab=GND}
-C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Oscilloscope-probe.sym} 1410 -1250 0 0 {name=x_Probe_x10}
-C {opin.sym} 1860 -1540 0 0 {name=p16 lab=Oscilloscope_signal}
-C {gnd.sym} 460 -640 0 0 {name=l14 lab=GND}
+C {isource.sym} 300 -620 0 0 {name=I0 value=10u}
+C {gnd.sym} 670 -1300 0 0 {name=l11 lab=GND}
+C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Gilbert_cell_hierarchal_loading_stage.sym} 930 -1840 0 0 {name=x2}
+C {vdd.sym} 660 -1940 0 0 {name=l5 lab=VDD}
+C {lab_pin.sym} 930 -1140 3 0 {name=p15 sig_type=std_logic lab=VDD}
+C {symbols/pplus_u.sym} 930 -1180 1 1 {name=R_load_3
+W=0.5e-6
+L=5e-6
+model=pplus_u
+spiceprefix=X
+m=1
+hide_texts=true}
+C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Biasing_network_with_local_mirros.sym} 660 -660 0 0 {name=x3}
+C {vdd.sym} 370 -860 0 0 {name=l12 lab=VDD}
+C {gnd.sym} 370 -540 0 0 {name=l13 lab=GND}
+C {ammeter.sym} 900 -990 0 0 {name=Vmeas savecurrent=true spice_ignore=0}
+C {ammeter.sym} 960 -990 0 0 {name=Vmeas1 savecurrent=true spice_ignore=0}
+C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/5T-OTA-buffer_no_hierarchy.sym} 1390 -1800 0 0 {name=x4}
+C {vdd.sym} 1190 -1940 0 0 {name=l6 lab=VDD}
+C {gnd.sym} 1190 -1670 0 0 {name=l14 lab=GND}
+C {opin.sym} 1640 -1800 0 0 {name=p5 lab=V_out}
+C {ammeter.sym} 1390 -1540 0 0 {name=Vmeas2 savecurrent=true spice_ignore=0}
+C {symbols/cap_pmos_03v3.sym} 1160 -1760 1 1 {name=C1
+W=1e-6
+L=1e-6
+model=cap_pmos_03v3
+spiceprefix=X
+m=1}
+C {symbols/cap_pmos_03v3.sym} 1160 -1720 1 0 {name=C2
+W=1e-6
+L=1e-6
+model=cap_pmos_03v3
+spiceprefix=X
+m=1}
+C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_tb/PEX/Gilbert_cell_hierarchal_mixing_stage.sym} 930 -1490 0 0 {name=x1}
