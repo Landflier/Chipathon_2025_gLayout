@@ -15,23 +15,25 @@ V_RF V_RF GND sin( 1 1 1 0 )
 .save i(v_rf)
 V_RF_b V_RF_b GND sin( 1 1 1 0 0 180 )
 .save i(v_rf_b)
-I0 net8 GND 10u
-x2 net3 net4 VDD Gilbert_cell_hierarchal_loading_stage
+I0 net6 GND 10u
+x2 V_out_p V_out_n VDD Gilbert_cell_hierarchal_loading_stage
 XR_load_3 net1 net2 VDD pplus_u r_width=0.5e-6 r_length=5e-6 m=1
-x3 VDD net5 net6 net7 net8 GND Biasing_network_with_local_mirros
-Vmeas net1 net5 0
+x3 VDD net3 net4 net5 net6 GND Biasing_network_with_local_mirros
+Vmeas net1 net3 0
 .save i(vmeas)
-Vmeas1 net2 net6 0
+Vmeas1 net2 net4 0
 .save i(vmeas1)
-x4 VDD V_out net11 net10 net9 GND 5T-OTA-buffer_no_hierarchy
-Vmeas2 net9 net7 0
+x4 VDD net8 V_out_p V_out_n net7 GND 5T-OTA-buffer_no_hierarchy
+Vmeas2 net7 net5 0
 .save i(vmeas2)
-XC1 net3 net11 cap_pmos_03v3 c_width=1e-6 c_length=1e-6 m=1
-XC2 net4 net10 cap_pmos_03v3 c_width=1e-6 c_length=1e-6 m=1
-x1 net4 net3 V_LO V_LO_b V_RF V_RF_b net1 net2 GND Gilbert_mixer_layout
+x1 V_out_n V_out_p V_LO V_LO_b V_RF V_RF_b net1 net2 GND Gilbert_cell_hierarchal_mixing_stage
+C1 V_out GND 2p m=1
+Vmeas3 net8 V_out 0
+.save i(vmeas3)
 **** begin user architecture code
 
 .include /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/design.ngspice
+.include ~/Downloads/SSCS_PICO_2025/src/python/Gilbert_mixer_intedigited/lvs/netlists/Gilbert_mixer_extracted_layout_PEX.spice
 .lib /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/sm141064.ngspice typical
 .lib /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/sm141064.ngspice mimcap_typical
 .lib /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/sm141064.ngspice cap_mim
@@ -42,7 +44,6 @@ x1 net4 net3 V_LO V_LO_b V_RF V_RF_b net1 net2 GND Gilbert_mixer_layout
 
 
 
-.op
 .control
 
     * Set frequency and amplitude variables to proper values from within the control sequence
@@ -74,13 +75,13 @@ x1 net4 net3 V_LO V_LO_b V_RF V_RF_b net1 net2 GND Gilbert_mixer_layout
     op
     * show
 
-    write Gilbert_cell_hierarchal_sim.raw
+    write Gilbert_cell_PEX.raw
 
     set appendwrite
 
     * Transient analysis to observe mixing operation
-    tran 3p 0.5u
-    write Gilbert_cell_hierarchal_sim.raw
+    tran 5p 0.5u
+    write Gilbert_cell_PEX.raw
 
     * Calculate differential output for conversion gain measurement
     * let v_out_diff = v(v_out_p)-v(v_out_n)
@@ -127,17 +128,18 @@ x1 net4 net3 V_LO V_LO_b V_RF V_RF_b net1 net2 GND Gilbert_mixer_layout
 
     * Calculate power by summing magnitude squared over the bandwidth
     * RF power integration (±10MHz around freq_rf)
-    let rf_power_total = 0
-    let i = rf_center_bin - bin_width
-    while i <= rf_center_bin + bin_width
-        if i>0 & i < length(v_rf_diff)
-            let bin_freq = i * freq_res
+    * let rf_power_total = 0
+    * let i = rf_center_bin - bin_width
+    * while i <= rf_center_bin + bin_width
+    *     if i>0 & i < length(v_rf_diff)
+    *         let bin_freq = i * freq_res
             * print bin_freq
             * print abs(v_rf_diff[i])
-            let rf_power_total = rf_power_total + abs(v_rf_diff[i])^2
-        end
-        let i = i + 1
-    end
+    *         let rf_power_total = rf_power_total + abs(v_rf_diff[i])^2
+    *    end
+    *     let i = i + 1
+    * end
+    rf_power_total = 0
 
     * IF power integration (±10MHz around freq_if)
     let if_power_total = 0
@@ -158,7 +160,7 @@ x1 net4 net3 V_LO V_LO_b V_RF V_RF_b net1 net2 GND Gilbert_mixer_layout
     let conversion_gain_db = 10*log10(if_power_total/rf_power_total)
     print conversion_gain_db
 
-    write Gilbert_cell_hierarchal_sim.raw
+    write Gilbert_cell_PEX.raw
 
 .endc
 
@@ -173,8 +175,8 @@ x1 net4 net3 V_LO V_LO_b V_RF V_RF_b net1 net2 GND Gilbert_mixer_layout
 *.iopin I_in_neg
 *.iopin I_in_pos
 *.iopin VDD
-XR_load_2 I_in_pos VDD VDD ppolyf_u_1k r_width=1e-6 r_length=20e-6 m=1
-XR_load_1 I_in_neg VDD VDD ppolyf_u_1k r_width=1e-6 r_length=20e-6 m=1
+XR_load_2 I_in_pos VDD VDD ppolyf_u_1k r_width=0.5e-6 r_length=10e-6 m=1
+XR_load_1 I_in_neg VDD VDD ppolyf_u_1k r_width=0.5e-6 r_length=10e-6 m=1
 .ends
 
 

@@ -6,8 +6,8 @@ V {}
 S {}
 E {}
 B 2 1780 -1200 2580 -800 {flags=graph,unlocked
-y1=-1.2346793
-y2=2.9695862
+y1=0.36
+y2=3
 ypos1=0
 ypos2=2
 divy=5
@@ -26,10 +26,12 @@ unitx=1
 logx=0
 logy=0
 rainbow=1
-color="4 8 6"
+color="4 8 6 21 15"
 node="v_rf
 v_lo
-v_out"
+v_out
+v_out_p
+v_out_n"
 
 sim_type=tran
 autoload=1
@@ -102,9 +104,9 @@ lab=#net1}
 N 950 -1320 950 -1260 {
 lab=#net2}
 N 830 -1790 830 -1690 {
-lab=#net3}
+lab=V_out_p}
 N 1030 -1790 1030 -1690 {
-lab=#net4}
+lab=V_out_n}
 N 660 -1940 660 -1910 {
 lab=VDD}
 N 660 -1910 750 -1910 {
@@ -140,15 +142,13 @@ lab=#net2}
 N 960 -1130 960 -1120 {
 lab=#net2}
 N 820 -930 820 -870 {
-lab=#net5}
+lab=#net3}
 N 820 -930 900 -930 {
-lab=#net5}
+lab=#net3}
 N 1060 -930 1060 -870 {
-lab=#net6}
+lab=#net4}
 N 960 -930 1060 -930 {
-lab=#net6}
-N 1300 -920 1300 -870 {
-lab=#net7}
+lab=#net4}
 N 370 -830 400 -830 {
 lab=VDD}
 N 370 -860 370 -830 {
@@ -162,49 +162,63 @@ lab=#net1}
 N 960 -1120 960 -1020 {
 lab=#net2}
 N 300 -670 300 -650 {
-lab=#net8}
+lab=#net5}
 N 300 -670 400 -670 {
-lab=#net8}
+lab=#net5}
 N 300 -570 370 -570 {
 lab=GND}
 N 300 -590 300 -570 {
 lab=GND}
 N 900 -960 900 -930 {
-lab=#net5}
+lab=#net3}
 N 960 -960 960 -930 {
-lab=#net6}
-N 1190 -1940 1190 -1890 {
+lab=#net4}
+N 1300 -1940 1300 -1890 {
 lab=VDD}
-N 1190 -1890 1250 -1890 {
+N 1300 -1890 1360 -1890 {
 lab=VDD}
-N 1190 -1690 1250 -1690 {
+N 1300 -1690 1360 -1690 {
 lab=GND}
-N 1190 -1690 1190 -1670 {
+N 1300 -1690 1300 -1670 {
 lab=GND}
-N 1300 -920 1370 -920 {
-lab=#net7}
-N 1540 -1800 1640 -1800 {
+N 1650 -1800 1750 -1800 {
 lab=V_out}
-N 1390 -1660 1390 -1610 {
-lab=#net9}
-N 1390 -1610 1390 -1570 {
-lab=#net9}
-N 1370 -920 1390 -920 {
-lab=#net7}
-N 1390 -1510 1390 -920 {
+N 1500 -1660 1500 -1610 {
+lab=#net6}
+N 1500 -1610 1500 -1570 {
+lab=#net6}
+N 1500 -1510 1500 -920 {
 lab=#net7}
 N 1030 -1720 1040 -1720 {
-lab=#net4}
+lab=V_out_n}
 N 830 -1760 1040 -1760 {
-lab=#net3}
-N 1040 -1760 1130 -1760 {
-lab=#net3}
-N 1040 -1720 1130 -1720 {
-lab=#net4}
-N 1190 -1720 1250 -1720 {
-lab=#net10}
-N 1190 -1760 1250 -1760 {
-lab=#net11}
+lab=V_out_p}
+N 1040 -1760 1240 -1760 {
+lab=V_out_p}
+N 1040 -1720 1240 -1720 {
+lab=V_out_n}
+N 1300 -1720 1360 -1720 {
+lab=#net8}
+N 1300 -1760 1360 -1760 {
+lab=#net9}
+N 460 -1540 510 -1540 {
+lab=V_LO}
+N 570 -1540 640 -1540 {
+lab=V_LO}
+N 460 -1490 500 -1490 {
+lab=V_LO_b}
+N 560 -1490 640 -1490 {
+lab=V_LO_b}
+N 500 -1490 510 -1490 {
+lab=V_LO_b}
+N 510 -1490 560 -1490 {
+lab=V_LO_b}
+N 510 -1540 570 -1540 {
+lab=V_LO}
+N 1300 -870 1500 -870 {
+lab=#net7}
+N 1500 -920 1500 -870 {
+lab=#net7}
 C {code.sym} 50 -190 0 0 {name=MODELS only_toplevel=true
 format="tcleval( @value )"
 value="
@@ -258,7 +272,7 @@ value="
     set appendwrite
 
     * Transient analysis to observe mixing operation
-    tran 1p 0.5u
+    tran 3p 0.3u
     write Gilbert_cell_hierarchal_sim.raw
 
     * Calculate differential output for conversion gain measurement
@@ -380,8 +394,8 @@ C {gnd.sym} 120 -2250 0 0 {name=l1 lab=GND}
 C {gnd.sym} 200 -2250 0 0 {name=l2 lab=GND}
 C {gnd.sym} 270 -2250 0 0 {name=l3 lab=GND}
 C {gnd.sym} 340 -2250 0 0 {name=l4 lab=GND}
-C {ipin.sym} 640 -1540 2 1 {name=p1 lab=V_LO}
-C {ipin.sym} 640 -1490 2 1 {name=p2 lab=V_LO_b
+C {ipin.sym} 460 -1540 2 1 {name=p1 lab=V_LO}
+C {ipin.sym} 460 -1490 2 1 {name=p2 lab=V_LO_b
 }
 C {ipin.sym} 640 -1440 0 0 {name=p3 lab=V_RF}
 C {ipin.sym} 640 -1380 2 1 {name=p4 lab=V_RF_b
@@ -404,20 +418,22 @@ C {vdd.sym} 370 -860 0 0 {name=l12 lab=VDD}
 C {gnd.sym} 370 -540 0 0 {name=l13 lab=GND}
 C {ammeter.sym} 900 -990 0 0 {name=Vmeas savecurrent=true spice_ignore=0}
 C {ammeter.sym} 960 -990 0 0 {name=Vmeas1 savecurrent=true spice_ignore=0}
-C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/5T-OTA-buffer_no_hierarchy.sym} 1390 -1800 0 0 {name=x4}
-C {vdd.sym} 1190 -1940 0 0 {name=l6 lab=VDD}
-C {gnd.sym} 1190 -1670 0 0 {name=l14 lab=GND}
-C {opin.sym} 1640 -1800 0 0 {name=p5 lab=V_out}
-C {ammeter.sym} 1390 -1540 0 0 {name=Vmeas2 savecurrent=true spice_ignore=0}
-C {symbols/cap_pmos_03v3.sym} 1160 -1760 3 0 {name=C1
+C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/5T-OTA-buffer_no_hierarchy.sym} 1500 -1800 0 0 {name=x4}
+C {vdd.sym} 1300 -1940 0 0 {name=l6 lab=VDD}
+C {gnd.sym} 1300 -1670 0 0 {name=l14 lab=GND}
+C {opin.sym} 1750 -1800 0 0 {name=p5 lab=V_out}
+C {ammeter.sym} 1500 -1540 0 0 {name=Vmeas2 savecurrent=true spice_ignore=0}
+C {symbols/cap_pmos_03v3.sym} 1270 -1760 3 0 {name=C1
 W=10e-6
 L=1e-6
 model=cap_pmos_03v3
 spiceprefix=X
 m=1}
-C {symbols/cap_pmos_03v3.sym} 1160 -1720 3 1 {name=C2
+C {symbols/cap_pmos_03v3.sym} 1270 -1720 3 1 {name=C2
 W=10e-6
 L=1e-6
 model=cap_pmos_03v3
 spiceprefix=X
 m=1}
+C {lab_wire.sym} 1140 -1720 3 0 {name=p6 sig_type=std_logic lab=V_out_n hide_texts=True}
+C {lab_wire.sym} 1140 -1760 3 1 {name=p7 sig_type=std_logic lab=V_out_p hide_texts=True}

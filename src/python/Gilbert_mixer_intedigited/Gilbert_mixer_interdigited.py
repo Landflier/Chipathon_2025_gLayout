@@ -639,7 +639,8 @@ class GilbertMixerInterdigited:
             "fingers": self.rf_fingers,
             "multipliers": 1,
             "with_tie": config.with_tie,
-            "with_dummy": config.with_dummies,
+            # "with_dummy": config.with_dummies,
+            "with_dummy": False,
             "with_dnwell": config.with_dnwell,
             "with_substrate_tap": config.with_substrate_tap,
             "length": self.rf_length,
@@ -655,9 +656,12 @@ class GilbertMixerInterdigited:
         M2_temp = nmos(self.pdk, **fet_params)
         
         # Swap drain and source of M1
-        M1 = swap_drain_source_ports(M1_temp)
-        M2 = M2_temp
+        # M1 = swap_drain_source_ports(M1_temp)
+        # M2 = swap_drain_source_ports(M2_temp)
         
+        M1 = (M1_temp)
+        M2 = (M2_temp)
+
         # Place transistors with 2um separation
         M1_ref = top_level << M1
         M2_ref = top_level << M2

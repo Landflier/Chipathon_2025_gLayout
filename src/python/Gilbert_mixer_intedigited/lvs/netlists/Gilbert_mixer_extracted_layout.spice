@@ -8,18 +8,17 @@ X2 a_n2822_n400# a_n2878_n1500# a_n3106_n400# a_n3316_n1664# nfet_03v3 ad=2.44p 
 X3 a_n2222_n400# a_n2878_n1500# a_n2522_n400# a_n3316_n1664# nfet_03v3 ad=2.44p pd=5.22u as=2.44p ps=5.22u w=4u l=0.28u M=5
 .ends
 
-.subckt RF_diff_pair$1 a_3384_n849# a_3440_n321# a_3156_n321# a_n628_n849# a_n572_n321#
-+ a_n1750_n1013# a_n856_n321# a_2262_n1013#
-X0 a_n1750_n1013# a_n1750_n1013# a_n1750_n1013# a_n1750_n1013# nfet_03v3 ad=2.28p pd=6.28u as=18.24p ps=50.24u w=2u l=0.28u M=4
-X1 a_n856_n321# a_n628_n849# a_n572_n321# a_n1750_n1013# nfet_03v3 ad=1.22p pd=3.22u as=1.22p ps=3.22u w=2u l=0.28u M=5
-X2 a_3440_n321# a_3384_n849# a_3156_n321# a_n1750_n1013# nfet_03v3 ad=1.22p pd=3.22u as=2.28p ps=6.28u w=2u l=0.28u M=5
+.subckt RF_diff_pair$1 a_n1066_n1013# a_2016_n849# a_2072_n321# a_n628_n849# a_n572_n321#
++ a_1578_n1013# a_n856_n321# a_1788_n321#
+X0 a_1788_n321# a_2016_n849# a_2072_n321# a_n1066_n1013# nfet_03v3 ad=1.22p pd=3.22u as=1.22p ps=3.22u w=2u l=0.28u M=5
+X1 a_n856_n321# a_n628_n849# a_n572_n321# a_n1066_n1013# nfet_03v3 ad=1.22p pd=3.22u as=1.22p ps=3.22u w=2u l=0.28u M=5
 .ends
 
 .subckt Gilbert_cell_layout VSS I_bias_pos I_bias_neg V_out_p V_out_n V_LO V_LO_b
 + V_RF V_RF_b
-XLO_diff_pairs_interdigitized_0 RF_diff_pair$1_0/a_3156_n321# V_LO V_LO_b RF_diff_pair$1_0/a_n856_n321#
+XLO_diff_pairs_interdigitized_0 RF_diff_pair$1_0/a_1788_n321# V_LO V_LO_b RF_diff_pair$1_0/a_n572_n321#
 + V_out_p V_out_n VSS LO_diff_pairs_interdigitized
-XRF_diff_pair$1_0 V_RF_b I_bias_neg RF_diff_pair$1_0/a_3156_n321# V_RF I_bias_pos
-+ VSS RF_diff_pair$1_0/a_n856_n321# VSS RF_diff_pair$1
+XRF_diff_pair$1_0 VSS V_RF_b I_bias_neg V_RF RF_diff_pair$1_0/a_n572_n321# VSS I_bias_pos
++ RF_diff_pair$1_0/a_1788_n321# RF_diff_pair$1
 .ends
 
