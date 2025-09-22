@@ -34,15 +34,15 @@ from diff_pair import diff_pair
 class OTAConfig:
     """Configuration for 5T-OTA design"""
     # PMOS Current Mirror Configuration
-    pmos_width: float = 0.3
+    pmos_width: float = 0.6  # 0.6um per individual transistor (larger for via compatibility)
     pmos_length: float = 0.28
-    pmos_fingers: int = 1
+    pmos_fingers: int = 2    # 2 fingers per transistor
     pmos_multipliers: int = 1
     
     # NMOS Differential Pair Configuration  
-    nmos_width: float = 1.0
+    nmos_width: float = 1.0  # 1.0um per individual transistor
     nmos_length: float = 0.28
-    nmos_fingers: int = 1
+    nmos_fingers: int = 1    # 1 finger per transistor
     nmos_multipliers: int = 1
     
     # Layout Configuration
@@ -98,26 +98,26 @@ class FiveTOTA:
         self.top_level = None
 
     def create_pmos_mirror(self) -> Component:
-        """Create PMOS current mirror using simple PMOS components."""
-        print("🔧 Creating PMOS Current Mirror...")
+        """Create PMOS current mirror with individual transistors and guard ring."""
+        print("🔧 Creating PMOS Current Mirror with guard ring...")
         
         # Create top-level component for PMOS mirror
         pmos_mirror = Component(name="pmos_current_mirror_5T_OTA")
         
-        # Create two PMOS transistors for current mirror
+        # Create two individual PMOS transistors for current mirror
         # M3: Reference transistor (diode-connected)
         M3 = pmos(
             pdk=self.pdk,
             width=self.config.pmos_width,      # 0.6um total
             length=self.config.pmos_length,    # 0.28um
             fingers=self.config.pmos_fingers,  # 2 fingers
-            multipliers=self.config.pmos_multipliers,
-            with_dummy=(False, False),         # No dummies to avoid via issues
-            with_substrate_tap=False,          # No substrate tap
+            multipliers=1,
+            with_dummy=(False, False),         # No dummies
+            with_substrate_tap=False,          # No substrate tap (we'll use tapring)
             with_tie=False,                    # No tie connections
-            sd_rmult=1,                        # Single routing multiplier
-            gate_rmult=1,                      # Single gate routing
-            interfinger_rmult=1                # Single interfinger routing
+            sd_rmult=1,
+            gate_rmult=1,
+            interfinger_rmult=1
         )
         
         # M4: Mirror transistor  
@@ -126,13 +126,13 @@ class FiveTOTA:
             width=self.config.pmos_width,      # 0.6um total
             length=self.config.pmos_length,    # 0.28um  
             fingers=self.config.pmos_fingers,  # 2 fingers
-            multipliers=self.config.pmos_multipliers,
-            with_dummy=(False, False),         # No dummies to avoid via issues
-            with_substrate_tap=False,          # No substrate tap
+            multipliers=1,
+            with_dummy=(False, False),         # No dummies
+            with_substrate_tap=False,          # No substrate tap (we'll use tapring)
             with_tie=False,                    # No tie connections
-            sd_rmult=1,                        # Single routing multiplier
-            gate_rmult=1,                      # Single gate routing
-            interfinger_rmult=1                # Single interfinger routing
+            sd_rmult=1,
+            gate_rmult=1,
+            interfinger_rmult=1
         )
         
         # Add transistors to mirror component
@@ -142,60 +142,282 @@ class FiveTOTA:
         M3_ref.name = "M3_ref"
         M4_ref.name = "M4_mir"
         
-        # Position M4 next to M3
+        # Position M4 next to M3 with appropriate spacing
         M3_bbox = evaluate_bbox(M3)
-        spacing = 1.0  # 1um spacing
+        spacing = 2.0  # 2um spacing for well isolation
         M4_ref.movex(M3_bbox[0] + spacing)
         
+        # Create tapring around both PMOS transistors
+        self.create_pmos_tapring_and_wells(pmos_mirror, M3_ref, M4_ref)
+        
         # Connect gates together (current mirror configuration)
-        try:
-            pmos_mirror << straight_route(self.pdk, M3_ref.ports["gate_W"], M4_ref.ports["gate_E"])
-        except:
-            try:
-                pmos_mirror << c_route(self.pdk, M3_ref.ports["gate_W"], M4_ref.ports["gate_E"])
-            except:
-                print("  ⚠ Gate routing failed, manual connection required")
+        self.create_pmos_routing(pmos_mirror, M3_ref, M4_ref)
         
-        # Connect M3 gate to M3 drain (diode connection for reference)
-        try:
-            pmos_mirror << straight_route(self.pdk, M3_ref.ports["gate_S"], M3_ref.ports["drain_S"])
-        except:
-            try:
-                pmos_mirror << c_route(self.pdk, M3_ref.ports["gate_S"], M3_ref.ports["drain_S"])
-            except:
-                print("  ⚠ Diode connection routing failed, manual connection required")
-                
         # Add external ports with proper names
-        # Reference side (M3)
-        pmos_mirror.add_ports(M3_ref.get_ports_list(), prefix="REF_")
-        # Mirror side (M4)  
-        pmos_mirror.add_ports(M4_ref.get_ports_list(), prefix="MIR_")
+        pmos_mirror.add_ports(M3_ref.get_ports_list(), prefix="M3_")
+        pmos_mirror.add_ports(M4_ref.get_ports_list(), prefix="M4_")
         
-        print(f"  ✓ Created PMOS mirror: {self.config.pmos_width}um x {self.config.pmos_length}um")
+        print(f"  ✓ Created PMOS mirror: {self.config.pmos_width}um x {self.config.pmos_length}um with guard ring")
         
         return pmos_mirror
 
     def create_diff_pair(self) -> Component:
-        """Create NMOS differential pair as specified."""
-        print("🔧 Creating NMOS Differential Pair...")
+        """Create NMOS differential pair with individual transistors and guard ring."""
+        print("🔧 Creating NMOS Differential Pair with guard ring...")
         
-        # Create differential pair with specified dimensions
-        diff_pair_comp = diff_pair(
+        # Create top-level component for differential pair
+        diff_pair = Component(name="nmos_diff_pair_5T_OTA")
+        
+        # Create two individual NMOS transistors for differential pair
+        # M1: Left input transistor
+        M1 = nmos(
             pdk=self.pdk,
-            placement=self.config.placement,
-            width=(self.config.nmos_width, self.config.nmos_width),  # 1.0um each
-            length=(self.config.nmos_length, self.config.nmos_length),  # 0.28um each (min length)
-            fingers=(self.config.nmos_fingers, self.config.nmos_fingers),
-            multipliers=(self.config.nmos_multipliers, self.config.nmos_multipliers),
-            dummy_1=(True, True),
-            dummy_2=(True, True),
-            connected_sources=True,  # Common source connection
-            debug_mode=self.config.debug_mode,
-            component_name="diff_pair_5T_OTA",
-            vss_port_placement="S"  # VSS at bottom
+            width=self.config.nmos_width,      # 1.0um
+            length=self.config.nmos_length,    # 0.28um
+            fingers=self.config.nmos_fingers,  # 1 finger
+            multipliers=1,
+            with_dummy=(False, False),         # No dummies
+            with_substrate_tap=False,          # No substrate tap (we'll use tapring)
+            with_tie=False,                    # No tie connections
+            sd_rmult=1,
+            gate_rmult=1,
+            interfinger_rmult=1
         )
         
-        return diff_pair_comp
+        # M2: Right input transistor
+        M2 = nmos(
+            pdk=self.pdk,
+            width=self.config.nmos_width,      # 1.0um
+            length=self.config.nmos_length,    # 0.28um
+            fingers=self.config.nmos_fingers,  # 1 finger
+            multipliers=1,
+            with_dummy=(False, False),         # No dummies
+            with_substrate_tap=False,          # No substrate tap (we'll use tapring)
+            with_tie=False,                    # No tie connections
+            sd_rmult=1,
+            gate_rmult=1,
+            interfinger_rmult=1
+        )
+        
+        # Add transistors to diff pair component
+        M1_ref = diff_pair << M1
+        M2_ref = diff_pair << M2
+        
+        M1_ref.name = "M1_left"
+        M2_ref.name = "M2_right"
+        
+        # Position M2 next to M1 with appropriate spacing
+        if self.config.placement == "horizontal":
+            M1_bbox = evaluate_bbox(M1)
+            spacing = 1.5  # 1.5um spacing
+            M2_ref.movex(M1_bbox[0] + spacing)
+        else:  # vertical
+            M1_ref.mirror_y()
+            M1_bbox = evaluate_bbox(M1)
+            spacing = 1.5  # 1.5um spacing
+            M2_ref.movey(M1_ref.ymin - M1_bbox[1]/2 - spacing)
+        
+        # Create tapring around both NMOS transistors
+        self.create_nmos_tapring_and_wells(diff_pair, M1_ref, M2_ref)
+        
+        # Connect sources together (common source connection)
+        self.create_nmos_routing(diff_pair, M1_ref, M2_ref)
+        
+        # Add external ports with proper names
+        diff_pair.add_ports(M1_ref.get_ports_list(), prefix="M1_")
+        diff_pair.add_ports(M2_ref.get_ports_list(), prefix="M2_")
+        
+        print(f"  ✓ Created NMOS diff pair: {self.config.nmos_width}um x {self.config.nmos_length}um with guard ring")
+        
+        return diff_pair
+
+    def create_pmos_tapring_and_wells(self, pmos_mirror, M3_ref, M4_ref):
+        """Create tapring around PMOS transistors and extend nwells."""
+        print("  Creating PMOS tapring and extending nwells...")
+        
+        # Create tapring around both PMOS transistors
+        # For PMOS in nwell, we need substrate tap (p-substrate connection)
+        tapring_comp = tapring(
+            pdk=self.pdk,
+            enclosed_rectangle=evaluate_bbox(pmos_mirror, padding=self.pdk.get_grule("nwell", "active_diff")["min_enclosure"] + 0.5),
+            tap_separation=2.0,  # Adequate separation for PMOS
+            enclosed_tapring=True  # Ensure proper enclosure
+        )
+        
+        # Center the tapring around the PMOS transistors
+        tapring_ref = pmos_mirror << tapring_comp
+        tapring_ref.name = "pmos_substrate_tapring"
+        tapring_ref.move(pmos_mirror.center)
+        
+        # Extend nwell rectangles to connect both PMOS transistors
+        self.extend_nwell_to_tapring(pmos_mirror, M3_ref, M4_ref, tapring_ref, "horizontal")
+        
+        # Add substrate connection port (for PMOS body bias)
+        self.add_substrate_port_to_tapring(pmos_mirror, tapring_ref)
+
+    def create_nmos_tapring_and_wells(self, diff_pair, M1_ref, M2_ref):
+        """Create tapring around NMOS transistors and extend pwells."""
+        print("  Creating NMOS tapring and extending pwells...")
+        
+        # Create tapring around both NMOS transistors  
+        tapring_comp = tapring(
+            pdk=self.pdk,
+            enclosed_rectangle=evaluate_bbox(diff_pair, padding=self.pdk.get_grule("nwell", "active_diff")["min_enclosure"] + 0.5),
+        )
+        
+        # Center the tapring around the NMOS transistors
+        tapring_ref = diff_pair << tapring_comp
+        tapring_ref.name = "nmos_tapring"
+        tapring_ref.move(diff_pair.center)
+        
+        # Extend pwell rectangles to connect both NMOS transistors
+        self.extend_pwell_to_tapring(diff_pair, M1_ref, M2_ref, tapring_ref, self.config.placement)
+        
+        # Add VSS port connected to the tapring
+        self.add_vss_port_to_tapring(diff_pair, tapring_ref)
+
+    def extend_nwell_to_tapring(self, top_level, M3_ref, M4_ref, tapring_ref, placement):
+        """Extend nwell rectangles for PMOS transistors towards tapring sides."""
+        print("    Extending nwell to tapring...")
+        
+        # Get the nwell layer
+        try:
+            nwell_layer = self.pdk.get_glayer("nwell")
+            print(f"    Found nwell layer: {nwell_layer}")
+        except Exception as e:
+            print(f"    Warning: Could not find nwell layer ({e}), skipping nwell extension")
+            return
+        
+        # Get tapring boundaries
+        tapring_bbox = evaluate_bbox(tapring_ref)
+        tapring_center = tapring_ref.center
+        tapring_width = tapring_bbox[0]
+        tapring_height = tapring_bbox[1]
+        
+        print(f"    Tapring dimensions: {tapring_width:.2f} x {tapring_height:.2f} um")
+        
+        # Create unified nwell rectangle covering both PMOS transistors
+        # Make it slightly smaller than tapring to avoid DRC issues
+        nwell_margin = 0.3  # 0.3um margin from tapring edge
+        extended_nwell = rectangle(
+            layer=nwell_layer,
+            size=(tapring_width - 2*nwell_margin, tapring_height - 2*nwell_margin),
+            centered=True
+        )
+        
+        extended_nwell_ref = top_level << extended_nwell
+        extended_nwell_ref.name = "extended_nwell_pmos"
+        extended_nwell_ref.move(tapring_center)
+        
+        print(f"    ✓ Created extended nwell: {tapring_width - 2*nwell_margin:.2f} x {tapring_height - 2*nwell_margin:.2f} um")
+
+    def extend_pwell_to_tapring(self, top_level, M1_ref, M2_ref, tapring_ref, placement):
+        """Extend pwell rectangles for NMOS transistors towards tapring sides."""
+        print("    Extending pwell to tapring...")
+        
+        # Get the pwell layer (similar to diff_pair.py implementation)
+        try:
+            pwell_layer = self.pdk.get_glayer("lvpwell")
+            print(f"    Found lvpwell layer: {pwell_layer}")
+        except:
+            try:
+                pwell_layer = self.pdk.get_glayer("pwell")
+                print(f"    Found pwell layer: {pwell_layer}")
+            except Exception as e:
+                print(f"    Warning: Could not find pwell layer ({e}), skipping pwell extension")
+                return
+        
+        # Get tapring boundaries
+        tapring_bbox = evaluate_bbox(tapring_ref)
+        tapring_center = tapring_ref.center
+        tapring_width = tapring_bbox[0]
+        tapring_height = tapring_bbox[1]
+        
+        print(f"    Tapring dimensions: {tapring_width:.2f} x {tapring_height:.2f} um")
+        
+        # Create unified pwell rectangle covering both NMOS transistors (like in diff_pair.py)
+        pwell_margin = 0.3  # 0.3um margin from tapring edge
+        extended_pwell = rectangle(
+            layer=pwell_layer,
+            size=(tapring_width - 2*pwell_margin, tapring_height - 2*pwell_margin),
+            centered=True
+        )
+        
+        extended_pwell_ref = top_level << extended_pwell
+        extended_pwell_ref.name = "extended_pwell_nmos"
+        extended_pwell_ref.move(tapring_center)
+        
+        print(f"    ✓ Created extended pwell: {tapring_width - 2*pwell_margin:.2f} x {tapring_height - 2*pwell_margin:.2f} um")
+
+    def add_substrate_port_to_tapring(self, component, tapring_ref):
+        """Add substrate port connected to PMOS tapring (for body bias)."""
+        # Find tapring ports for substrate connection
+        tapring_ports = [port for port in tapring_ref.get_ports_list() if "bottom_met" in port.name.lower()]
+        if tapring_ports:
+            ref_port = tapring_ports[0]
+            substrate_center = ref_port.center
+            component.add_port(center=substrate_center, width=ref_port.width, orientation=90, 
+                             layer=ref_port.layer, name="PSUB_N")
+            print("    ✓ Added substrate connection port")
+        else:
+            print("    ⚠ Could not find tapring ports for substrate connection")
+
+    def add_vss_port_to_tapring(self, component, tapring_ref):
+        """Add VSS port connected to NMOS tapring."""
+        # Find tapring ports for VSS connection  
+        tapring_ports = [port for port in tapring_ref.get_ports_list() if "bottom_met" in port.name.lower()]
+        if tapring_ports:
+            ref_port = tapring_ports[0]
+            vss_center = ref_port.center
+            component.add_port(center=vss_center, width=ref_port.width, orientation=270,
+                             layer=ref_port.layer, name="VSS_S")
+
+    def create_pmos_routing(self, pmos_mirror, M3_ref, M4_ref):
+        """Create routing for PMOS current mirror."""
+        print("  Creating PMOS current mirror routing...")
+        
+        # Connect gates together (current mirror configuration)
+        try:
+            pmos_mirror << straight_route(self.pdk, M3_ref.ports["gate_W"], M4_ref.ports["gate_E"])
+            print("    ✓ Connected PMOS gates")
+        except:
+            try:
+                pmos_mirror << c_route(self.pdk, M3_ref.ports["gate_W"], M4_ref.ports["gate_E"])
+                print("    ✓ Connected PMOS gates with C-route")
+            except:
+                print("    ⚠ PMOS gate routing failed")
+        
+        # Connect M3 gate to M3 drain (diode connection for reference)
+        try:
+            pmos_mirror << straight_route(self.pdk, M3_ref.ports["gate_S"], M3_ref.ports["drain_S"])
+            print("    ✓ Created diode connection")
+        except:
+            try:
+                pmos_mirror << c_route(self.pdk, M3_ref.ports["gate_S"], M3_ref.ports["drain_S"])
+                print("    ✓ Created diode connection with C-route")
+            except:
+                print("    ⚠ Diode connection routing failed")
+
+    def create_nmos_routing(self, diff_pair, M1_ref, M2_ref):
+        """Create routing for NMOS differential pair."""
+        print("  Creating NMOS differential pair routing...")
+        
+        # Connect sources together (common source connection)
+        try:
+            if self.config.placement == "horizontal":
+                diff_pair << straight_route(self.pdk, M1_ref.ports["source_E"], M2_ref.ports["source_W"])
+            else:  # vertical
+                diff_pair << straight_route(self.pdk, M1_ref.ports["source_S"], M2_ref.ports["source_N"])
+            print("    ✓ Connected NMOS sources")
+        except:
+            try:
+                if self.config.placement == "horizontal":
+                    diff_pair << c_route(self.pdk, M1_ref.ports["source_E"], M2_ref.ports["source_W"])
+                else:  # vertical
+                    diff_pair << c_route(self.pdk, M1_ref.ports["source_S"], M2_ref.ports["source_N"])
+                print("    ✓ Connected NMOS sources with C-route")
+            except:
+                print("    ⚠ NMOS source routing failed")
 
     def create_routing(self) -> None:
         """Create routing connections between PMOS mirror and differential pair."""
