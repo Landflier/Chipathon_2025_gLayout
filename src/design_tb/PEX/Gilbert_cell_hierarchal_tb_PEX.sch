@@ -13,8 +13,8 @@ ypos2=2
 divy=5
 subdivy=1
 unity=1
-x1=0
-x2=5e-07
+x1=2.5e-08
+x2=5.25e-07
 divx=5
 subdivx=1
 xlabmag=1.0
@@ -26,11 +26,10 @@ unitx=1
 logx=0
 logy=0
 rainbow=1
-color="4 16 6 7 21"
+color="6 16 10 12"
 node="v_out
+v_out_loaded
 v_out_n
-v_in_n
-v_in_p
 v_out_p"
 
 sim_type=tran
@@ -44,16 +43,16 @@ ypos2=2
 divy=5
 subdivy=1
 unity=1
-x1=-7768139.6
-x2=1.0600656e+08
+x1=-2079404.2
+x2=1.1169529e+08
 divx=5
 subdivx=1
 xlabmag=1.0
 ylabmag=1.0
 node="v_rf_diff
-v_out_diff
+v_out_loaded
 v_lo_diff"
-color="4 6 8"
+color="4 6 12"
 dataset=-1
 unitx=1
 logx=0
@@ -179,11 +178,11 @@ N 1030 -1720 1040 -1720 {
 lab=V_out_n}
 N 830 -1760 1040 -1760 {
 lab=V_out_p}
-N 1640 -1740 1680 -1740 {
+N 1660 -1740 1700 -1740 {
 lab=V_out}
 N 1420 -1660 1420 -1580 {
 lab=#net7}
-N 1520 -1740 1640 -1740 {
+N 1520 -1740 1660 -1740 {
 lab=V_out}
 N 1300 -920 1360 -920 {
 lab=#net5}
@@ -208,13 +207,41 @@ lab=#net7}
 N 1420 -1300 1420 -920 {
 lab=#net5}
 N 1540 -870 1660 -870 {
-lab=#net8}
+lab=V_out_loaded}
 N 1660 -900 1660 -870 {
-lab=#net8}
+lab=V_out_loaded}
 N 1660 -990 1660 -960 {
-lab=VDD}
+lab=V_out_loaded}
 N 1660 -990 1740 -990 {
+lab=V_out_loaded}
+N 1670 -1800 1670 -1780 {
 lab=VDD}
+N 1670 -1780 1700 -1780 {
+lab=VDD}
+N 1740 -990 1790 -990 {
+lab=V_out_loaded}
+N 1790 -990 1890 -990 {
+lab=V_out_loaded}
+N 1790 -1190 1790 -990 {
+lab=V_out_loaded}
+N 1890 -1190 1890 -990 {
+lab=V_out_loaded}
+N 1890 -1660 1890 -1250 {
+lab=V_out_loaded}
+N 1790 -1660 1790 -1250 {
+lab=V_out_loaded}
+N 1890 -1620 2160 -1620 {
+lab=V_out_loaded}
+N 2060 -1540 2060 -1520 {
+lab=GND}
+N 2060 -1620 2060 -1600 {
+lab=V_out_loaded}
+N 1660 -960 1660 -900 {
+lab=V_out_loaded}
+N 1790 -1250 1790 -1190 {
+lab=V_out_loaded}
+N 1890 -1250 1890 -1190 {
+lab=V_out_loaded}
 C {code.sym} 50 -190 0 0 {name=MODELS only_toplevel=true
 format="tcleval( @value )"
 value="
@@ -278,14 +305,14 @@ value="
 
     
     * Extract IF component at 100MHz using FFT
-    linearize v_out_diff v_rf_diff v_lo_diff
+    linearize v_out_diff v_rf_diff v_lo_diff v_out_loaded
     let time_step = 1e-12
     let sample_freq = 1/time_step
     let npts = length(v_out_diff)
     let freq_res = sample_freq/npts
     
 
-    fft v_out_diff v_rf_diff v_lo_diff
+    fft v_out_diff v_rf_diff v_lo_diff v_out_loaded
 
     * print everything, sanity check
     * set     ; print all available global (?) variables (?)
@@ -413,7 +440,7 @@ C {vdd.sym} 370 -860 0 0 {name=l12 lab=VDD}
 C {gnd.sym} 370 -540 0 0 {name=l13 lab=GND}
 C {ammeter.sym} 900 -990 0 0 {name=Vmeas savecurrent=true spice_ignore=0}
 C {ammeter.sym} 960 -990 0 0 {name=Vmeas1 savecurrent=true spice_ignore=0}
-C {opin.sym} 1680 -1740 0 0 {name=p5 lab=V_out}
+C {opin.sym} 2160 -1620 0 0 {name=p5 lab=V_out_loaded}
 C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_tb/PEX/Gilbert_cell_hierarchal_mixing_stage.sym} 930 -1490 0 0 {name=x_Gilbert_mixer}
 C {lab_pin.sym} 1160 -1760 1 0 {name=p6 sig_type=std_logic lab=V_out_p}
 C {lab_pin.sym} 1160 -1720 3 0 {name=p7 sig_type=std_logic lab=V_out_n}
@@ -421,5 +448,12 @@ C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/5T-OTA-buffer_no_hierarc
 C {vdd.sym} 1350 -1870 0 0 {name=l16 lab=VDD}
 C {gnd.sym} 1350 -1600 0 0 {name=l17 lab=GND}
 C {ammeter.sym} 1420 -1330 0 0 {name=Vmeas2 savecurrent=true spice_ignore=0}
-C {ammeter.sym} 1660 -930 0 0 {name=Vmeas3 savecurrent=true spice_ignore=0}
-C {vdd.sym} 1740 -990 0 0 {name=l6 lab=VDD}
+C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Output_stage.sym} 1830 -1720 0 0 {name=x1}
+C {vdd.sym} 1670 -1800 0 0 {name=l6 lab=VDD}
+C {lab_pin.sym} 1600 -1740 1 0 {name=p12 sig_type=std_logic lab=V_out}
+C {capa.sym} 2060 -1570 0 0 {name=C1
+m=1
+value=10p
+footprint=1206
+device="ceramic capacitor"}
+C {gnd.sym} 2060 -1520 0 0 {name=l10 lab=GND}

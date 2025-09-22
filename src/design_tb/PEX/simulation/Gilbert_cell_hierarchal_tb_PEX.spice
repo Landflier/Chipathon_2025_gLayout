@@ -1,10 +1,10 @@
 ** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_tb/PEX/Gilbert_cell_hierarchal_tb_PEX.sch
-**.subckt Gilbert_cell_hierarchal_tb_PEX V_LO V_LO_b V_RF V_RF_b V_out
+**.subckt Gilbert_cell_hierarchal_tb_PEX V_LO V_LO_b V_RF V_RF_b V_out_loaded
 *.ipin V_LO
 *.ipin V_LO_b
 *.ipin V_RF
 *.ipin V_RF_b
-*.opin V_out
+*.opin V_out_loaded
 V_PWR VDD GND 3.3
 .save i(v_pwr)
 V_LO V_LO GND pulse(0 1.5 0 1p 1p 0.25n 0.5n)
@@ -18,7 +18,7 @@ V_RF_b V_RF_b GND sin( 1 1 1 0 0 180 )
 I0 net6 GND 10u
 x_Loading_stage V_out_p V_out_n VDD Gilbert_cell_hierarchal_loading_stage
 XR_load_3 net1 net2 VDD pplus_u r_width=0.5e-6 r_length=5e-6 m=1
-x_Biasing_network VDD net3 net4 net5 net6 GND net8 Biasing_network_with_local_mirros
+x_Biasing_network VDD net3 net4 net5 net6 GND V_out_loaded Biasing_network_with_local_mirros
 Vmeas net1 net3 0
 .save i(vmeas)
 Vmeas1 net2 net4 0
@@ -27,8 +27,8 @@ x_Gilbert_mixer V_out_n V_out_p V_LO V_LO_b V_RF V_RF_b net1 net2 GND Gilbert_ce
 x_Amplifier VDD V_out V_out_p V_out_n net7 GND 5T-OTA-buffer_no_hierarchy
 Vmeas2 net7 net5 0
 .save i(vmeas2)
-Vmeas3 VDD net8 0
-.save i(vmeas3)
+x1 VDD V_out V_out_loaded V_out_loaded Output_stage
+C1 V_out_loaded GND 10p m=1
 **** begin user architecture code
 
 .include /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/design.ngspice
@@ -90,14 +90,14 @@ Vmeas3 VDD net8 0
 
 
     * Extract IF component at 100MHz using FFT
-    linearize v_out_diff v_rf_diff v_lo_diff
+    linearize v_out_diff v_rf_diff v_lo_diff v_out_loaded
     let time_step = 1e-12
     let sample_freq = 1/time_step
     let npts = length(v_out_diff)
     let freq_res = sample_freq/npts
 
 
-    fft v_out_diff v_rf_diff v_lo_diff
+    fft v_out_diff v_rf_diff v_lo_diff v_out_loaded
 
     * print everything, sanity check
     * set     ; print all available global (?) variables (?)
@@ -216,6 +216,21 @@ XM1 net1 net1 VDD VDD pfet_03v3 L=0.28u W=0.3u nf=1 ad='int((nf+1)/2) * W/nf * 0
 + ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
 XM2 Vout net1 VDD VDD pfet_03v3 L=0.28u W=0.3u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
 + ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
+.ends
+
+
+* expanding   symbol:  /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Output_stage.sym # of pins=4
+** sym_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Output_stage.sym
+** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Output_stage.sch
+.subckt Output_stage VDD V_in V_out_biasing I_bias_1
+*.iopin VDD
+*.iopin V_in
+*.iopin I_bias_1
+*.iopin V_out_biasing
+XM1 VDD V_in I_bias_1 GND nfet_03v3 L=0.28u W=2.8u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
++ ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
+XM2 VDD I_bias_1 V_out_biasing GND nfet_03v3 L=0.28u W=10u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u'
++ pd='2*int((nf+1)/2) * (W/nf + 0.18u)' ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
 .ends
 
 
