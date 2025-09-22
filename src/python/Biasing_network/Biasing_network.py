@@ -193,6 +193,42 @@ if __name__ == "__main__":
     nmos3_component = nmos3_mirror.build()
     
     # =================================================================
+    # NMOS Current Mirror 4 with Decap 
+    # =================================================================
+    print("\n🔧 Creating NMOS Current Mirror 1 with Decap...")
+    
+    nmos4_config = CMirrorConfig(
+        sd_rmult=2,
+        sd_route_topmet="met2",
+        gate_route_topmet="met2",
+        gate_rmult=2,
+        interfinger_rmult=1,
+        tie_layers=("met2", "met1"),
+        inter_finger_topmet="met1",
+        sd_route_extension=0.0,
+        gate_route_extension=0,
+        sdlayer="n+s/d",
+        routing=True,
+        with_dummies=False,
+        with_tie=True,
+        with_dnwell=False,
+        with_decap=True
+    )
+    
+    nmos4_mirror = CmirrorWithDecap(
+        pdk=pdk_choice,
+        width_ref=1.5,
+        width_mir=15,
+        fingers_ref=1,
+        fingers_mir=10,
+        length=1.0,
+        cmirror_config=nmos1_config,
+        component_name="nmos4_Cmirror_with_decap"
+    )
+    
+    print("  Building NMOS4 mirror...")
+    nmos4_component = nmos4_mirror.build()
+    # =================================================================
     # Create Top-Level Biasing Network Component
     # =================================================================
     print("\n🔧 Creating Top-Level Biasing Network Component...")
@@ -208,6 +244,7 @@ if __name__ == "__main__":
     nmos1_ref = biasing_network << nmos1_component
     nmos2_ref = biasing_network << nmos2_component  
     nmos3_ref = biasing_network << nmos3_component
+    nmos4_ref = biasing_network << nmos4_component
     
     # Position the components in a 2x2 grid layout
     print("  Positioning components...")
@@ -217,6 +254,7 @@ if __name__ == "__main__":
     nmos1_bbox = evaluate_bbox(nmos1_component)
     nmos2_bbox = evaluate_bbox(nmos2_component)
     nmos3_bbox = evaluate_bbox(nmos3_component)
+    nmos4_bbox = evaluate_bbox(nmos4_component)
     
     # Add spacing between components
     x_spacing = 20.0  # 20um spacing
@@ -239,12 +277,17 @@ if __name__ == "__main__":
     nmos3_ref.movex(max(pmos_bbox[0], nmos1_bbox[0]) + x_spacing)
     nmos3_ref.movey(max(nmos1_bbox[1], nmos2_bbox[1]) + y_spacing)
     
+    # Position NMOS4 at top-right
+    nmos4_ref.movex(max(pmos_bbox[0], nmos1_bbox[0]) + 3*x_spacing)
+    nmos4_ref.movey(max(nmos1_bbox[1], nmos2_bbox[1]) + y_spacing)
+
     # Add ports from all components with prefixes
     print("  Adding component ports...")
     biasing_network.add_ports(pmos_ref.get_ports_list(), prefix="PMOS_")
     biasing_network.add_ports(nmos1_ref.get_ports_list(), prefix="NMOS1_")
     biasing_network.add_ports(nmos2_ref.get_ports_list(), prefix="NMOS2_")
     biasing_network.add_ports(nmos3_ref.get_ports_list(), prefix="NMOS3_")
+    biasing_network.add_ports(nmos4_ref.get_ports_list(), prefix="NMOS4_")
     
     # Write the combined GDS file
     print("  Writing combined GDS file...")
