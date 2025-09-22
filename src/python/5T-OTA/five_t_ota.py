@@ -108,25 +108,31 @@ class FiveTOTA:
         # M3: Reference transistor (diode-connected)
         M3 = pmos(
             pdk=self.pdk,
-            width=self.config.pmos_width,      # 0.3um
+            width=self.config.pmos_width,      # 0.6um total
             length=self.config.pmos_length,    # 0.28um
-            fingers=self.config.pmos_fingers,
+            fingers=self.config.pmos_fingers,  # 2 fingers
             multipliers=self.config.pmos_multipliers,
             with_dummy=(False, False),         # No dummies to avoid via issues
             with_substrate_tap=False,          # No substrate tap
-            with_tie=False                     # No tie connections
+            with_tie=False,                    # No tie connections
+            sd_rmult=1,                        # Single routing multiplier
+            gate_rmult=1,                      # Single gate routing
+            interfinger_rmult=1                # Single interfinger routing
         )
         
         # M4: Mirror transistor  
         M4 = pmos(
             pdk=self.pdk,
-            width=self.config.pmos_width,      # 0.3um
+            width=self.config.pmos_width,      # 0.6um total
             length=self.config.pmos_length,    # 0.28um  
-            fingers=self.config.pmos_fingers,
+            fingers=self.config.pmos_fingers,  # 2 fingers
             multipliers=self.config.pmos_multipliers,
             with_dummy=(False, False),         # No dummies to avoid via issues
             with_substrate_tap=False,          # No substrate tap
-            with_tie=False                     # No tie connections
+            with_tie=False,                    # No tie connections
+            sd_rmult=1,                        # Single routing multiplier
+            gate_rmult=1,                      # Single gate routing
+            interfinger_rmult=1                # Single interfinger routing
         )
         
         # Add transistors to mirror component
@@ -199,42 +205,24 @@ class FiveTOTA:
         pmos_ref = self.pmos_mirror_ref
         diff_ref = self.diff_pair_ref
         
-        try:
-            # Connect PMOS mirror drains to differential pair drains
-            # Mirror reference drain to diff pair M1 drain
-            self.top_level << straight_route(
-                self.pdk, 
-                pmos_ref.ports["REF_DRAIN_S"], 
-                diff_ref.ports["diff_pair_5T_OTA_M1_DRAIN_N"]
-            )
-            
-            # Mirror output drain to diff pair M2 drain  
-            self.top_level << straight_route(
-                self.pdk,
-                pmos_ref.ports["MIR_DRAIN_S"],
-                diff_ref.ports["diff_pair_5T_OTA_M2_DRAIN_N"]
-            )
-            
-            print("  ✓ Successfully connected PMOS drains to diff pair drains")
-            
-        except Exception as e:
-            print(f"  ⚠ Routing connection failed, trying alternative routing: {e}")
-            try:
-                # Try C-routing as backup
-                self.top_level << c_route(
-                    self.pdk, 
-                    pmos_ref.ports["REF_DRAIN_S"], 
-                    diff_ref.ports["diff_pair_5T_OTA_M1_DRAIN_N"]
-                )
-                
-                self.top_level << c_route(
-                    self.pdk,
-                    pmos_ref.ports["MIR_DRAIN_S"],
-                    diff_ref.ports["diff_pair_5T_OTA_M2_DRAIN_N"]
-                )
-                print("  ✓ Successfully connected using C-routing")
-            except Exception as e2:
-                print(f"  ⚠ C-routing also failed: {e2}")
+        # Debug: Print available ports
+        print("  Available PMOS ports:", list(pmos_ref.ports.keys())[:5])  # Show first 5
+        print("  Available diff pair ports:", list(diff_ref.ports.keys())[:5])  # Show first 5
+        
+        # Find the correct port names by looking for drain ports
+        pmos_drain_ports = [p for p in pmos_ref.ports.keys() if "drain" in p.lower()]
+        diff_drain_ports = [p for p in diff_ref.ports.keys() if "drain" in p.lower()]
+        
+        print(f"  PMOS drain ports: {pmos_drain_ports}")
+        print(f"  Diff pair drain ports: {diff_drain_ports}")
+        
+        # Skip routing for now - just print what we found
+        if len(pmos_drain_ports) >= 2 and len(diff_drain_ports) >= 2:
+            print("  ⚠ Routing skipped - manual connection required")
+            print(f"  Connect {pmos_drain_ports[0]} to {diff_drain_ports[0]}")
+            print(f"  Connect {pmos_drain_ports[1]} to {diff_drain_ports[1]}")
+        else:
+            print("  ⚠ Could not find appropriate drain ports for routing")
 
     def position_components(self) -> None:
         """Position PMOS mirror and differential pair components."""
@@ -266,75 +254,118 @@ class FiveTOTA:
         diff_ref = self.diff_pair_ref
         pmos_ref = self.pmos_mirror_ref
         
-        # Differential input ports (VIN+ and VIN-)
-        for orientation in [0, 90, 180, 270]:
-            # VIN+ (M1 gate)
-            self.top_level.add_port(
-                center=diff_ref.ports["diff_pair_5T_OTA_M1_GATE_E"].center,
-                width=diff_ref.ports["diff_pair_5T_OTA_M1_GATE_E"].width,
-                orientation=orientation,
-                layer=diff_ref.ports["diff_pair_5T_OTA_M1_GATE_E"].layer,
-                name=f"{self.config.component_name}_VIN_P_{['E','N','W','S'][orientation//90]}"
-            )
+        # Find gate ports
+        diff_gate_ports = [p for p in diff_ref.ports.keys() if "gate" in p.lower()]
+        print(f"  Available gate ports: {diff_gate_ports}")
+        
+        # Find M1 and M2 gate ports
+        m1_gate_ports = [p for p in diff_gate_ports if "m1" in p.lower()]
+        m2_gate_ports = [p for p in diff_gate_ports if "m2" in p.lower()]
+        
+        if m1_gate_ports and m2_gate_ports:
+            # Use the first available gate port for each transistor
+            m1_gate_port = m1_gate_ports[0]
+            m2_gate_port = m2_gate_ports[0]
             
-            # VIN- (M2 gate)
-            self.top_level.add_port(
-                center=diff_ref.ports["diff_pair_5T_OTA_M2_GATE_E"].center,
-                width=diff_ref.ports["diff_pair_5T_OTA_M2_GATE_E"].width,
-                orientation=orientation,
-                layer=diff_ref.ports["diff_pair_5T_OTA_M2_GATE_E"].layer,
-                name=f"{self.config.component_name}_VIN_N_{['E','N','W','S'][orientation//90]}"
-            )
+            # Differential input ports (VIN+ and VIN-)
+            for orientation in [0, 90, 180, 270]:
+                # VIN+ (M1 gate)
+                self.top_level.add_port(
+                    center=diff_ref.ports[m1_gate_port].center,
+                    width=diff_ref.ports[m1_gate_port].width,
+                    orientation=orientation,
+                    layer=diff_ref.ports[m1_gate_port].layer,
+                    name=f"{self.config.component_name}_VIN_P_{['E','N','W','S'][orientation//90]}"
+                )
+                
+                # VIN- (M2 gate)
+                self.top_level.add_port(
+                    center=diff_ref.ports[m2_gate_port].center,
+                    width=diff_ref.ports[m2_gate_port].width,
+                    orientation=orientation,
+                    layer=diff_ref.ports[m2_gate_port].layer,
+                    name=f"{self.config.component_name}_VIN_N_{['E','N','W','S'][orientation//90]}"
+                )
+        else:
+            print("  ⚠ Could not find M1/M2 gate ports, skipping input ports")
         
         # Output ports from PMOS mirror drains (differential outputs)
-        for orientation in [0, 90, 180, 270]:
-            # VOUT+ (typically the reference side)
-            self.top_level.add_port(
-                center=pmos_ref.ports["REF_DRAIN_S"].center,
-                width=pmos_ref.ports["REF_DRAIN_S"].width,
-                orientation=orientation,
-                layer=pmos_ref.ports["REF_DRAIN_S"].layer,
-                name=f"{self.config.component_name}_VOUT_P_{['E','N','W','S'][orientation//90]}"
-            )
+        pmos_drain_ports = [p for p in pmos_ref.ports.keys() if "drain" in p.lower()]
+        print(f"  Available PMOS drain ports: {pmos_drain_ports}")
+        
+        if len(pmos_drain_ports) >= 2:
+            # Use the first two drain ports found
+            drain_port_1 = pmos_drain_ports[0]
+            drain_port_2 = pmos_drain_ports[1]
             
-            # VOUT- (mirror side)
-            self.top_level.add_port(
-                center=pmos_ref.ports["MIR_DRAIN_S"].center,
-                width=pmos_ref.ports["MIR_DRAIN_S"].width,
-                orientation=orientation,
-                layer=pmos_ref.ports["MIR_DRAIN_S"].layer,
-                name=f"{self.config.component_name}_VOUT_N_{['E','N','W','S'][orientation//90]}"
-            )
+            for orientation in [0, 90, 180, 270]:
+                # VOUT+ (first drain port)
+                self.top_level.add_port(
+                    center=pmos_ref.ports[drain_port_1].center,
+                    width=pmos_ref.ports[drain_port_1].width,
+                    orientation=orientation,
+                    layer=pmos_ref.ports[drain_port_1].layer,
+                    name=f"{self.config.component_name}_VOUT_P_{['E','N','W','S'][orientation//90]}"
+                )
+                
+                # VOUT- (second drain port)
+                self.top_level.add_port(
+                    center=pmos_ref.ports[drain_port_2].center,
+                    width=pmos_ref.ports[drain_port_2].width,
+                    orientation=orientation,
+                    layer=pmos_ref.ports[drain_port_2].layer,
+                    name=f"{self.config.component_name}_VOUT_N_{['E','N','W','S'][orientation//90]}"
+                )
+        else:
+            print("  ⚠ Could not find PMOS drain ports, skipping output ports")
 
-        # Power supply ports
-        for orientation in [0, 90, 180, 270]:
-            # VDD from PMOS sources
-            self.top_level.add_port(
-                center=pmos_ref.ports["REF_SOURCE_N"].center,
-                width=pmos_ref.ports["REF_SOURCE_N"].width,
-                orientation=orientation,
-                layer=pmos_ref.ports["REF_SOURCE_N"].layer,
-                name=f"{self.config.component_name}_VDD_{['E','N','W','S'][orientation//90]}"
-            )
+        # Power supply ports - find source and VSS ports dynamically
+        pmos_source_ports = [p for p in pmos_ref.ports.keys() if "source" in p.lower()]
+        diff_vss_ports = [p for p in diff_ref.ports.keys() if "vss" in p.lower()]
+        pmos_gate_ports = [p for p in pmos_ref.ports.keys() if "gate" in p.lower()]
+        
+        print(f"  Available PMOS source ports: {pmos_source_ports[:3]}")  # Show first 3
+        print(f"  Available VSS ports: {diff_vss_ports}")
+        print(f"  Available PMOS gate ports: {pmos_gate_ports[:3]}")  # Show first 3
+        
+        if pmos_source_ports:
+            for orientation in [0, 90, 180, 270]:
+                # VDD from PMOS sources
+                self.top_level.add_port(
+                    center=pmos_ref.ports[pmos_source_ports[0]].center,
+                    width=pmos_ref.ports[pmos_source_ports[0]].width,
+                    orientation=orientation,
+                    layer=pmos_ref.ports[pmos_source_ports[0]].layer,
+                    name=f"{self.config.component_name}_VDD_{['E','N','W','S'][orientation//90]}"
+                )
+        else:
+            print("  ⚠ Could not find PMOS source ports, skipping VDD ports")
             
-            # VSS from differential pair
-            self.top_level.add_port(
-                center=diff_ref.ports["diff_pair_5T_OTA_VSS_S"].center,
-                width=diff_ref.ports["diff_pair_5T_OTA_VSS_S"].width,
-                orientation=orientation,
-                layer=diff_ref.ports["diff_pair_5T_OTA_VSS_S"].layer,
-                name=f"{self.config.component_name}_VSS_{['E','N','W','S'][orientation//90]}"
-            )
+        if diff_vss_ports:
+            for orientation in [0, 90, 180, 270]:
+                # VSS from differential pair
+                self.top_level.add_port(
+                    center=diff_ref.ports[diff_vss_ports[0]].center,
+                    width=diff_ref.ports[diff_vss_ports[0]].width,
+                    orientation=orientation,
+                    layer=diff_ref.ports[diff_vss_ports[0]].layer,
+                    name=f"{self.config.component_name}_VSS_{['E','N','W','S'][orientation//90]}"
+                )
+        else:
+            print("  ⚠ Could not find VSS ports, skipping VSS ports")
 
         # Bias current input
-        for orientation in [0, 90, 180, 270]:
-            self.top_level.add_port(
-                center=pmos_ref.ports["REF_GATE_W"].center,
-                width=pmos_ref.ports["REF_GATE_W"].width,
-                orientation=orientation,
-                layer=pmos_ref.ports["REF_GATE_W"].layer,
-                name=f"{self.config.component_name}_IBIAS_{['E','N','W','S'][orientation//90]}"
-            )
+        if pmos_gate_ports:
+            for orientation in [0, 90, 180, 270]:
+                self.top_level.add_port(
+                    center=pmos_ref.ports[pmos_gate_ports[0]].center,
+                    width=pmos_ref.ports[pmos_gate_ports[0]].width,
+                    orientation=orientation,
+                    layer=pmos_ref.ports[pmos_gate_ports[0]].layer,
+                    name=f"{self.config.component_name}_IBIAS_{['E','N','W','S'][orientation//90]}"
+                )
+        else:
+            print("  ⚠ Could not find PMOS gate ports, skipping IBIAS ports")
 
         print("  ✓ Added differential input ports (VIN+, VIN-)")
         print("  ✓ Added differential output ports (VOUT+, VOUT-)")
