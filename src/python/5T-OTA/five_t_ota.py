@@ -221,8 +221,6 @@ class FiveTOTA:
         tapring_comp = tapring(
             pdk=self.pdk,
             enclosed_rectangle=evaluate_bbox(pmos_mirror, padding=self.pdk.get_grule("nwell", "active_diff")["min_enclosure"] + 0.5),
-            tap_separation=2.0,  # Adequate separation for PMOS
-            enclosed_tapring=True  # Ensure proper enclosure
         )
         
         # Center the tapring around the PMOS transistors
