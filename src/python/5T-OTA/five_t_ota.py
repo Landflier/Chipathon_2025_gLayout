@@ -25,18 +25,14 @@ from glayout.util.port_utils import (
 from glayout.util.snap_to_grid import component_snap_to_grid
 from glayout.spice import Netlist
     
-# Add the diff_pair module to the path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../diff_pair'))
-from diff_pair import diff_pair
-
 
 @dataclass
 class OTAConfig:
     """Configuration for 5T-OTA design"""
     # PMOS Current Mirror Configuration
-    pmos_width: float = 0.6  # 0.6um per individual transistor (larger for via compatibility)
+    pmos_width: float = 0.3  # 0.6um per individual transistor (larger for via compatibility)
     pmos_length: float = 0.28
-    pmos_fingers: int = 2    # 2 fingers per transistor
+    pmos_fingers: int = 1   
     pmos_multipliers: int = 1
     
     # NMOS Differential Pair Configuration  
@@ -489,7 +485,7 @@ if __name__ == "__main__":
     # Create configuration with specified parameters
     ota_config = OTAConfig(
         pmos_width=0.6,      # 0.6um total (2 fingers of 0.3um each)
-        pmos_fingers=2,      # 2 fingers to achieve 0.3um effective width per finger
+        pmos_fingers=1,      # 2 fingers to achieve 0.3um effective width per finger
         pmos_length=0.28,    # min length as specified  
         nmos_width=1.0,      # 1.0um as specified
         nmos_length=0.28,    # min length as specified
