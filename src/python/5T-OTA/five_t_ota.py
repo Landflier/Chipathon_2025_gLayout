@@ -145,8 +145,7 @@ class FiveTOTA:
         spacing = 2.0  # 2um spacing for well isolation
         M4_ref.movex(M3_bbox[0] + spacing)
         
-        # Create tapring around both PMOS transistors
-        self.create_pmos_tapring_and_wells(pmos_mirror, M3_ref, M4_ref)
+        # Don't add tapring here - do it after adding to top_level in build method
         
         # Connect gates together (current mirror configuration)
         self.create_pmos_routing(pmos_mirror, M3_ref, M4_ref)
@@ -181,8 +180,9 @@ class FiveTOTA:
         
         return rf_diff_pair
 
-    def create_pmos_tapring_and_wells(self, pmos_mirror, M3_ref, M4_ref):
-        """Create tapring around PMOS transistors using Gilbert_mixer_interdigited approach."""
+    def create_pmos_tapring_and_wells(self, top_level):
+        """Create tapring around PMOS transistors using Gilbert_mixer_interdigited approach.
+        Treat pmos_mirror component as equivalent to multiplier in Gilbert mixer."""
         # Calculate tap separation using the same approach as Gilbert mixer
         tap_separation = max(
             self.pdk.get_grule("met2")["min_separation"],
@@ -191,17 +191,14 @@ class FiveTOTA:
         )
         tap_separation += self.pdk.get_grule("p+s/d", "active_tap")["min_enclosure"]
         
-        # Calculate the bounding box for both PMOS transistors
-        pmos_bbox = evaluate_bbox(pmos_mirror)
-        
-        # Calculate tap encloses dimensions
+        # Use the exact same approach as Gilbert mixer
         tap_encloses = (
-            2 * (tap_separation + pmos_bbox[0]/2),
-            2 * (tap_separation + pmos_bbox[1]/2),
+            2 * (tap_separation + top_level.xmax),
+            2 * (tap_separation + top_level.ymax),
         )
         
-        # Create tapring with proper parameters (same as Gilbert mixer)
-        tapring_ref = pmos_mirror << tapring(
+        # Create tapring exactly like Gilbert mixer (note: tiering_ref not tapring_ref)
+        tiering_ref = top_level << tapring(
             self.pdk,
             enclosed_rectangle=tap_encloses,
             sdlayer="p+s/d",  # PMOS substrate connection
@@ -209,11 +206,8 @@ class FiveTOTA:
             vertical_glayer="met1",    # Use met1 for vertical routing
         )
         
-        # Add ports from tapring with tie prefix (same as Gilbert mixer)
-        pmos_mirror.add_ports(tapring_ref.get_ports_list(), prefix="tie_")
-        
-        # Extend nwell rectangles to connect both PMOS transistors
-        self.extend_nwell_to_tapring(pmos_mirror, M3_ref, M4_ref, tapring_ref, "horizontal")
+        # Add ports from tapring with tie prefix (exactly like Gilbert mixer)
+        top_level.add_ports(tiering_ref.get_ports_list(), prefix="tie_")
 
 
     def extend_nwell_to_tapring(self, top_level, M3_ref, M4_ref, tapring_ref, placement):
@@ -437,6 +431,9 @@ class FiveTOTA:
         
         self.pmos_mirror_ref.name = "pmos_current_mirror"
         self.diff_pair_ref.name = "differential_pair"
+        
+        # Add tapring to PMOS mirror using reference (like Gilbert mixer does)
+        self.create_pmos_tapring_and_wells(self.pmos_mirror_ref)
         
         # Position components
         self.position_components()
