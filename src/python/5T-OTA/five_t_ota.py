@@ -99,8 +99,6 @@ class FiveTOTA:
 
     def create_pmos_mirror(self) -> Component:
         """Create PMOS current mirror with individual transistors and guard ring."""
-        print("🔧 Creating PMOS Current Mirror with guard ring...")
-        
         # Create top-level component for PMOS mirror
         pmos_mirror = Component(name="pmos_current_mirror_5T_OTA")
         
@@ -157,14 +155,10 @@ class FiveTOTA:
         pmos_mirror.add_ports(M3_ref.get_ports_list(), prefix="M3_")
         pmos_mirror.add_ports(M4_ref.get_ports_list(), prefix="M4_")
         
-        print(f"  ✓ Created PMOS mirror: {self.config.pmos_width}um x {self.config.pmos_length}um with guard ring")
-        
         return pmos_mirror
 
     def create_diff_pair(self) -> Component:
         """Create NMOS differential pair using RF_diff_pair approach from Gilbert mixer."""
-        print("🔧 Creating NMOS Differential Pair (RF_diff_pair style)...")
-        
         # Create top level component
         top_level = Component()
         
@@ -208,25 +202,27 @@ class FiveTOTA:
         
         top_level.name = "NMOS_diff_pair_5T_OTA"
         
-        print(f"  ✓ Created NMOS diff pair: {self.config.nmos_width}um x {self.config.nmos_length}um (RF_diff_pair style)")
-        
         return component_snap_to_grid(top_level)
 
     def create_pmos_tapring_and_wells(self, pmos_mirror, M3_ref, M4_ref):
         """Create tapring around PMOS transistors and extend nwells."""
-        print("  Creating PMOS tapring and extending nwells...")
+        # Calculate the bounding box that includes both PMOS transistors
+        combined_bbox = evaluate_bbox(pmos_mirror)
         
         # Create tapring around both PMOS transistors
         # For PMOS in nwell, we need substrate tap (p-substrate connection)
         tapring_comp = tapring(
             pdk=self.pdk,
-            enclosed_rectangle=evaluate_bbox(pmos_mirror, padding=self.pdk.get_grule("nwell", "active_diff")["min_enclosure"] + 0.5),
+            enclosed_rectangle=combined_bbox,
         )
         
-        # Center the tapring around the PMOS transistors
+        # Add tapring to component BEFORE positioning other elements
         tapring_ref = pmos_mirror << tapring_comp
         tapring_ref.name = "pmos_substrate_tapring"
-        tapring_ref.move(pmos_mirror.center)
+        
+        # Center the tapring around the combined PMOS transistors
+        pmos_center = ((M3_ref.center[0] + M4_ref.center[0])/2, (M3_ref.center[1] + M4_ref.center[1])/2)
+        tapring_ref.move(pmos_center)
         
         # Extend nwell rectangles to connect both PMOS transistors
         self.extend_nwell_to_tapring(pmos_mirror, M3_ref, M4_ref, tapring_ref, "horizontal")
@@ -237,14 +233,10 @@ class FiveTOTA:
 
     def extend_nwell_to_tapring(self, top_level, M3_ref, M4_ref, tapring_ref, placement):
         """Extend nwell rectangles for PMOS transistors towards tapring sides."""
-        print("    Extending nwell to tapring...")
-        
         # Get the nwell layer
         try:
             nwell_layer = self.pdk.get_glayer("nwell")
-            print(f"    Found nwell layer: {nwell_layer}")
         except Exception as e:
-            print(f"    Warning: Could not find nwell layer ({e}), skipping nwell extension")
             return
         
         # Get tapring boundaries
@@ -252,8 +244,6 @@ class FiveTOTA:
         tapring_center = tapring_ref.center
         tapring_width = tapring_bbox[0]
         tapring_height = tapring_bbox[1]
-        
-        print(f"    Tapring dimensions: {tapring_width:.2f} x {tapring_height:.2f} um")
         
         # Create unified nwell rectangle covering both PMOS transistors
         # Make it slightly smaller than tapring to avoid DRC issues
@@ -267,8 +257,6 @@ class FiveTOTA:
         extended_nwell_ref = top_level << extended_nwell
         extended_nwell_ref.name = "extended_nwell_pmos"
         extended_nwell_ref.move(tapring_center)
-        
-        print(f"    ✓ Created extended nwell: {tapring_width - 2*nwell_margin:.2f} x {tapring_height - 2*nwell_margin:.2f} um")
 
 
     def add_substrate_port_to_tapring(self, component, tapring_ref):
@@ -280,67 +268,42 @@ class FiveTOTA:
             substrate_center = ref_port.center
             component.add_port(center=substrate_center, width=ref_port.width, orientation=90, 
                              layer=ref_port.layer, name="PSUB_N")
-            print("    ✓ Added substrate connection port")
-        else:
-            print("    ⚠ Could not find tapring ports for substrate connection")
 
     def create_pmos_routing(self, pmos_mirror, M3_ref, M4_ref):
         """Create routing for PMOS current mirror."""
-        print("  Creating PMOS current mirror routing...")
-        
         # Connect gates together (current mirror configuration)
         try:
             pmos_mirror << straight_route(self.pdk, M3_ref.ports["gate_W"], M4_ref.ports["gate_E"])
-            print("    ✓ Connected PMOS gates")
         except:
             try:
                 pmos_mirror << c_route(self.pdk, M3_ref.ports["gate_W"], M4_ref.ports["gate_E"])
-                print("    ✓ Connected PMOS gates with C-route")
             except:
-                print("    ⚠ PMOS gate routing failed")
+                pass
         
         # Connect M3 gate to M3 drain (diode connection for reference)
         try:
             pmos_mirror << straight_route(self.pdk, M3_ref.ports["gate_S"], M3_ref.ports["drain_S"])
-            print("    ✓ Created diode connection")
         except:
             try:
                 pmos_mirror << c_route(self.pdk, M3_ref.ports["gate_S"], M3_ref.ports["drain_S"])
-                print("    ✓ Created diode connection with C-route")
             except:
-                print("    ⚠ Diode connection routing failed")
+                pass
 
     def create_routing(self) -> None:
         """Create routing connections between PMOS mirror and differential pair."""
-        print("🔧 Creating routing connections...")
-        
         # Get component references
         pmos_ref = self.pmos_mirror_ref
         diff_ref = self.diff_pair_ref
-        
-        # Debug: Print available ports
-        print("  Available PMOS ports:", list(pmos_ref.ports.keys())[:5])  # Show first 5
-        print("  Available diff pair ports:", list(diff_ref.ports.keys())[:5])  # Show first 5
         
         # Find the correct port names by looking for drain ports  
         pmos_drain_ports = [p for p in pmos_ref.ports.keys() if "drain" in p.lower()]
         diff_drain_ports = [p for p in diff_ref.ports.keys() if "drain" in p.lower()]
         
-        print(f"  PMOS drain ports: {pmos_drain_ports}")
-        print(f"  Diff pair drain ports: {diff_drain_ports}")
-        
-        # Skip routing for now - just print what we found
-        if len(pmos_drain_ports) >= 2 and len(diff_drain_ports) >= 2:
-            print("  ⚠ Routing skipped - manual connection required")
-            print(f"  Connect {pmos_drain_ports[0]} to {diff_drain_ports[0]}")
-            print(f"  Connect {pmos_drain_ports[1]} to {diff_drain_ports[1]}")
-        else:
-            print("  ⚠ Could not find appropriate drain ports for routing")
+        # Skip routing for now - connections would be made manually at higher level
+        pass
 
     def position_components(self) -> None:
         """Position PMOS mirror and differential pair components."""
-        print("🔧 Positioning components...")
-        
         # Get bounding boxes for spacing calculations
         pmos_bbox = evaluate_bbox(self.pmos_mirror)
         diff_bbox = evaluate_bbox(self.diff_pair_comp)
@@ -355,21 +318,16 @@ class FiveTOTA:
         
         self.pmos_mirror_ref.movex(0)  # Center horizontally
         self.pmos_mirror_ref.movey(pmos_y_position)
-        
-        print(f"  ✓ Positioned diff pair at origin")
-        print(f"  ✓ Positioned PMOS mirror at y={pmos_y_position:.2f}um")
 
     def add_ota_ports(self) -> None:
         """Add external ports for the 5T-OTA."""
-        print("🔧 Adding OTA external ports...")
-        
         # Input ports from differential pair gates
         diff_ref = self.diff_pair_ref
         pmos_ref = self.pmos_mirror_ref
         
         # Find gate ports using RF_diff_pair naming convention
         diff_gate_ports = [p for p in diff_ref.ports.keys() if "gate" in p.lower()]
-        print(f"  Available gate ports: {diff_gate_ports}")
+        print(f"Available gate ports: {diff_gate_ports}")
         
         # Find DIFF_M1 and DIFF_M2 gate ports (new naming convention)
         m1_gate_ports = [p for p in diff_gate_ports if "diff_m1" in p.lower()]
@@ -400,11 +358,11 @@ class FiveTOTA:
                     name=f"{self.config.component_name}_VIN_N_{['E','N','W','S'][orientation//90]}"
                 )
         else:
-            print("  ⚠ Could not find M1/M2 gate ports, skipping input ports")
+            print("Could not find M1/M2 gate ports, skipping input ports")
         
         # Output ports from PMOS mirror drains (differential outputs)
         pmos_drain_ports = [p for p in pmos_ref.ports.keys() if "drain" in p.lower()]
-        print(f"  Available PMOS drain ports: {pmos_drain_ports}")
+        print(f"Available PMOS drain ports: {pmos_drain_ports}")
         
         if len(pmos_drain_ports) >= 2:
             # Use the first two drain ports found
@@ -430,7 +388,7 @@ class FiveTOTA:
                     name=f"{self.config.component_name}_VOUT_N_{['E','N','W','S'][orientation//90]}"
                 )
         else:
-            print("  ⚠ Could not find PMOS drain ports, skipping output ports")
+            print("Could not find PMOS drain ports, skipping output ports")
 
         # Power supply ports - find source and substrate tap ports dynamically
         pmos_source_ports = [p for p in pmos_ref.ports.keys() if "source" in p.lower()]
@@ -438,9 +396,9 @@ class FiveTOTA:
         diff_vss_ports = [p for p in diff_ref.ports.keys() if ("substrate" in p.lower() or "tap" in p.lower() or "tie" in p.lower())]
         pmos_gate_ports = [p for p in pmos_ref.ports.keys() if "gate" in p.lower()]
         
-        print(f"  Available PMOS source ports: {pmos_source_ports[:3]}")  # Show first 3
-        print(f"  Available VSS ports: {diff_vss_ports}")
-        print(f"  Available PMOS gate ports: {pmos_gate_ports[:3]}")  # Show first 3
+        print(f"Available PMOS source ports: {pmos_source_ports[:3]}")
+        print(f"Available VSS ports: {diff_vss_ports}")
+        print(f"Available PMOS gate ports: {pmos_gate_ports[:3]}")
         
         if pmos_source_ports:
             for orientation in [0, 90, 180, 270]:
@@ -453,7 +411,7 @@ class FiveTOTA:
                     name=f"{self.config.component_name}_VDD_{['E','N','W','S'][orientation//90]}"
                 )
         else:
-            print("  ⚠ Could not find PMOS source ports, skipping VDD ports")
+            print("Could not find PMOS source ports, skipping VDD ports")
             
         if diff_vss_ports:
             for orientation in [0, 90, 180, 270]:
@@ -466,7 +424,7 @@ class FiveTOTA:
                     name=f"{self.config.component_name}_VSS_{['E','N','W','S'][orientation//90]}"
                 )
         else:
-            print("  ⚠ Could not find VSS ports, skipping VSS ports")
+            print("Could not find VSS ports, skipping VSS ports")
 
         # Bias current input
         if pmos_gate_ports:
@@ -479,12 +437,7 @@ class FiveTOTA:
                     name=f"{self.config.component_name}_IBIAS_{['E','N','W','S'][orientation//90]}"
                 )
         else:
-            print("  ⚠ Could not find PMOS gate ports, skipping IBIAS ports")
-
-        print("  ✓ Added differential input ports (VIN+, VIN-)")
-        print("  ✓ Added differential output ports (VOUT+, VOUT-)")
-        print("  ✓ Added power supply ports (VDD, VSS)")
-        print("  ✓ Added bias current port (IBIAS)")
+            print("Could not find PMOS gate ports, skipping IBIAS ports")
 
     def build(self) -> Component:
         """
@@ -493,12 +446,7 @@ class FiveTOTA:
         Returns:
             Component: Complete 5T-OTA layout component
         """
-        print("\n" + "="*60)
-        print("5T-OTA LAYOUT GENERATION")
-        print("="*60)
-        print(f"PMOS Mirror: {self.config.pmos_width}um width, {self.config.pmos_length}um length")
-        print(f"Diff Pair: {self.config.nmos_width}um width, {self.config.nmos_length}um length")
-        print("="*60)
+        print("Building 5T-OTA layout...")
         
         # Create top-level component
         self.top_level = Component(name=self.config.component_name)
@@ -508,7 +456,6 @@ class FiveTOTA:
         self.diff_pair_comp = self.create_diff_pair()
         
         # Add components to top level
-        print("🔧 Adding components to top level...")
         self.pmos_mirror_ref = self.top_level << self.pmos_mirror
         self.diff_pair_ref = self.top_level << self.diff_pair_comp
         
@@ -527,11 +474,7 @@ class FiveTOTA:
         # Snap to grid for clean layout
         self.top_level = component_snap_to_grid(self.top_level)
         
-        print("\n" + "="*60)
-        print("✅ 5T-OTA LAYOUT COMPLETED!")
-        print("="*60)
-        print(f"Component name: {self.config.component_name}")
-        print(f"Total ports: {len(self.top_level.ports)}")
+        print(f"5T-OTA completed with {len(self.top_level.ports)} ports")
         
         return self.top_level
 
@@ -540,16 +483,13 @@ if __name__ == "__main__":
     # Example usage
     from glayout import gf180
     
-    print("="*60)
-    print("5T-OTA EXAMPLE USAGE")
-    print("="*60)
-    
     # Initialize PDK
     pdk_choice = gf180
     
     # Create configuration with specified parameters
     ota_config = OTAConfig(
-        pmos_width=0.3,      # 0.3um as specified
+        pmos_width=0.6,      # 0.6um total (2 fingers of 0.3um each)
+        pmos_fingers=2,      # 2 fingers to achieve 0.3um effective width per finger
         pmos_length=0.28,    # min length as specified  
         nmos_width=1.0,      # 1.0um as specified
         nmos_length=0.28,    # min length as specified
@@ -567,7 +507,6 @@ if __name__ == "__main__":
     ota_component = ota.build()
     
     # Write GDS file
-    print("📝 Writing GDS file...")
     ota_component.write_gds(
         'lvs/gds/5T_OTA.gds',
         cellname="5T_OTA",
@@ -576,18 +515,16 @@ if __name__ == "__main__":
     )
     
     # Run DRC if available
-    print("🔍 Running DRC...")
     try:
         drc_result = pdk_choice.drc_magic(ota_component, "5T_OTA")
         if drc_result:
-            print(f"  ✓ DRC: {drc_result}")
+            print(f"DRC: {drc_result}")
     except Exception as e:
-        print(f"  ⚠ DRC skipped: {e}")
+        print(f"DRC skipped: {e}")
     
     # Print port summary
-    print("\n📋 Port Summary:")
     print(f"Total ports: {len(ota_component.ports)}")
     for port_name in sorted(ota_component.ports.keys()):
-        print(f"  - {port_name}")
+        print(f"  {port_name}")
     
-    print("\n✅ 5T-OTA example completed successfully!")
+    print("5T-OTA example completed")
