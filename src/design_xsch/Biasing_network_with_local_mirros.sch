@@ -52,6 +52,16 @@ N 360 -1210 360 -1160 {
 lab=I_BIAS}
 N 240 -1370 280 -1370 {
 lab=VDD}
+N 1400 -1140 1810 -1140 {
+lab=#net1}
+N 1810 -1140 1810 -980 {
+lab=#net1}
+N 1790 -860 1810 -860 {
+lab=VSS}
+N 1780 -860 1790 -860 {
+lab=VSS}
+N 2010 -1190 2010 -1020 {
+lab=I_out_4}
 C {title-2.sym} 0 0 0 0 {name=l9 author="Time Transcenders" lock=true rev=1.0 page=1}
 C {code.sym} 50 -190 0 0 {name=MODELS only_toplevel=true
 format="tcleval( @value )"
@@ -97,7 +107,7 @@ C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Local_mirror_pmos.sym} 3
 l_ref=0.4u
 w_ref=2u
 l_mir=0.4u
-w_mir=6u}
+w_mir=8u}
 C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Local_mirror_nmos.sym} 720 -900 0 0 {name=x_NMOS_mirror_1
 l_ref=1u
 w_ref=1.5u
@@ -118,7 +128,16 @@ l_ref=1u
 w_ref=1.5u
 nf_ref=1
 l_mir=1u
-w_mir=1.5u
-nf_mir=1}
+w_mir=6u
+nf_mir=4}
 C {lab_pin.sym} 950 -860 0 0 {name=p5 sig_type=std_logic lab=VSS}
 C {lab_pin.sym} 1370 -860 0 0 {name=p6 sig_type=std_logic lab=VSS}
+C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Local_mirror_nmos.sym} 1890 -900 0 0 {name=x_NMOS_mirror_4
+l_ref=1u
+w_ref=1.5u
+nf_ref=1
+l_mir=1u
+w_mir=15u
+nf_mir=10}
+C {lab_pin.sym} 1780 -860 0 0 {name=p10 sig_type=std_logic lab=VSS}
+C {opin.sym} 2010 -1190 3 0 {name=p11 lab=I_out_4}

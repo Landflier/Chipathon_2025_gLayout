@@ -23,14 +23,14 @@ C {iopin.sym} 1100 -1060 1 0 {name=p1 lab=I_in_neg}
 C {iopin.sym} 900 -1060 1 0 {name=p2 lab=I_in_pos
 }
 C {symbols/ppolyf_u_1k.sym} 900 -1140 0 1 {name=R_load_2
-W=0.5e-6
-L=10e-6
+W=1e-6
+L=20e-6
 model=ppolyf_u_1k
 spiceprefix=X
 m=1}
 C {symbols/ppolyf_u_1k.sym} 1100 -1140 0 0 {name=R_load_1
-W=0.5e-6
-L=10e-6
+W=1e-6
+L=20e-6
 model=ppolyf_u_1k
 spiceprefix=X
 m=1}

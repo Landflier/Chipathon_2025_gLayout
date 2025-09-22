@@ -26,9 +26,8 @@ unitx=1
 logx=0
 logy=0
 rainbow=1
-color="4 8 6 7"
-node="v_rf
-v_lo
+color="4 8 16"
+node="v_out
 \\"diff_output; v_out_p v_out_n -\\"
 v_out_p"
 
@@ -36,7 +35,7 @@ sim_type=tran
 autoload=1
 rawfile=$netlist_dir/Gilbert_cell_hierarchal_sim.raw}
 B 2 2260 -1650 3060 -1250 {flags=graph,unlocked
-y1=8.3e-14
+y1=7.4e-15
 y2=0.8
 ypos1=0
 ypos2=2
@@ -50,7 +49,7 @@ subdivx=1
 xlabmag=1.0
 ylabmag=1.0
 node="v_rf_diff
-v_out_diff
+v_out
 v_lo_diff"
 color="4 6 8"
 dataset=-1
@@ -120,10 +119,6 @@ N 1120 -1380 1210 -1380 {
 lab=#net6}
 N 1150 -1350 1210 -1350 {
 lab=GND}
-N 1510 -1720 1640 -1720 {
-lab=V_out_n}
-N 1310 -1760 1640 -1760 {
-lab=V_out_p}
 N 1390 -1260 1390 -1230 {
 lab=#net1}
 N 1430 -1260 1430 -1230 {
@@ -144,20 +139,6 @@ N 1430 -1230 1440 -1230 {
 lab=#net2}
 N 1440 -1130 1440 -1120 {
 lab=#net2}
-N 1950 -1850 2020 -1850 {
-lab=V_out_p}
-N 1950 -1630 2010 -1630 {
-lab=V_out_n}
-N 1640 -1630 1750 -1630 {
-lab=V_out_n}
-N 1640 -1720 1640 -1630 {
-lab=V_out_n}
-N 1640 -1850 1750 -1850 {
-lab=V_out_p}
-N 1640 -1850 1640 -1760 {
-lab=V_out_p}
-N 1750 -1850 1950 -1850 {
-lab=V_out_p}
 N 1300 -930 1300 -870 {
 lab=#net7}
 N 1300 -930 1380 -930 {
@@ -167,11 +148,9 @@ lab=#net8}
 N 1440 -930 1540 -930 {
 lab=#net8}
 N 1780 -920 1780 -870 {
-lab=GND}
+lab=#net9}
 N 1780 -920 1810 -920 {
-lab=GND}
-N 1750 -1630 1950 -1630 {
-lab=V_out_n}
+lab=#net9}
 N 850 -830 880 -830 {
 lab=VDD}
 N 850 -860 850 -830 {
@@ -185,7 +164,7 @@ lab=#net1}
 N 1440 -1120 1440 -1020 {
 lab=#net2}
 N 780 -670 880 -670 {
-lab=#net9}
+lab=#net10}
 N 780 -570 850 -570 {
 lab=GND}
 N 1380 -960 1380 -930 {
@@ -195,7 +174,7 @@ lab=#net8}
 N 580 -560 580 -530 {
 lab=GND}
 N 580 -670 580 -620 {
-lab=#net10}
+lab=#net11}
 N 700 -600 700 -570 {
 lab=GND}
 N 700 -570 780 -570 {
@@ -248,6 +227,36 @@ N 760 -1450 760 -1440 {
 lab=GND}
 N 760 -1620 760 -1610 {
 lab=GND}
+N 2330 -1740 2370 -1740 {
+lab=V_out}
+N 1920 -1660 1920 -1580 {
+lab=#net12}
+N 2020 -1740 2330 -1740 {
+lab=V_out}
+N 1520 -1720 1640 -1720 {
+lab=V_out_n}
+N 1520 -1760 1640 -1760 {
+lab=V_out_p}
+N 1850 -1870 1850 -1850 {
+lab=VDD}
+N 1850 -1620 1850 -1600 {
+lab=GND}
+N 1640 -1720 1800 -1720 {
+lab=V_out_n}
+N 1640 -1760 1780 -1760 {
+lab=V_out_p}
+N 1920 -1580 1920 -1360 {
+lab=#net12}
+N 1920 -1300 1920 -920 {
+lab=#net9}
+N 1510 -1720 1520 -1720 {
+lab=V_out_n}
+N 1310 -1760 1520 -1760 {
+lab=V_out_p}
+N 1780 -1760 1800 -1760 {
+lab=V_out_p}
+N 1810 -920 1920 -920 {
+lab=#net9}
 C {code.sym} 50 -190 0 0 {name=MODELS only_toplevel=true
 format="tcleval( @value )"
 value="
@@ -313,14 +322,14 @@ value="
 
     
     * Extract IF component at 100MHz using FFT
-    linearize v_out_diff v_rf_diff v_lo_diff
+    linearize v_out_diff v_rf_diff v_lo_diff v_out
     let time_step = 1e-12
     let sample_freq = 1/time_step
     let npts = length(v_out_diff)
     let freq_res = sample_freq/npts
     
 
-    fft v_out_diff v_rf_diff v_lo_diff
+    fft v_out_diff v_rf_diff v_lo_diff v_out
 
     * print everything, sanity check
     * set     ; print all available global (?) variables (?)
@@ -430,8 +439,6 @@ C {ipin.sym} 610 -1510 2 1 {name=p2 lab=V_LO_b
 C {ipin.sym} 610 -1320 0 0 {name=p3 lab=V_RF}
 C {ipin.sym} 610 -1140 2 1 {name=p4 lab=V_RF_b
 }
-C {opin.sym} 2020 -1850 0 0 {name=p5 lab=V_out_p}
-C {opin.sym} 2010 -1630 0 0 {name=p7 lab=V_out_n}
 C {isource.sym} 580 -590 0 0 {name=I0 value=10u}
 C {gnd.sym} 1150 -1300 0 0 {name=l11 lab=GND}
 C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Gilbert_cell_hierarchal_mixing_stage.sym} 1410 -1490 0 0 {name=x1}
@@ -446,7 +453,6 @@ spiceprefix=X
 m=1
 hide_texts=true}
 C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Biasing_network_with_local_mirros.sym} 1140 -660 0 0 {name=x3}
-C {gnd.sym} 1810 -920 0 0 {name=l10 lab=GND}
 C {vdd.sym} 850 -860 0 0 {name=l12 lab=VDD}
 C {gnd.sym} 580 -530 0 0 {name=l13 lab=GND}
 C {ammeter.sym} 1380 -990 0 0 {name=Vmeas savecurrent=true spice_ignore=0}
@@ -476,3 +482,10 @@ C {gnd.sym} 760 -1070 0 0 {name=l14 lab=GND}
 C {gnd.sym} 760 -1250 0 0 {name=l15 lab=GND}
 C {gnd.sym} 760 -1440 0 0 {name=l16 lab=GND}
 C {gnd.sym} 760 -1610 0 0 {name=l17 lab=GND}
+C {opin.sym} 2370 -1740 0 0 {name=p5 lab=V_out}
+C {lab_pin.sym} 1570 -1760 1 0 {name=p7 sig_type=std_logic lab=V_out_p}
+C {lab_pin.sym} 1570 -1720 3 0 {name=p17 sig_type=std_logic lab=V_out_n}
+C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/5T-OTA-buffer_no_hierarchy.sym} 1920 -1740 0 0 {name=x_Amplifier}
+C {vdd.sym} 1850 -1870 0 0 {name=l18 lab=VDD}
+C {gnd.sym} 1850 -1600 0 0 {name=l19 lab=GND}
+C {ammeter.sym} 1920 -1330 0 0 {name=Vmeas2 savecurrent=true spice_ignore=0}
