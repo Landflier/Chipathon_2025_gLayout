@@ -24,6 +24,10 @@ from glayout.util.port_utils import (
 )
 from glayout.util.snap_to_grid import component_snap_to_grid
 from glayout.spice import Netlist
+
+# Add the Gilbert_mixer_interdigited module to the path
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../Gilbert_mixer_intedigited'))
+from Gilbert_mixer_interdigited import GilbertMixerInterdigited
     
 
 @dataclass
@@ -154,77 +158,62 @@ class FiveTOTA:
         return pmos_mirror
 
     def create_diff_pair(self) -> Component:
-        """Create NMOS differential pair using RF_diff_pair approach from Gilbert mixer."""
-        # Create top level component
-        top_level = Component()
-        
-        # Create two FETs using the RF_diff_pair approach
-        fet_params = {
-            "width": self.config.nmos_width,
-            "fingers": self.config.nmos_fingers,
-            "multipliers": 1,
-            "with_tie": True,  # Enable tie connections like in RF_diff_pair
-            "with_dummy": (True, True),  # Enable dummies like in RF_diff_pair
-            "with_dnwell": False,  # No dnwell for NMOS
-            "with_substrate_tap": True,  # Enable substrate tap like in RF_diff_pair
-            "length": self.config.nmos_length,
-            "sd_rmult": 1,
-            "sd_route_topmet": "met2",
-            "gate_route_topmet": "met2", 
-            "gate_rmult": 1,
-            "interfinger_rmult": 1,
-            "tie_layers": ("met2", "met1"),
-        }
-        
-        M1_temp = nmos(self.pdk, **fet_params)
-        M2_temp = nmos(self.pdk, **fet_params)
-        
-        # Use transistors as-is (no drain/source swapping needed for differential pair)
-        M1 = M1_temp
-        M2 = M2_temp
-
-        # Place transistors with separation (following RF_diff_pair approach)
-        M1_ref = top_level << M1
-        M2_ref = top_level << M2
-        
-        M2_ref.mirror_x()
-        # Add 2um separation between differential pair NMOS instances (like RF_diff_pair)
-        diff_separation = 2.0  # 2um separation
-        M2_ref.movex(M1_ref.xmax + evaluate_bbox(M2)[0]/2 + diff_separation)
-        
-        # Add ports (using RF_diff_pair naming convention)
-        top_level.add_ports(M1_ref.get_ports_list(), prefix="DIFF_M1_")
-        top_level.add_ports(M2_ref.get_ports_list(), prefix="DIFF_M2_")
-        
-        top_level.name = "NMOS_diff_pair_5T_OTA"
-        
-        return component_snap_to_grid(top_level)
-
-    def create_pmos_tapring_and_wells(self, pmos_mirror, M3_ref, M4_ref):
-        """Create tapring around PMOS transistors and extend nwells."""
-        # Calculate the bounding box that includes both PMOS transistors
-        combined_bbox = evaluate_bbox(pmos_mirror)
-        
-        # Create tapring around both PMOS transistors
-        # For PMOS in nwell, we need substrate tap (p-substrate connection)
-        tapring_comp = tapring(
+        """Create NMOS differential pair using RF_diff_pair directly from Gilbert mixer."""
+        # Create a temporary Gilbert mixer instance to access create_RF_diff_pair
+        # We only need the RF diff pair functionality, not the full mixer
+        temp_mixer = GilbertMixerInterdigited(
             pdk=self.pdk,
-            enclosed_rectangle=combined_bbox,
+            rf_width=self.config.nmos_width,
+            rf_fingers=self.config.nmos_fingers,
+            rf_length=self.config.nmos_length,
+            # Use minimal LO parameters (not used for RF diff pair)
+            lo_width=1.0,
+            lo_fingers=1,
+            lo_length=self.config.nmos_length,
+            component_name="temp_5T_OTA_RF_diff_pair"
         )
         
-        # Add tapring to component BEFORE positioning other elements
-        tapring_ref = pmos_mirror << tapring_comp
-        tapring_ref.name = "pmos_substrate_tapring"
+        # Directly use the proven create_RF_diff_pair method
+        rf_diff_pair = temp_mixer.create_RF_diff_pair()
         
-        # Center the tapring around the combined PMOS transistors
-        pmos_center = ((M3_ref.center[0] + M4_ref.center[0])/2, (M3_ref.center[1] + M4_ref.center[1])/2)
-        tapring_ref.move(pmos_center)
+        # Rename to match our 5T-OTA naming
+        rf_diff_pair.name = "NMOS_diff_pair_5T_OTA"
+        
+        return rf_diff_pair
+
+    def create_pmos_tapring_and_wells(self, pmos_mirror, M3_ref, M4_ref):
+        """Create tapring around PMOS transistors using Gilbert_mixer_interdigited approach."""
+        # Calculate tap separation using the same approach as Gilbert mixer
+        tap_separation = max(
+            self.pdk.get_grule("met2")["min_separation"],
+            self.pdk.get_grule("met1")["min_separation"],
+            self.pdk.get_grule("active_diff", "active_tap")["min_separation"],
+        )
+        tap_separation += self.pdk.get_grule("p+s/d", "active_tap")["min_enclosure"]
+        
+        # Calculate the bounding box for both PMOS transistors
+        pmos_bbox = evaluate_bbox(pmos_mirror)
+        
+        # Calculate tap encloses dimensions
+        tap_encloses = (
+            2 * (tap_separation + pmos_bbox[0]/2),
+            2 * (tap_separation + pmos_bbox[1]/2),
+        )
+        
+        # Create tapring with proper parameters (same as Gilbert mixer)
+        tapring_ref = pmos_mirror << tapring(
+            self.pdk,
+            enclosed_rectangle=tap_encloses,
+            sdlayer="p+s/d",  # PMOS substrate connection
+            horizontal_glayer="met2",  # Use met2 for horizontal routing
+            vertical_glayer="met1",    # Use met1 for vertical routing
+        )
+        
+        # Add ports from tapring with tie prefix (same as Gilbert mixer)
+        pmos_mirror.add_ports(tapring_ref.get_ports_list(), prefix="tie_")
         
         # Extend nwell rectangles to connect both PMOS transistors
         self.extend_nwell_to_tapring(pmos_mirror, M3_ref, M4_ref, tapring_ref, "horizontal")
-        
-        # Add substrate connection port (for PMOS body bias)
-        self.add_substrate_port_to_tapring(pmos_mirror, tapring_ref)
 
 
     def extend_nwell_to_tapring(self, top_level, M3_ref, M4_ref, tapring_ref, placement):
@@ -255,15 +244,6 @@ class FiveTOTA:
         extended_nwell_ref.move(tapring_center)
 
 
-    def add_substrate_port_to_tapring(self, component, tapring_ref):
-        """Add substrate port connected to PMOS tapring (for body bias)."""
-        # Find tapring ports for substrate connection
-        tapring_ports = [port for port in tapring_ref.get_ports_list() if "bottom_met" in port.name.lower()]
-        if tapring_ports:
-            ref_port = tapring_ports[0]
-            substrate_center = ref_port.center
-            component.add_port(center=substrate_center, width=ref_port.width, orientation=90, 
-                             layer=ref_port.layer, name="PSUB_N")
 
     def create_pmos_routing(self, pmos_mirror, M3_ref, M4_ref):
         """Create routing for PMOS current mirror."""
