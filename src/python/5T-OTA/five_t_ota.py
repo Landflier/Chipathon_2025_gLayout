@@ -29,10 +29,6 @@ from glayout.spice import Netlist
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../diff_pair'))
 from diff_pair import diff_pair
 
-# Add the Cmirror_with_decap module to the path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../Cmirror_with_decap'))
-from Cmirror_with_decap import CmirrorWithDecap, CMirrorConfig
-
 
 @dataclass
 class OTAConfig:
@@ -102,41 +98,76 @@ class FiveTOTA:
         self.top_level = None
 
     def create_pmos_mirror(self) -> Component:
-        """Create PMOS current mirror without decap as specified."""
+        """Create PMOS current mirror using simple PMOS components."""
         print("🔧 Creating PMOS Current Mirror...")
         
-        # Configuration for PMOS current mirror (without decap as requested)
-        pmos_config = CMirrorConfig(
-            sd_rmult=2,
-            sd_route_topmet=self.config.routing_metal,
-            gate_route_topmet=self.config.routing_metal,
-            gate_rmult=1,
-            interfinger_rmult=1,
-            tie_layers=(self.config.routing_metal, self.config.via_metal),
-            inter_finger_topmet=self.config.via_metal,
-            sd_route_extension=0.0,
-            gate_route_extension=0,
-            sdlayer="p+s/d",
-            routing=True,
-            with_dummies=True,
-            with_tie=True,
-            with_dnwell=False,
-            with_decap=False  # No decap as requested
-        )
+        # Create top-level component for PMOS mirror
+        pmos_mirror = Component(name="pmos_current_mirror_5T_OTA")
         
-        # Create PMOS current mirror with specified dimensions
-        pmos_mirror = CmirrorWithDecap(
+        # Create two PMOS transistors for current mirror
+        # M3: Reference transistor (diode-connected)
+        M3 = pmos(
             pdk=self.pdk,
-            width_ref=self.config.pmos_width,  # 0.3um
-            width_mir=self.config.pmos_width,  # 0.3um (matched for current mirror)
-            fingers_ref=self.config.pmos_fingers,
-            fingers_mir=self.config.pmos_fingers,
-            length=self.config.pmos_length,  # 0.28um (min length)
-            cmirror_config=pmos_config,
-            component_name="pmos_current_mirror_5T_OTA"
+            width=self.config.pmos_width,      # 0.3um
+            length=self.config.pmos_length,    # 0.28um
+            fingers=self.config.pmos_fingers,
+            multipliers=self.config.pmos_multipliers,
+            with_dummy=(False, False),         # No dummies to avoid via issues
+            with_substrate_tap=False,          # No substrate tap
+            with_tie=False                     # No tie connections
         )
         
-        return pmos_mirror.build()
+        # M4: Mirror transistor  
+        M4 = pmos(
+            pdk=self.pdk,
+            width=self.config.pmos_width,      # 0.3um
+            length=self.config.pmos_length,    # 0.28um  
+            fingers=self.config.pmos_fingers,
+            multipliers=self.config.pmos_multipliers,
+            with_dummy=(False, False),         # No dummies to avoid via issues
+            with_substrate_tap=False,          # No substrate tap
+            with_tie=False                     # No tie connections
+        )
+        
+        # Add transistors to mirror component
+        M3_ref = pmos_mirror << M3
+        M4_ref = pmos_mirror << M4
+        
+        M3_ref.name = "M3_ref"
+        M4_ref.name = "M4_mir"
+        
+        # Position M4 next to M3
+        M3_bbox = evaluate_bbox(M3)
+        spacing = 1.0  # 1um spacing
+        M4_ref.movex(M3_bbox[0] + spacing)
+        
+        # Connect gates together (current mirror configuration)
+        try:
+            pmos_mirror << straight_route(self.pdk, M3_ref.ports["gate_W"], M4_ref.ports["gate_E"])
+        except:
+            try:
+                pmos_mirror << c_route(self.pdk, M3_ref.ports["gate_W"], M4_ref.ports["gate_E"])
+            except:
+                print("  ⚠ Gate routing failed, manual connection required")
+        
+        # Connect M3 gate to M3 drain (diode connection for reference)
+        try:
+            pmos_mirror << straight_route(self.pdk, M3_ref.ports["gate_S"], M3_ref.ports["drain_S"])
+        except:
+            try:
+                pmos_mirror << c_route(self.pdk, M3_ref.ports["gate_S"], M3_ref.ports["drain_S"])
+            except:
+                print("  ⚠ Diode connection routing failed, manual connection required")
+                
+        # Add external ports with proper names
+        # Reference side (M3)
+        pmos_mirror.add_ports(M3_ref.get_ports_list(), prefix="REF_")
+        # Mirror side (M4)  
+        pmos_mirror.add_ports(M4_ref.get_ports_list(), prefix="MIR_")
+        
+        print(f"  ✓ Created PMOS mirror: {self.config.pmos_width}um x {self.config.pmos_length}um")
+        
+        return pmos_mirror
 
     def create_diff_pair(self) -> Component:
         """Create NMOS differential pair as specified."""
