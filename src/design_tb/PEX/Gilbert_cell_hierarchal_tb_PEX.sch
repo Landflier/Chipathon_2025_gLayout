@@ -5,9 +5,9 @@ K {}
 V {}
 S {}
 E {}
-B 2 1780 -1200 2580 -800 {flags=graph,unlocked
-y1=0.91
-y2=3.4
+B 2 2350 -1020 3150 -620 {flags=graph,unlocked
+y1=-0.53
+y2=2.9
 ypos1=0
 ypos2=2
 divy=5
@@ -26,24 +26,25 @@ unitx=1
 logx=0
 logy=0
 rainbow=1
-color="4 8 6"
-node="v_out
-v_out_n
+color="4 21 6 7"
+node="v_out_n
+v_in_n
+v_in_p
 v_out_p"
 
 sim_type=tran
 autoload=1
 rawfile=$netlist_dir/Gilbert_cell_PEX.raw}
-B 2 1780 -1650 2580 -1250 {flags=graph,unlocked
-y1=5.5511151e-17
-y2=2.2
+B 2 2350 -1470 3150 -1070 {flags=graph,unlocked
+y1=-0.44
+y2=1.76
 ypos1=0
 ypos2=2
 divy=5
 subdivy=1
 unity=1
-x1=-6979370.5
-x2=1.506073e+08
+x1=-7768139.6
+x2=1.0600656e+08
 divx=5
 subdivx=1
 xlabmag=1.0
@@ -72,7 +73,7 @@ T {f_LO = 100 MHz
 f_RF = 89.7 MHz
 
 f_IF = f_LO - f_RF 
-       = 10.7 MHz} 2580 -1200 0 0 0.4 0.4 {}
+       = 10.7 MHz} 3150 -1020 0 0 0.4 0.4 {}
 T {Degeneration} 880 -1220 0 0 0.3 0.3 {}
 N 120 -2270 120 -2250 {
 lab=GND}
@@ -173,52 +174,38 @@ N 900 -960 900 -930 {
 lab=#net3}
 N 960 -960 960 -930 {
 lab=#net4}
-N 1190 -1940 1190 -1890 {
-lab=VDD}
-N 1190 -1890 1250 -1890 {
-lab=VDD}
-N 1190 -1690 1250 -1690 {
-lab=GND}
-N 1190 -1690 1190 -1670 {
-lab=GND}
 N 1300 -920 1370 -920 {
-lab=#net5}
-N 1390 -1660 1390 -1610 {
-lab=#net7}
-N 1390 -1610 1390 -1570 {
-lab=#net7}
-N 1370 -920 1390 -920 {
-lab=#net5}
-N 1390 -1510 1390 -920 {
 lab=#net5}
 N 1030 -1720 1040 -1720 {
 lab=V_out_n}
 N 830 -1760 1040 -1760 {
 lab=V_out_p}
-N 1040 -1760 1130 -1760 {
-lab=V_out_p}
-N 1040 -1720 1130 -1720 {
-lab=V_out_n}
-N 1190 -1760 1250 -1760 {
-lab=V_out_p}
-N 1190 -1720 1250 -1720 {
-lab=V_out_n}
-N 1130 -1760 1190 -1760 {
-lab=V_out_p}
-N 1130 -1720 1190 -1720 {
-lab=V_out_n}
-N 1700 -1800 1760 -1800 {
+N 1850 -1740 1890 -1740 {
 lab=V_out}
-N 1640 -1800 1680 -1800 {
+N 1630 -1660 1630 -1580 {
+lab=#net5}
+N 1730 -1740 1850 -1740 {
 lab=V_out}
-N 1680 -1800 1680 -1790 {
-lab=V_out}
-N 1680 -1730 1680 -1700 {
+N 1370 -920 1430 -920 {
+lab=#net5}
+N 1040 -1720 1160 -1720 {
+lab=V_out_n}
+N 1040 -1760 1160 -1760 {
+lab=V_out_p}
+N 1560 -1870 1560 -1850 {
+lab=VDD}
+N 1560 -1620 1560 -1600 {
 lab=GND}
-N 1680 -1800 1700 -1800 {
-lab=V_out}
-N 1540 -1800 1580 -1800 {
-lab=#net8}
+N 1630 -1580 1630 -920 {
+lab=#net5}
+N 1430 -920 1630 -920 {
+lab=#net5}
+N 1300 -1760 1510 -1760 {
+lab=V_in_p}
+N 1160 -1720 1320 -1720 {
+lab=V_out_n}
+N 1460 -1720 1510 -1720 {
+lab=V_in_n}
 C {code.sym} 50 -190 0 0 {name=MODELS only_toplevel=true
 format="tcleval( @value )"
 value="
@@ -355,11 +342,11 @@ value="
 
 .endc
 "}
-C {devices/launcher.sym} 1830 -720 2 1 {name=h2
+C {devices/launcher.sym} 2400 -540 2 1 {name=h2
 descr="Run ngSpice simulation (ctrl+left-click)" 
 tclcommand="xschem save; xschem netlist; xschem simulate"
 }
-C {devices/launcher.sym} 1830 -680 0 0 {name=h1
+C {devices/launcher.sym} 2400 -500 0 0 {name=h1
 descr="Load ngSpice waveforms (ctrl+left-click)" 
 tclcommand="xschem raw_read $netlist_dir/Gilbert_cell_PEX.raw tran"
 }
@@ -417,18 +404,14 @@ C {vdd.sym} 370 -860 0 0 {name=l12 lab=VDD}
 C {gnd.sym} 370 -540 0 0 {name=l13 lab=GND}
 C {ammeter.sym} 900 -990 0 0 {name=Vmeas savecurrent=true spice_ignore=0}
 C {ammeter.sym} 960 -990 0 0 {name=Vmeas1 savecurrent=true spice_ignore=0}
-C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/5T-OTA-buffer_no_hierarchy.sym} 1390 -1800 0 0 {name=x4}
-C {vdd.sym} 1190 -1940 0 0 {name=l6 lab=VDD}
-C {gnd.sym} 1190 -1670 0 0 {name=l14 lab=GND}
-C {opin.sym} 1760 -1800 0 0 {name=p5 lab=V_out}
-C {ammeter.sym} 1390 -1540 0 0 {name=Vmeas2 savecurrent=true spice_ignore=0}
+C {opin.sym} 1890 -1740 0 0 {name=p5 lab=V_out}
 C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_tb/PEX/Gilbert_cell_hierarchal_mixing_stage.sym} 930 -1490 0 0 {name=x1}
 C {lab_pin.sym} 1090 -1760 1 0 {name=p6 sig_type=std_logic lab=V_out_p}
 C {lab_pin.sym} 1090 -1720 3 0 {name=p7 sig_type=std_logic lab=V_out_n}
-C {capa.sym} 1680 -1760 0 0 {name=C1
-m=1
-value=2p
-footprint=1206
-device="ceramic capacitor"}
-C {gnd.sym} 1680 -1700 0 0 {name=l10 lab=GND}
-C {ammeter.sym} 1610 -1800 3 0 {name=Vmeas3 savecurrent=true spice_ignore=0}
+C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/5T-OTA-buffer_no_hierarchy.sym} 1630 -1740 0 0 {name=x6}
+C {vdd.sym} 1560 -1870 0 0 {name=l16 lab=VDD}
+C {gnd.sym} 1560 -1600 0 0 {name=l17 lab=GND}
+C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/High_pass_filter.sym} 1230 -1760 0 0 {name=x4}
+C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/High_pass_filter.sym} 1390 -1720 0 0 {name=x5}
+C {lab_pin.sym} 1480 -1760 1 0 {name=p12 sig_type=std_logic lab=V_in_p}
+C {lab_pin.sym} 1480 -1720 3 0 {name=p13 sig_type=std_logic lab=V_in_n}

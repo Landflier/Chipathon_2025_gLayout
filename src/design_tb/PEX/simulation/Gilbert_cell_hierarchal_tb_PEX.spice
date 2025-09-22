@@ -23,13 +23,10 @@ Vmeas net1 net3 0
 .save i(vmeas)
 Vmeas1 net2 net4 0
 .save i(vmeas1)
-x4 VDD net8 V_out_p V_out_n net7 GND 5T-OTA-buffer_no_hierarchy
-Vmeas2 net7 net5 0
-.save i(vmeas2)
 x1 V_out_n V_out_p V_LO V_LO_b V_RF V_RF_b net1 net2 GND Gilbert_cell_hierarchal_mixing_stage
-C1 V_out GND 2p m=1
-Vmeas3 net8 V_out 0
-.save i(vmeas3)
+x6 VDD V_out V_in_p V_in_n net5 GND 5T-OTA-buffer_no_hierarchy
+x4 V_in_p V_out_p High_pass_filter
+x5 V_in_n V_out_n High_pass_filter
 **** begin user architecture code
 
 .include /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/design.ngspice
@@ -175,8 +172,8 @@ Vmeas3 net8 V_out 0
 *.iopin I_in_neg
 *.iopin I_in_pos
 *.iopin VDD
-XR_load_2 I_in_pos VDD VDD ppolyf_u_1k r_width=0.5e-6 r_length=10e-6 m=1
-XR_load_1 I_in_neg VDD VDD ppolyf_u_1k r_width=0.5e-6 r_length=10e-6 m=1
+XR_load_2 I_in_pos VDD VDD ppolyf_u_1k r_width=1e-6 r_length=20e-6 m=1
+XR_load_1 I_in_neg VDD VDD ppolyf_u_1k r_width=1e-6 r_length=20e-6 m=1
 .ends
 
 
@@ -215,6 +212,17 @@ XM1 net1 net1 VDD VDD pfet_03v3 L=0.28u W=17u nf=5 ad='int((nf+1)/2) * W/nf * 0.
 + ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
 XM2 Vout net1 VDD VDD pfet_03v3 L=0.28u W=17u nf=5 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
 + ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
+.ends
+
+
+* expanding   symbol:  /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/High_pass_filter.sym # of pins=2
+** sym_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/High_pass_filter.sym
+** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/High_pass_filter.sch
+.subckt High_pass_filter Vout Vin
+*.iopin Vin
+*.iopin Vout
+XC1 Vout Vin cap_mim_2f0fF c_width=10e-6 c_length=10e-6 m=5
+XR1 GND Vout net1 ppolyf_u_1k r_width=1e-6 r_length=100e-6 m=1
 .ends
 
 

@@ -639,8 +639,7 @@ class GilbertMixerInterdigited:
             "fingers": self.rf_fingers,
             "multipliers": 1,
             "with_tie": config.with_tie,
-            # "with_dummy": config.with_dummies,
-            "with_dummy": False,
+            "with_dummy": config.with_dummies,
             "with_dnwell": config.with_dnwell,
             "with_substrate_tap": config.with_substrate_tap,
             "length": self.rf_length,
@@ -744,8 +743,8 @@ class GilbertMixerInterdigited:
         
         via_width = port_LO.width
         
-        via_port_LO = via_array(self.pdk, "met3", "met2", size=(via_width, via_width), fullbottom=True)
-        via_port_LO_b = via_array(self.pdk, "met3", "met2", size=(via_width, via_width), fullbottom=True)
+        via_port_LO = via_array(self.pdk, "met4", "met2", size=(2*via_width, via_width), fullbottom=True)
+        via_port_LO_b = via_array(self.pdk, "met4", "met2", size=(2*via_width, via_width), fullbottom=True)
         
         via_port_LO_ref = comp << via_port_LO
         via_port_LO_b_ref = comp << via_port_LO_b
@@ -753,8 +752,8 @@ class GilbertMixerInterdigited:
         align_comp_to_port(via_port_LO_ref, port_LO, alignment=('c', 'c'))
         align_comp_to_port(via_port_LO_b_ref, port_LO_b, alignment=('c', 'c'))
         
-        via_LO_x_displacement = -port_4_x_displacement - 2*port_LO.width
-        via_LO_b_x_displacement = port_4_x_displacement + 2*port_LO_b.width
+        via_LO_x_displacement = -port_4_x_displacement - 4*port_LO.width
+        via_LO_b_x_displacement = port_4_x_displacement + 4*port_LO_b.width
         
         via_LO_x_displacement = self.pdk.snap_to_2xgrid(via_LO_x_displacement)
         via_LO_b_x_displacement = self.pdk.snap_to_2xgrid(via_LO_b_x_displacement)
@@ -788,8 +787,8 @@ class GilbertMixerInterdigited:
         source_via_width = M1_source.width
         
         # Create vias
-        via_RF_gate = via_array(self.pdk, "met3", "met2", size=(gate_via_width, gate_via_width), fullbottom=True)
-        via_RF_b_gate = via_array(self.pdk, "met3", "met2", size=(gate_via_width, gate_via_width), fullbottom=True)
+        via_RF_gate = via_array(self.pdk, "met4", "met2", size=(2*gate_via_width, gate_via_width), fullbottom=True)
+        via_RF_b_gate = via_array(self.pdk, "met4", "met2", size=(2*gate_via_width, gate_via_width), fullbottom=True)
         via_M1_source = via_array(self.pdk, "met3", "met2", size=(source_via_width, source_via_width), fullbottom=True)
         via_M2_source = via_array(self.pdk, "met3", "met2", size=(source_via_width, source_via_width), fullbottom=True)
         
@@ -806,11 +805,11 @@ class GilbertMixerInterdigited:
         align_comp_to_port(via_M2_source_ref, M2_source, alignment=('c', 'c'))
         
         # Move vias outside tapring
-        via_M1_source_ref.movex(2*(-abs(RF_diff_pair_ref.ports["RF_M1_source_W"].center[0] - RF_diff_pair_ref.ports["RF_M1_tie_W_bottom_lay_W"].center[0]) - source_via_width))
-        via_M2_source_ref.movex(2*abs(RF_diff_pair_ref.ports["RF_M2_source_W"].center[0] - RF_diff_pair_ref.ports["RF_M2_tie_W_bottom_lay_W"].center[0]) + source_via_width)
+        via_M1_source_ref.movex(-2*abs(RF_diff_pair_ref.ports["RF_M1_source_W"].center[0] - RF_diff_pair_ref.ports["RF_M1_tie_W_bottom_lay_W"].center[0]) - 3*source_via_width)
+        via_M2_source_ref.movex(2*abs(RF_diff_pair_ref.ports["RF_M2_source_W"].center[0] - RF_diff_pair_ref.ports["RF_M2_tie_W_bottom_lay_W"].center[0]) + 3*source_via_width)
         
-        via_RF_gate_ref.movex(-abs(RF_gate.center[0] - RF_diff_pair_ref.ports["RF_M1_tie_W_bottom_lay_W"].center[0]) - gate_via_width)
-        via_RF_b_gate_ref.movex(abs(RF_b_gate.center[0] - RF_diff_pair_ref.ports["RF_M2_tie_W_bottom_lay_W"].center[0]) + gate_via_width)
+        via_RF_gate_ref.movex(-abs(RF_gate.center[0] - RF_diff_pair_ref.ports["RF_M1_tie_W_bottom_lay_W"].center[0]) - 2*gate_via_width)
+        via_RF_b_gate_ref.movex(abs(RF_b_gate.center[0] - RF_diff_pair_ref.ports["RF_M2_tie_W_bottom_lay_W"].center[0]) + 2*gate_via_width)
         
         via_RF_gate_ref.movey(RF_gate.width)
         via_RF_b_gate_ref.movey(RF_gate.width)
