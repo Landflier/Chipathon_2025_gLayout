@@ -15,7 +15,7 @@ lab=#net1}
 N 1240 -1210 1240 -1150 {
 lab=Vout}
 N 1280 -1120 1360 -1120 {
-lab=Vin_minus}
+lab=V_in_minus}
 N 1020 -1330 1020 -1270 {
 lab=VDD}
 N 1240 -1330 1240 -1270 {
@@ -35,9 +35,9 @@ lab=I_bias}
 N 1240 -1180 1360 -1180 {
 lab=Vout}
 N 1360 -1120 1360 -1060 {
-lab=Vin_minus}
+lab=V_in_minus}
 N 850 -1060 860 -1060 {
-lab=Vin_minus}
+lab=V_in_minus}
 N 1130 -970 1130 -940 {
 lab=I_bias}
 N 1060 -1240 1200 -1240 {
@@ -55,13 +55,13 @@ lab=VSS}
 N 990 -1240 1020 -1240 {
 lab=VDD}
 N 920 -1120 980 -1120 {
-lab=Vin_plus}
+lab=V_in_plus}
 N 920 -1060 1360 -1060 {
-lab=Vin_minus}
+lab=V_in_minus}
 N 850 -1120 920 -1120 {
-lab=Vin_plus}
+lab=V_in_plus}
 N 860 -1060 920 -1060 {
-lab=Vin_minus}
+lab=V_in_minus}
 C {title-2.sym} 0 0 0 0 {name=l9 author="Time Transcenders" lock=true rev=1.0 page=1}
 C {code.sym} 50 -190 0 0 {name=MODELS only_toplevel=true
 format="tcleval( @value )"
@@ -103,9 +103,9 @@ model=nfet_03v3
 spiceprefix=X
 }
 C {ipin.sym} 840 -1330 0 0 {name=p1 lab=VDD}
-C {ipin.sym} 850 -1120 0 0 {name=p2 lab=Vin_plus
+C {ipin.sym} 850 -1120 0 0 {name=p2 lab=V_in_plus
 }
-C {ipin.sym} 850 -1060 0 0 {name=p3 lab=Vin_minus
+C {ipin.sym} 850 -1060 0 0 {name=p3 lab=V_in_minus
 }
 C {opin.sym} 1360 -1180 0 0 {name=p4 lab=Vout}
 C {iopin.sym} 1130 -940 1 0 {name=p5 lab=I_bias}
