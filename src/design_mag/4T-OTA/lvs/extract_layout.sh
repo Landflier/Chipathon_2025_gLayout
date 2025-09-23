@@ -10,6 +10,7 @@ gds read 4T-OTA.gds
 # Check what cells are available and load the flattened one
 cellname list allcells
 load 4t-ota
+cellname rename 4t-ota 4t-ota_layout
 
 # Extract with more detailed options
 extract all
@@ -21,9 +22,10 @@ ext2spice subcircuit top auto
 ext2spice hierarchy on
 ext2spice scale off
 ext2spice blackbox on
-ext2spice merge conservative
+# ext2spice merge conservative
+ext2spice merge none
 ext2spice global off
-ext2spice -o netlists/4t-ota.spice
+ext2spice -o netlists/4t-ota_layout.spice
 quit
 EOF
 rm *.ext

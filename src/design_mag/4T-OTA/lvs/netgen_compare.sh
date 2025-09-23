@@ -7,6 +7,6 @@ source /usr/local/share/pdk/gf180mcuD/libs.tech/netgen/gf180mcuD_setup.tcl
 EOF
 
 # Run netgen with the custom setup
-netgen -batch lvs "netlists/secondary_ESD_layout.spice io_secondary_5p0_layout" "netlists/secondary_ESD_xschem.spice io_secondary_5p0_schematic" custom_netgen_setup.tcl comp.out
+netgen -batch lvs "netlists/4t-ota_layout.spice x4t-ota_layout" "netlists/4t-ota_schematic.spice 4t-ota-schematic" custom_netgen_setup.tcl comp.out
 
 
