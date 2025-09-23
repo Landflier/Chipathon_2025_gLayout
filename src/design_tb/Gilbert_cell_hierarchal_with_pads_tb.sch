@@ -5,7 +5,7 @@ K {}
 V {}
 S {}
 E {}
-B 2 2260 -1200 3060 -800 {flags=graph,unlocked
+B 2 2470 -760 3270 -360 {flags=graph,unlocked
 y1=-1.2
 y2=3
 ypos1=0
@@ -34,7 +34,7 @@ v_out_p"
 sim_type=tran
 autoload=1
 rawfile=$netlist_dir/Gilbert_cell_hierarchal_sim.raw}
-B 2 2260 -1650 3060 -1250 {flags=graph,unlocked
+B 2 2470 -1210 3270 -810 {flags=graph,unlocked
 y1=7.4e-15
 y2=0.8
 ypos1=0
@@ -42,8 +42,8 @@ ypos2=2
 divy=5
 subdivy=1
 unity=1
-x1=-7260061.4
-x2=2.408058e+08
+x1=-19663354
+x2=2.2840251e+08
 divx=5
 subdivx=1
 xlabmag=1.0
@@ -227,12 +227,10 @@ N 760 -1450 760 -1440 {
 lab=GND}
 N 760 -1620 760 -1610 {
 lab=GND}
-N 2330 -1740 2370 -1740 {
+N 2480 -1620 2520 -1620 {
 lab=V_out}
 N 1920 -1660 1920 -1580 {
 lab=#net12}
-N 2020 -1740 2330 -1740 {
-lab=V_out}
 N 1520 -1720 1640 -1720 {
 lab=V_out_n}
 N 1520 -1760 1640 -1760 {
@@ -257,6 +255,28 @@ N 1780 -1760 1800 -1760 {
 lab=V_out_p}
 N 1810 -920 1920 -920 {
 lab=#net9}
+N 2160 -1740 2200 -1740 {
+lab=#net13}
+N 2020 -1740 2160 -1740 {
+lab=#net13}
+N 2170 -1800 2170 -1780 {
+lab=VDD}
+N 2170 -1780 2200 -1780 {
+lab=VDD}
+N 2390 -1660 2390 -1250 {
+lab=V_out}
+N 2290 -1660 2290 -1250 {
+lab=V_out}
+N 2390 -1620 2480 -1620 {
+lab=V_out}
+N 2020 -1200 2020 -870 {
+lab=V_out}
+N 2390 -1250 2390 -1200 {
+lab=V_out}
+N 2020 -1200 2390 -1200 {
+lab=V_out}
+N 2290 -1250 2290 -1200 {
+lab=V_out}
 C {code.sym} 50 -190 0 0 {name=MODELS only_toplevel=true
 format="tcleval( @value )"
 value="
@@ -394,11 +414,11 @@ value="
 
 .endc
 "}
-C {devices/launcher.sym} 2310 -720 2 1 {name=h2
+C {devices/launcher.sym} 2520 -280 2 1 {name=h2
 descr="Run ngSpice simulation (ctrl+left-click)" 
 tclcommand="xschem save; xschem netlist; xschem simulate"
 }
-C {devices/launcher.sym} 2310 -680 0 0 {name=h1
+C {devices/launcher.sym} 2520 -240 0 0 {name=h1
 descr="Load ngSpice waveforms (ctrl+left-click)" 
 tclcommand="xschem raw_read $netlist_dir/Gilbert_cell_hierarchal_with_pads_sim.raw tran"
 }
@@ -482,10 +502,12 @@ C {gnd.sym} 760 -1070 0 0 {name=l14 lab=GND}
 C {gnd.sym} 760 -1250 0 0 {name=l15 lab=GND}
 C {gnd.sym} 760 -1440 0 0 {name=l16 lab=GND}
 C {gnd.sym} 760 -1610 0 0 {name=l17 lab=GND}
-C {opin.sym} 2370 -1740 0 0 {name=p5 lab=V_out}
+C {opin.sym} 2520 -1620 0 0 {name=p5 lab=V_out}
 C {lab_pin.sym} 1570 -1760 1 0 {name=p7 sig_type=std_logic lab=V_out_p}
 C {lab_pin.sym} 1570 -1720 3 0 {name=p17 sig_type=std_logic lab=V_out_n}
 C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/5T-OTA-buffer_no_hierarchy.sym} 1920 -1740 0 0 {name=x_Amplifier}
 C {vdd.sym} 1850 -1870 0 0 {name=l18 lab=VDD}
 C {gnd.sym} 1850 -1600 0 0 {name=l19 lab=GND}
 C {ammeter.sym} 1920 -1330 0 0 {name=Vmeas2 savecurrent=true spice_ignore=0}
+C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Output_stage.sym} 2330 -1720 0 0 {name=x4}
+C {vdd.sym} 2170 -1800 0 0 {name=l10 lab=VDD}
