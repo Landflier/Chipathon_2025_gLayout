@@ -1,11 +1,13 @@
 magic
 tech gf180mcuD
 magscale 1 10
-timestamp 1758631570
+timestamp 1758634442
 << pwell >>
 rect 1044 -16 1365 -15
 rect 1039 -78 1365 -16
-rect 2066 -505 2393 -444
+rect 1826 -444 2098 -313
+rect 1826 -505 2393 -444
+rect 1826 -534 2098 -505
 << nsubdiffcont >>
 rect 1372 565 2076 611
 rect 1372 235 2076 281
@@ -85,9 +87,9 @@ rect 2323 -504 2325 -446
 rect 2383 -504 2385 -446
 rect 2323 -514 2385 -504
 use nfet_03v3_AZGML9  nfet_03v3_AZGML9_0
-timestamp 1758631570
+timestamp 1758634442
 transform 1 0 1716 0 -1 -260
-box -648 -390 519 491
+box -721 -390 519 491
 use pfet_03v3_RFU83T  pfet_03v3_RFU83T_0
 timestamp 1758629212
 transform 1 0 1723 0 1 423
