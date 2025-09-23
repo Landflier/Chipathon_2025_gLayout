@@ -1,0 +1,102 @@
+magic
+tech gf180mcuD
+magscale 1 10
+timestamp 1758621131
+<< error_p >>
+rect -271 1 -260 47
+rect -103 1 -92 47
+rect 35 1 46 47
+rect 203 1 214 47
+rect -187 -91 -176 -45
+rect 119 -91 130 -45
+<< nwell >>
+rect -435 -225 435 225
+<< pmos >>
+rect -181 -6 -125 54
+rect 125 -6 181 54
+<< pdiff >>
+rect -273 54 -201 60
+rect -105 54 -33 60
+rect -273 47 -181 54
+rect -273 1 -260 47
+rect -214 1 -181 47
+rect -273 -6 -181 1
+rect -125 47 -33 54
+rect -125 1 -92 47
+rect -46 1 -33 47
+rect -125 -6 -33 1
+rect -273 -12 -201 -6
+rect -105 -12 -33 -6
+rect 33 54 105 60
+rect 201 54 273 60
+rect 33 47 125 54
+rect 33 1 46 47
+rect 92 1 125 47
+rect 33 -6 125 1
+rect 181 47 273 54
+rect 181 1 214 47
+rect 260 1 273 47
+rect 181 -6 273 1
+rect 33 -12 105 -6
+rect 201 -12 273 -6
+<< pdiffc >>
+rect -260 1 -214 47
+rect -92 1 -46 47
+rect 46 1 92 47
+rect 214 1 260 47
+<< nsubdiff >>
+rect -411 129 411 201
+rect -411 85 -339 129
+rect -411 -85 -398 85
+rect -352 -85 -339 85
+rect 339 85 411 129
+rect -411 -129 -339 -85
+rect 339 -85 352 85
+rect 398 -85 411 85
+rect 339 -129 411 -85
+rect -411 -201 411 -129
+<< nsubdiffcont >>
+rect -398 -85 -352 85
+rect 352 -85 398 85
+<< polysilicon >>
+rect -181 54 -125 98
+rect -181 -32 -125 -6
+rect 125 54 181 98
+rect 125 -32 181 -6
+rect -189 -45 -117 -32
+rect -189 -91 -176 -45
+rect -130 -91 -117 -45
+rect -189 -104 -117 -91
+rect 117 -45 189 -32
+rect 117 -91 130 -45
+rect 176 -91 189 -45
+rect 117 -104 189 -91
+<< polycontact >>
+rect -176 -91 -130 -45
+rect 130 -91 176 -45
+<< metal1 >>
+rect -398 142 398 188
+rect -398 85 -352 142
+rect 352 85 398 142
+rect -271 1 -260 47
+rect -214 1 -203 47
+rect -103 1 -92 47
+rect -46 1 -35 47
+rect 35 1 46 47
+rect 92 1 103 47
+rect 203 1 214 47
+rect 260 1 271 47
+rect -398 -142 -352 -85
+rect -187 -91 -176 -45
+rect -130 -91 -119 -45
+rect 119 -91 130 -45
+rect 176 -91 187 -45
+rect 352 -142 398 -85
+rect -398 -188 398 -142
+<< properties >>
+string FIXED_BBOX -375 -165 375 165
+string gencell pfet_03v3
+string library gf180mcu
+string parameters w 0.3 l 0.280 m 1 nf 2 diffcov 100 polycov 100 guard 1 glc 1 grc 1 gtc 0 gbc 0 tbcov 100 rlcov 100 topc 0 botc 1 poverlap 0 doverlap 0 lmin 0.28 wmin 0.22 class mosfet full_metal 1 compatible {pfet_03v3 pfet_06v0}
+string pfet_03v3_RFU83T parameters
+<< end >>

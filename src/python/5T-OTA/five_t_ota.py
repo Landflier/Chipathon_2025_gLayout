@@ -110,7 +110,7 @@ class FiveTOTA:
             length=self.config.pmos_length,    # 0.28um
             fingers=self.config.pmos_fingers,  # 2 fingers
             multipliers=1,
-            with_dummy=(False, False),         # No dummies
+            with_dummy=(True, False),         # No dummies
             with_substrate_tap=False,          # No substrate tap (we'll use tapring)
             with_tie=False,                    # No tie connections
             sd_rmult=1,
@@ -125,7 +125,7 @@ class FiveTOTA:
             length=self.config.pmos_length,    # 0.28um  
             fingers=self.config.pmos_fingers,  # 2 fingers
             multipliers=1,
-            with_dummy=(False, False),         # No dummies
+            with_dummy=(False, True),         # No dummies
             with_substrate_tap=False,          # No substrate tap (we'll use tapring)
             with_tie=False,                    # No tie connections
             sd_rmult=1,
@@ -142,17 +142,36 @@ class FiveTOTA:
         
         # Position M4 next to M3 with appropriate spacing
         M3_bbox = evaluate_bbox(M3)
-        spacing = 2.0  # 2um spacing for well isolation
-        M4_ref.movex(M3_bbox[0] + spacing)
-        
-        # Don't add tapring here - do it after adding to top_level in build method
-        
-        # Connect gates together (current mirror configuration)
-        self.create_pmos_routing(pmos_mirror, M3_ref, M4_ref)
+        spacing = 0.2 # a bit of spacing for wiring, etc
+        M4_ref.movex((M3_bbox[0] + spacing)/2)
+        M3_ref.movex(-(M3_bbox[0] + spacing)/2)
         
         # Add external ports with proper names
         pmos_mirror.add_ports(M3_ref.get_ports_list(), prefix="M3_")
         pmos_mirror.add_ports(M4_ref.get_ports_list(), prefix="M4_")
+        
+       # Map dummy ports to Gilbert mixer naming for tapring routing
+        # M3 left dummy: multiplier_0_dummy_L_row0_col0_gate_W -> dummy_gate_L_W
+        m3_left_dummy_port = "M3_multiplier_0_dummy_L_row0_col0_gate_W"
+        if m3_left_dummy_port in pmos_mirror.ports:
+            pmos_mirror.add_port(
+                port=pmos_mirror.ports[m3_left_dummy_port],
+                name="dummy_gate_L_W"
+            )
+        
+        # M4 left dummy (inner dummy): multiplier_0_dummy_L_row0_col0_gate_E -> dummy_gate_R_E  
+        # Note: M4's left dummy becomes the "right" dummy in the overall layout
+        m4_left_dummy_port = "M4_multiplier_0_dummy_L_row0_col0_gate_E"
+        if m4_left_dummy_port in pmos_mirror.ports:
+            pmos_mirror.add_port(
+                port=pmos_mirror.ports[m4_left_dummy_port],
+                name="dummy_gate_R_E"
+            )
+                
+        self.create_pmos_tapring_and_wells(pmos_mirror) 
+
+        # Connect gates together (current mirror configuration)
+        self.create_pmos_routing(pmos_mirror, M3_ref, M4_ref)
         
         return pmos_mirror
 
@@ -169,7 +188,9 @@ class FiveTOTA:
             lo_width=1.0,
             lo_fingers=1,
             lo_length=self.config.nmos_length,
+            with_dummies = False,
             component_name="temp_5T_OTA_RF_diff_pair"
+
         )
         
         # Directly use the proven create_RF_diff_pair method
@@ -208,37 +229,74 @@ class FiveTOTA:
         
         # Add ports from tapring with tie prefix (exactly like Gilbert mixer)
         top_level.add_ports(tiering_ref.get_ports_list(), prefix="tie_")
-
-
-    def extend_nwell_to_tapring(self, top_level, M3_ref, M4_ref, tapring_ref, placement):
-        """Extend nwell rectangles for PMOS transistors towards tapring sides."""
-        # Get the nwell layer
-        try:
-            nwell_layer = self.pdk.get_glayer("nwell")
-        except Exception as e:
-            return
         
-        # Get tapring boundaries
-        tapring_bbox = evaluate_bbox(tapring_ref)
-        tapring_center = tapring_ref.center
-        tapring_width = tapring_bbox[0]
-        tapring_height = tapring_bbox[1]
-        
-        # Create unified nwell rectangle covering both PMOS transistors
-        # Make it slightly smaller than tapring to avoid DRC issues
-        nwell_margin = 0.3  # 0.3um margin from tapring edge
-        extended_nwell = rectangle(
-            layer=nwell_layer,
-            size=(tapring_width - 2*nwell_margin, tapring_height - 2*nwell_margin),
-            centered=True
+        # Add nwell padding to cover the entire tapring area (like Gilbert mixer adds pwell)
+        top_level.add_padding(
+            layers=(self.pdk.get_glayer("nwell"),),
+            default=self.pdk.get_grule("nwell", "active_tap")["min_enclosure"],
         )
-        
-        extended_nwell_ref = top_level << extended_nwell
-        extended_nwell_ref.name = "extended_nwell_pmos"
-        extended_nwell_ref.move(tapring_center)
+        top_level = add_ports_perimeter(top_level, layer=self.pdk.get_glayer("nwell"), prefix="well_")
 
+               
+        # Route dummies to tapring (exactly like Gilbert mixer does)
+        self.route_pmos_dummies_to_tapring(top_level)
 
+    def route_pmos_dummies_to_tapring(self, top_level):
+        """Route PMOS dummy gates to tapring, exactly like Gilbert mixer does."""
+        try:
+            
+            # Use actual PMOS transistor dummy port names for routing
+            left_dummy_port = "M3_dummy_gate_L_W"  # M3 left dummy gate
+            right_dummy_port = "M4_dummy_gate_R_E"  # M4 right dummy gate  
+            west_tie_port = "tie_W_top_met_E"   # Use top_met instead of bottom_lay
+            east_tie_port = "tie_E_top_met_W"   # Use top_met instead of bottom_lay
+            
+            # Check if the exact ports exist
+            ports_to_check = [left_dummy_port, right_dummy_port, west_tie_port, east_tie_port]
+            available_ports = [port for port in ports_to_check if port in top_level.ports]
+            print(f"Gilbert mixer style ports available: {available_ports}")
+            
+            # Route left dummy if both ports exist
+            if left_dummy_port in top_level.ports and west_tie_port in top_level.ports:
+                print(f"Connecting {left_dummy_port} to {west_tie_port}")
+                try:
+                    top_level << straight_route(
+                        self.pdk,
+                        top_level.ports[left_dummy_port],
+                        top_level.ports[west_tie_port],
+                        glayer1="poly",
+                        glayer2="met1",
+                    )
+                    print("✓ Left dummy connected successfully")
+                except Exception as e:
+                    print(f"Could not route left dummy: {e}")
+            else:
+                print(f"Missing ports for left dummy: {left_dummy_port} or {west_tie_port}")
+            
+            # Route right dummy if both ports exist
+            if right_dummy_port in top_level.ports and east_tie_port in top_level.ports:
+                print(f"Connecting {right_dummy_port} to {east_tie_port}")
+                try:
+                    top_level << straight_route(
+                        self.pdk,
+                        top_level.ports[right_dummy_port],
+                        top_level.ports[east_tie_port],
+                        glayer1="poly",
+                        glayer2="met1",
+                    )
+                    print("✓ Right dummy connected successfully")
+                except Exception as e:
+                    print(f"Could not route right dummy: {e}")
+            else:
+                print(f"Missing ports for right dummy: {right_dummy_port} or {east_tie_port}")
+                
+            if not any(port in top_level.ports for port in ports_to_check):
+                print("No Gilbert mixer style dummy/tie ports found")
+                
+        except Exception as e:
+            print(f"Dummy routing skipped: {e}")
 
+            
     def create_pmos_routing(self, pmos_mirror, M3_ref, M4_ref):
         """Create routing for PMOS current mirror."""
         # Connect gates together (current mirror configuration)
@@ -252,7 +310,7 @@ class FiveTOTA:
         
         # Connect M3 gate to M3 drain (diode connection for reference)
         try:
-            pmos_mirror << straight_route(self.pdk, M3_ref.ports["gate_S"], M3_ref.ports["drain_S"])
+            pmos_mirror << straight_route(self.pdk, M3_ref.ports["gate_S"], M3_ref.ports["drain_S"], width = 0.28)
         except:
             try:
                 pmos_mirror << c_route(self.pdk, M3_ref.ports["gate_S"], M3_ref.ports["drain_S"])
@@ -278,16 +336,21 @@ class FiveTOTA:
         pmos_bbox = evaluate_bbox(self.pmos_mirror)
         diff_bbox = evaluate_bbox(self.diff_pair_comp)
         
+        tap_separation = max(
+            self.pdk.get_grule("met2")["min_separation"],
+            self.pdk.get_grule("met1")["min_separation"],
+            self.pdk.get_grule("active_diff", "active_tap")["min_separation"],
+            self.pdk.get_grule("nwell", "pwell")["min_separation"],
+        )
+        tap_separation += self.pdk.get_grule("p+s/d", "active_tap")["min_enclosure"]
+        
         # Position differential pair at origin (reference)
-        self.diff_pair_ref.movex(0)
-        self.diff_pair_ref.movey(0)
+        self.diff_pair_ref.movex(-self.diff_pair_comp.xmax/2)
+        self.diff_pair_ref.movey(-tap_separation - pmos_bbox[1])
         
         # Position PMOS mirror above differential pair
         spacing_y = self.config.component_spacing
-        pmos_y_position = diff_bbox[1] + spacing_y + pmos_bbox[1]/2
         
-        self.pmos_mirror_ref.movex(0)  # Center horizontally
-        self.pmos_mirror_ref.movey(pmos_y_position)
 
     def add_ota_ports(self) -> None:
         """Add external ports for the 5T-OTA."""
@@ -297,7 +360,7 @@ class FiveTOTA:
         
         # Find gate ports using RF_diff_pair naming convention
         diff_gate_ports = [p for p in diff_ref.ports.keys() if "gate" in p.lower()]
-        print(f"Available gate ports: {diff_gate_ports}")
+        # print(f"Available gate ports: {diff_gate_ports}")
         
         # Find DIFF_M1 and DIFF_M2 gate ports (new naming convention)
         m1_gate_ports = [p for p in diff_gate_ports if "diff_m1" in p.lower()]
@@ -332,7 +395,7 @@ class FiveTOTA:
         
         # Output ports from PMOS mirror drains (differential outputs)
         pmos_drain_ports = [p for p in pmos_ref.ports.keys() if "drain" in p.lower()]
-        print(f"Available PMOS drain ports: {pmos_drain_ports}")
+        # print(f"Available PMOS drain ports: {pmos_drain_ports}")
         
         if len(pmos_drain_ports) >= 2:
             # Use the first two drain ports found
@@ -366,9 +429,9 @@ class FiveTOTA:
         diff_vss_ports = [p for p in diff_ref.ports.keys() if ("substrate" in p.lower() or "tap" in p.lower() or "tie" in p.lower())]
         pmos_gate_ports = [p for p in pmos_ref.ports.keys() if "gate" in p.lower()]
         
-        print(f"Available PMOS source ports: {pmos_source_ports[:3]}")
-        print(f"Available VSS ports: {diff_vss_ports}")
-        print(f"Available PMOS gate ports: {pmos_gate_ports[:3]}")
+        # print(f"Available PMOS source ports: {pmos_source_ports[:3]}")
+        # print(f"Available VSS ports: {diff_vss_ports}")
+        # print(f"Available PMOS gate ports: {pmos_gate_ports[:3]}")
         
         if pmos_source_ports:
             for orientation in [0, 90, 180, 270]:
@@ -432,9 +495,6 @@ class FiveTOTA:
         self.pmos_mirror_ref.name = "pmos_current_mirror"
         self.diff_pair_ref.name = "differential_pair"
         
-        # Add tapring to PMOS mirror using reference (like Gilbert mixer does)
-        self.create_pmos_tapring_and_wells(self.pmos_mirror_ref)
-        
         # Position components
         self.position_components()
         
@@ -447,7 +507,7 @@ class FiveTOTA:
         # Snap to grid for clean layout
         self.top_level = component_snap_to_grid(self.top_level)
         
-        print(f"5T-OTA completed with {len(self.top_level.ports)} ports")
+        # print(f"5T-OTA completed with {len(self.top_level.ports)} ports")
         
         return self.top_level
 
@@ -489,15 +549,10 @@ if __name__ == "__main__":
     
     # Run DRC if available
     try:
-        drc_result = pdk_choice.drc_magic(ota_component, "5T_OTA")
+        drc_result = pdk_choice.drc_magic(ota_component, "5T-OTA")
         if drc_result:
             print(f"DRC: {drc_result}")
     except Exception as e:
         print(f"DRC skipped: {e}")
-    
-    # Print port summary
-    print(f"Total ports: {len(ota_component.ports)}")
-    for port_name in sorted(ota_component.ports.keys()):
-        print(f"  {port_name}")
     
     print("5T-OTA example completed")
