@@ -18,7 +18,7 @@ V_RF_b V_RF_b GND sin( 1 1 1 0 0 180 )
 I0 net6 GND 10u
 x_Loading_stage V_out_p V_out_n VDD Gilbert_cell_hierarchal_loading_stage
 XR_load_3 net1 net2 VDD pplus_u r_width=0.5e-6 r_length=5e-6 m=1
-x_Biasing_network VDD net3 net4 net5 net6 GND V_out_loaded Biasing_network_with_local_mirros
+x_Biasing_network VDD net3 net4 net5 net6 GND net8 Biasing_network_with_local_mirros
 Vmeas net1 net3 0
 .save i(vmeas)
 Vmeas1 net2 net4 0
@@ -29,6 +29,8 @@ Vmeas2 net7 net5 0
 .save i(vmeas2)
 x1 VDD V_out V_out_loaded V_out_loaded Output_stage
 C1 V_out_loaded GND 10p m=1
+Vmeas3 V_out_loaded net8 0
+.save i(vmeas3)
 **** begin user architecture code
 
 .include /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/design.ngspice
@@ -201,16 +203,16 @@ x_NMOS_mirror_4 I_out_4 net1 VSS Local_mirror_nmos l_ref=1u w_ref=1.5u nf_ref=1 
 * expanding   symbol:  /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/5T-OTA-buffer_no_hierarchy.sym # of pins=6
 ** sym_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/5T-OTA-buffer_no_hierarchy.sym
 ** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/5T-OTA-buffer_no_hierarchy.sch
-.subckt 5T-OTA-buffer_no_hierarchy VDD Vout Vin_plus Vin_minus I_bias VSS
+.subckt 5T-OTA-buffer_no_hierarchy VDD Vout V_in_plus V_in_minus I_bias VSS
 *.ipin VDD
-*.ipin Vin_plus
-*.ipin Vin_minus
+*.ipin V_in_plus
+*.ipin V_in_minus
 *.opin Vout
 *.iopin I_bias
 *.ipin VSS
-XM3 net1 Vin_plus I_bias VSS nfet_03v3 L=0.28u W=1u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
+XM3 net1 V_in_plus I_bias VSS nfet_03v3 L=0.28u W=1u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
 + ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
-XM4 Vout Vin_minus I_bias VSS nfet_03v3 L=0.28u W=1u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
+XM4 Vout V_in_minus I_bias VSS nfet_03v3 L=0.28u W=1u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
 + ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
 XM1 net1 net1 VDD VDD pfet_03v3 L=0.28u W=0.3u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
 + ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
@@ -227,9 +229,9 @@ XM2 Vout net1 VDD VDD pfet_03v3 L=0.28u W=0.3u nf=1 ad='int((nf+1)/2) * W/nf * 0
 *.iopin V_in
 *.iopin I_bias_1
 *.iopin V_out_biasing
-XM1 VDD V_in I_bias_1 GND nfet_03v3 L=0.28u W=2.8u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
+XM1 VDD V_in I_bias_1 GND nfet_03v3 L=0.28u W=4u nf=2 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
 + ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
-XM2 VDD I_bias_1 V_out_biasing GND nfet_03v3 L=0.28u W=10u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u'
+XM2 VDD I_bias_1 V_out_biasing GND nfet_03v3 L=0.28u W=8u nf=4 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u'
 + pd='2*int((nf+1)/2) * (W/nf + 0.18u)' ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
 .ends
 

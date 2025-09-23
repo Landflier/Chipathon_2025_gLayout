@@ -1,0 +1,11 @@
+magic
+tech gf180mcuD
+magscale 1 10
+timestamp 1758659614
+<< metal2 >>
+rect -25 -318 1311 -243
+use nfet_03v3_N8FQLR  nfet_03v3_N8FQLR_0
+timestamp 1758659614
+transform 1 0 496 0 1 110
+box -680 -551 680 461
+<< end >>

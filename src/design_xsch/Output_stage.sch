@@ -25,8 +25,8 @@ N 150 -170 170 -170 {
 lab=GND}
 C {symbols/nfet_03v3.sym} 130 -170 0 0 {name=M1
 L=0.28u
-W=2.8u
-nf=1
+W=4u
+nf=2
 m=1
 ad="'int((nf+1)/2) * W/nf * 0.18u'"
 pd="'2*int((nf+1)/2) * (W/nf + 0.18u)'"
@@ -39,8 +39,8 @@ spiceprefix=X
 }
 C {symbols/nfet_03v3.sym} 270 -90 0 0 {name=M2
 L=0.28u
-W=10u
-nf=1
+W=8u
+nf=4
 m=1
 ad="'int((nf+1)/2) * W/nf * 0.18u'"
 pd="'2*int((nf+1)/2) * (W/nf + 0.18u)'"

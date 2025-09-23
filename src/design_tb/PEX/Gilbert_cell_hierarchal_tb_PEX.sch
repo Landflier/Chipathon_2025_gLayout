@@ -13,8 +13,8 @@ ypos2=2
 divy=5
 subdivy=1
 unity=1
-x1=5e-08
-x2=5.5e-07
+x1=0
+x2=5e-07
 divx=5
 subdivx=1
 xlabmag=1.0
@@ -207,9 +207,9 @@ lab=#net7}
 N 1420 -1300 1420 -920 {
 lab=#net5}
 N 1540 -870 1660 -870 {
-lab=V_out_loaded}
+lab=#net8}
 N 1660 -900 1660 -870 {
-lab=V_out_loaded}
+lab=#net8}
 N 1660 -990 1660 -960 {
 lab=V_out_loaded}
 N 1660 -990 1740 -990 {
@@ -235,8 +235,6 @@ lab=V_out_loaded}
 N 2060 -1540 2060 -1520 {
 lab=GND}
 N 2060 -1620 2060 -1600 {
-lab=V_out_loaded}
-N 1660 -960 1660 -900 {
 lab=V_out_loaded}
 N 1790 -1250 1790 -1190 {
 lab=V_out_loaded}
@@ -457,3 +455,4 @@ value=10p
 footprint=1206
 device="ceramic capacitor"}
 C {gnd.sym} 2060 -1520 0 0 {name=l10 lab=GND}
+C {ammeter.sym} 1660 -930 0 0 {name=Vmeas3 savecurrent=true spice_ignore=0}
