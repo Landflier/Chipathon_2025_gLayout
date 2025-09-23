@@ -1,14 +1,14 @@
 magic
 tech gf180mcuD
 magscale 1 10
-timestamp 1758621998
+timestamp 1758622239
 << nsubdiffcont >>
 rect 1372 565 2076 611
 rect 1372 235 2076 281
 << metal1 >>
-rect 1289 611 2122 648
-rect 1289 198 1372 611
-rect 2076 565 2122 611
+rect 1288 611 2158 648
+rect 1288 235 1372 611
+rect 2076 565 2158 611
 rect 1452 489 1522 501
 rect 1452 433 1454 489
 rect 1520 433 1522 489
@@ -23,6 +23,9 @@ rect 1920 423 2001 424
 rect 1941 418 2001 423
 rect 1452 359 1905 378
 rect 1453 332 1905 359
+rect 2075 281 2158 565
+rect 2076 235 2158 281
+rect 1288 198 2158 235
 << via1 >>
 rect 1454 433 1520 489
 rect 1924 430 1990 486
@@ -40,4 +43,11 @@ use pfet_03v3_RFU83T  pfet_03v3_RFU83T_0
 timestamp 1758621131
 transform 1 0 1723 0 1 423
 box -435 -225 435 225
+<< labels >>
+rlabel metal2 1201 456 1201 456 3 D_ref
+port 1 e
+rlabel metal1 1708 198 1708 198 1 VDD
+port 2 n
+rlabel metal2 2244 458 2244 458 7 D_mir
+port 0 w
 << end >>
