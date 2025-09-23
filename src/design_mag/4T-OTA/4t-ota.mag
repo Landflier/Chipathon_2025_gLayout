@@ -1,7 +1,7 @@
 magic
 tech gf180mcuD
 magscale 1 10
-timestamp 1758629365
+timestamp 1758630305
 << pwell >>
 rect 1044 -16 1365 -15
 rect 1039 -78 1365 -16
@@ -30,6 +30,9 @@ rect 1453 332 1905 359
 rect 2075 281 2158 565
 rect 2076 235 2158 281
 rect 1288 198 2158 235
+rect 1219 56 2212 128
+rect 2148 -670 2212 56
+rect 1198 -751 2212 -670
 << via1 >>
 rect 1454 433 1520 489
 rect 1924 430 1990 486
@@ -54,6 +57,8 @@ rect 1039 -18 1365 -16
 rect 1039 -76 1049 -18
 rect 1107 -76 1365 -18
 rect 1039 -78 1365 -76
+rect 939 -206 1143 -138
+rect 939 -381 1157 -313
 rect 2066 -446 2393 -444
 rect 2066 -504 2325 -446
 rect 2383 -504 2393 -446
@@ -80,24 +85,24 @@ rect 2323 -504 2325 -446
 rect 2383 -504 2385 -446
 rect 2323 -514 2385 -504
 use nfet_03v3_AZGML9  nfet_03v3_AZGML9_0
-timestamp 1758629365
+timestamp 1758630305
 transform 1 0 1716 0 -1 -260
-box -776 -390 519 491
+box -648 -390 519 491
 use pfet_03v3_RFU83T  pfet_03v3_RFU83T_0
 timestamp 1758629212
 transform 1 0 1723 0 1 423
 box -435 -225 435 225
 << labels >>
-rlabel metal2 2244 458 2244 458 7 D_mir
-rlabel space 941 -170 941 -170 3 V_in_minus
-port 1 e
-rlabel space 940 -346 940 -346 3 V_in_plus
-port 2 e
 rlabel metal1 1708 198 1708 198 1 VDD
 port 3 n
-rlabel metal2 1201 456 1201 456 3 D_ref
 rlabel metal2 2393 -589 2393 -589 7 I_bias
 port 0 w
-rlabel space 1715 -729 1715 -729 1 VSS
+rlabel metal1 1715 -729 1715 -729 1 VSS
+port 5 n
+rlabel metal2 940 -346 940 -346 3 V_in_plus
+port 2 e
+rlabel metal3 2385 -11 2385 -11 1 Vout
 port 4 n
+rlabel metal2 940 -169 940 -169 3 V_in_minus
+port 1 e
 << end >>
