@@ -1,0 +1,102 @@
+magic
+tech gf180mcuD
+magscale 1 10
+timestamp 1758637312
+<< error_p >>
+rect -271 1 -260 47
+rect -103 1 -92 47
+rect 35 1 46 47
+rect 203 1 214 47
+rect -187 -91 -176 -45
+rect 119 -91 130 -45
+<< nwell >>
+rect -435 -229 435 229
+<< pmos >>
+rect -181 2 -125 46
+rect 125 2 181 46
+<< pdiff >>
+rect -273 47 -201 60
+rect -273 1 -260 47
+rect -214 46 -201 47
+rect -105 47 -33 60
+rect -105 46 -92 47
+rect -214 2 -181 46
+rect -125 2 -92 46
+rect -214 1 -201 2
+rect -273 -12 -201 1
+rect -105 1 -92 2
+rect -46 1 -33 47
+rect -105 -12 -33 1
+rect 33 47 105 60
+rect 33 1 46 47
+rect 92 46 105 47
+rect 201 47 273 60
+rect 201 46 214 47
+rect 92 2 125 46
+rect 181 2 214 46
+rect 92 1 105 2
+rect 33 -12 105 1
+rect 201 1 214 2
+rect 260 1 273 47
+rect 201 -12 273 1
+<< pdiffc >>
+rect -260 1 -214 47
+rect -92 1 -46 47
+rect 46 1 92 47
+rect 214 1 260 47
+<< nsubdiff >>
+rect -411 133 411 205
+rect -411 89 -339 133
+rect -411 -89 -398 89
+rect -352 -89 -339 89
+rect 339 89 411 133
+rect -411 -133 -339 -89
+rect 339 -89 352 89
+rect 398 -89 411 89
+rect 339 -133 411 -89
+rect -411 -205 411 -133
+<< nsubdiffcont >>
+rect -398 -89 -352 89
+rect 352 -89 398 89
+<< polysilicon >>
+rect -181 46 -125 90
+rect -181 -32 -125 2
+rect 125 46 181 90
+rect 125 -32 181 2
+rect -189 -45 -117 -32
+rect -189 -91 -176 -45
+rect -130 -91 -117 -45
+rect -189 -104 -117 -91
+rect 117 -45 189 -32
+rect 117 -91 130 -45
+rect 176 -91 189 -45
+rect 117 -104 189 -91
+<< polycontact >>
+rect -176 -91 -130 -45
+rect 130 -91 176 -45
+<< metal1 >>
+rect -398 146 398 192
+rect -398 89 -352 146
+rect 352 89 398 146
+rect -271 1 -260 47
+rect -214 1 -203 47
+rect -103 1 -92 47
+rect -46 1 -35 47
+rect 35 1 46 47
+rect 92 1 103 47
+rect 203 1 214 47
+rect 260 1 271 47
+rect -398 -146 -352 -89
+rect -187 -91 -176 -45
+rect -130 -91 -119 -45
+rect 119 -91 130 -45
+rect 176 -91 187 -45
+rect 352 -146 398 -89
+rect -398 -192 398 -146
+<< properties >>
+string FIXED_BBOX -375 -169 375 169
+string gencell pfet_03v3
+string library gf180mcu
+string parameters w 0.220 l 0.280 m 1 nf 2 diffcov 100 polycov 100 guard 1 glc 1 grc 1 gtc 0 gbc 0 tbcov 100 rlcov 100 topc 0 botc 1 poverlap 0 doverlap 0 lmin 0.28 wmin 0.22 class mosfet full_metal 1 compatible {pfet_03v3 pfet_06v0}
+string pfet_03v3_VPBQTB parameters
+<< end >>
