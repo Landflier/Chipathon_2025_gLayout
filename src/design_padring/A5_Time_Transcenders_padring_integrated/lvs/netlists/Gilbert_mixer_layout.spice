@@ -37,23 +37,20 @@ Xppolyf_u_1k_DB8C7L_0 m1_170_1346# m1_459_2748# VSUBS m1_170_1346# m1_168_2735# 
 + m1_730_1578# m1_459_2748# m1_459_192# VSUBS ppolyf_u_1k_DB8C7L
 .ends
 
-.subckt pfet_03v3_RFU83T$1 a_181_n6# a_n125_n6# a_33_n12# w_n435_n238# a_n190_n119#
+.subckt pfet_03v3_RFU83T a_181_n6# a_n125_n6# a_33_n12# w_n435_n238# a_n190_n119#
 + a_n273_n12#
 X0 a_181_n6# a_n190_n119# a_33_n12# w_n435_n238# pfet_03v3 ad=0.1596p pd=1.64u as=0.1596p ps=1.64u w=0.3u l=0.28u
 X1 a_n125_n6# a_n190_n119# a_n273_n12# w_n435_n238# pfet_03v3 ad=0.1596p pd=1.64u as=0.1596p ps=1.64u w=0.3u l=0.28u
 .ends
 
-.subckt nfet_03v3_AZGML9$1 a_n52_n50# a_n276_70# a_n212_n50# a_n356_n36# a_n116_n142#
-+ a_n496_n388#
-X0 a_n212_n50# a_n116_n142# a_n52_n50# a_n496_n388# nfet_03v3 ad=0.13p pd=1.02u as=0.13p ps=1.02u w=0.5u l=0.28u M=2
-X1 a_n356_n36# a_n276_70# a_n212_n50# a_n496_n388# nfet_03v3 ad=0.2109p pd=1.88u as=0.13p ps=1.02u w=0.5u l=0.28u M=2
+.subckt nfet_03v3_AZGML9 VSS a_n52_n50# a_n276_70# a_n212_n50# a_n356_n36# a_n116_n142#
+X0 a_n212_n50# a_n116_n142# a_n52_n50# VSS nfet_03v3 ad=0.13p pd=1.02u as=0.13p ps=1.02u w=0.5u l=0.28u M=2
+X1 a_n356_n36# a_n276_70# a_n212_n50# VSS nfet_03v3 ad=0.2109p pd=1.88u as=0.13p ps=1.02u w=0.5u l=0.28u M=2
 .ends
 
-.subckt x4t-ota w_1372_318# m2_1984_n621# m2_939_n381# m2_939_n206# m1_1910_520# VSUBS
-Xpfet_03v3_RFU83T_0 m1_1910_520# w_1372_318# w_1372_318# w_1372_318# m1_1452_455#
-+ m1_1452_455# pfet_03v3_RFU83T$1
-Xnfet_03v3_AZGML9_0 m1_1910_520# m2_939_n381# m2_1984_n621# m1_1452_455# m2_939_n206#
-+ VSUBS nfet_03v3_AZGML9$1
+.subckt x4t-ota$1 VDD Vout I_bias V_in_minus V_in_plus VSS
+Xpfet_03v3_RFU83T_0 Vout VDD VDD VDD m1_1452_455# m1_1452_455# pfet_03v3_RFU83T
+Xnfet_03v3_AZGML9_0 VSS Vout V_in_plus I_bias m1_1452_455# V_in_minus nfet_03v3_AZGML9
 .ends
 
 .subckt ppolyf_u_9H3LNU a_n4000_1000# a_n4000_n1102# w_n4216_n1318#
@@ -243,14 +240,15 @@ XRF_diff_pair$1_0 RF_diff_pair$1_0/a_3384_n849# RF_diff_pair$1_0/a_3440_n321# RF
 .subckt Gilbert_mixer_layout V_IF_out V_LO V_RF V_LO_b V_RF_b VDD
 XOutput_stage_0 VDD VDD V_IF_out m3_453280_108358# V_IF_out Output_stage
 XDegeneration_resistor_0 VDD m3_447543_98113# m3_436631_98228# Degeneration_resistor
-XGilbert_mixer_loading_stage_0 m3_451768_108051# m3_451768_106738# VDD Gilbert_mixer_loading_stage
-X4t-ota_0 VDD m3_454799_105309# m3_451768_106738# m3_451768_108051# m3_453280_108358#
-+ VDD x4t-ota
+XGilbert_mixer_loading_stage_0 4t-ota$1_0/V_in_minus 4t-ota$1_0/V_in_plus VDD Gilbert_mixer_loading_stage
+X4t-ota$1_0 VDD 4t-ota$1_0/Vout 4t-ota$1_0/I_bias 4t-ota$1_0/V_in_minus 4t-ota$1_0/V_in_plus
++ VDD x4t-ota$1
 Xio_secondary_5p0_array_0 V_LO_b m3_481277_87562# m3_402897_87612# VDD m3_504377_87383#
 + V_RF_b V_LO m3_424557_87585# m2_497668_69901# m3_459617_87585# V_RF VDD io_secondary_5p0_array
-XBiasing_Network_0 V_IF_out m3_447543_98113# m3_454799_105309# VDD m3_470429_92059#
+XBiasing_Network_0 V_IF_out m3_447543_98113# 4t-ota$1_0/I_bias VDD m3_470429_92059#
 + m3_504377_87383# m3_470429_92059# m3_436631_98228# VDD Biasing_Network
 XGilbert_mixer_interdigited_0 m3_436631_98228# m3_459617_87585# m3_424557_87585# m3_481277_87562#
-+ m3_447251_106735# m3_402897_87612# m3_447251_108129# m3_447543_98113# VDD Gilbert_mixer_interdigited
++ 4t-ota$1_0/V_in_plus m3_402897_87612# 4t-ota$1_0/V_in_minus m3_447543_98113# VDD
++ Gilbert_mixer_interdigited
 .ends
 
