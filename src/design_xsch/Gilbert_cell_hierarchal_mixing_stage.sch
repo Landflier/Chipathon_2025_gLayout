@@ -97,6 +97,22 @@ N 910 -880 910 -730 {
 lab=I_bias_pos}
 N 990 -880 990 -730 {
 lab=I_bias_neg}
+N 1480 -910 1480 -840 {
+lab=xxx}
+N 1360 -840 1480 -840 {
+lab=xxx}
+N 1440 -880 1440 -840 {
+lab=xxx}
+N 1390 -910 1440 -910 {
+lab=xxx}
+N 1390 -910 1390 -840 {
+lab=xxx}
+N 1360 -940 1360 -840 {
+lab=xxx}
+N 1360 -940 1440 -940 {
+lab=xxx}
+N 1320 -840 1360 -840 {
+lab=xxx}
 C {ipin.sym} 630 -1090 0 0 {name=p1 lab=V_LO}
 C {ipin.sym} 630 -1000 0 0 {name=p2 lab=V_LO_b
 }
@@ -201,3 +217,19 @@ C {lab_wire.sym} 1090 -990 0 0 {name=p15 sig_type=std_logic lab=rf_diff_pair_neg
 }
 C {lab_wire.sym} 800 -990 0 0 {name=p16 sig_type=std_logic lab=rf_diff_pair_pos_input hide_texts=true
 }
+C {symbols/nfet_03v3.sym} 1460 -910 0 1 {name=M_rf_dummies
+L=0.28u
+W=2u
+nf=1
+m=4
+hide_texts=false
+ad="'int((nf+1)/2) * W/nf * 0.18u'"
+pd="'2*int((nf+1)/2) * (W/nf + 0.18u)'"
+as="'int((nf+2)/2) * W/nf * 0.18u'"
+ps="'2*int((nf+2)/2) * (W/nf + 0.18u)'"
+nrd="'0.18u / W'" nrs="'0.18u / W'"
+sa=0 sb=0 sd=0
+model=nfet_03v3
+spiceprefix=X
+}
+C {lab_pin.sym} 1320 -840 0 0 {name=p10 sig_type=std_logic lab=VSS}
