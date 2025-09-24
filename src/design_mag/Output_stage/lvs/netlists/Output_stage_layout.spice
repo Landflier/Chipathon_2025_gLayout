@@ -1,11 +1,11 @@
 * NGSPICE file created from Output_stage_layout.ext - technology: gf180mcuD
 
-.subckt nfet_03v3_N8FQLR a_n52_n200# a_n372_n200# a_n436_n292# a_n516_n163# a_n655_n527#
+.subckt nfet_03v3_N8FQLR a_n372_n200# a_n436_n292# a_n116_220# a_n516_n163# a_n655_n527#
 X0 a_n372_n200# a_n436_n292# a_n516_n163# a_n655_n527# nfet_03v3 ad=0.52p pd=2.52u as=0.85595p ps=4.88u w=2u l=0.28u M=4
-X1 a_n516_n163# a_n516_n163# a_n52_n200# a_n655_n527# nfet_03v3 ad=0.52p pd=2.52u as=0.52p ps=2.52u w=2u l=0.28u M=2
+X1 a_n516_n163# a_n116_220# a_n436_n292# a_n655_n527# nfet_03v3 ad=0.52p pd=2.52u as=0.52p ps=2.52u w=2u l=0.28u M=2
 .ends
 
 .subckt Output_stage_layout I_bias V_in V_out_biasing VDD
-Xnfet_03v3_N8FQLR_0 V_out_biasing VDD V_in I_bias a_n158_n420# nfet_03v3_N8FQLR
+Xnfet_03v3_N8FQLR_0 V_out_biasing I_bias V_in VDD m1_n158_415# nfet_03v3_N8FQLR
 .ends
 
