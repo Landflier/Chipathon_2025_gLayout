@@ -1,5 +1,5 @@
 ** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_padring/A5_Time_Transcenders_padring_integrated/schematic/Gilbert_cell_hierarchal_with_pads_LVS.sch
-.subckt Gilbert_cell_hierarchal_with_pads_LVS V_LO V_LO_b V_RF V_RF_b V_IF_out I_bias VSS VDD
+.subckt Gilbert_mixer_schematic V_LO V_LO_b V_RF V_RF_b V_IF_out I_bias VSS VDD
 *.PININFO V_LO:I V_LO_b:I V_RF:I V_RF_b:I V_IF_out:O I_bias:I VSS:I VDD:I
 x1 V_out_n V_out_p net4 net3 net5 net6 net1 net2 VSS Gilbert_cell_hierarchal_mixing_stage
 x2 V_out_p V_out_n VDD Gilbert_cell_hierarchal_loading_stage

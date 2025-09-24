@@ -1,0 +1,329 @@
+
+Circuit 1 cell ppolyf_u and Circuit 2 cell ppolyf_u are black boxes.
+Warning: Equate pins:  cell ppolyf_u is a placeholder, treated as a black box.
+Warning: Equate pins:  cell ppolyf_u is a placeholder, treated as a black box.
+
+Subcircuit pins:
+Circuit 1: ppolyf_u                        |Circuit 2: ppolyf_u                        
+-------------------------------------------|-------------------------------------------
+1                                          |1                                          
+2                                          |2                                          
+3                                          |3                                          
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes ppolyf_u and ppolyf_u are equivalent.
+
+Circuit 1 cell cap_mim_2f0_m4m5_noshield and Circuit 2 cell cap_mim_2f0fF are black boxes.
+Warning: Equate pins:  cell cap_mim_2f0_m4m5_noshield is a placeholder, treated as a black box.
+Warning: Equate pins:  cell cap_mim_2f0fF is a placeholder, treated as a black box.
+
+Subcircuit pins:
+Circuit 1: cap_mim_2f0_m4m5_noshield       |Circuit 2: cap_mim_2f0fF                   
+-------------------------------------------|-------------------------------------------
+1                                          |1                                          
+2                                          |2                                          
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes cap_mim_2f0_m4m5_noshield and cap_mim_2f0fF are equivalent.
+
+Circuit 1 cell pfet_03v3 and Circuit 2 cell pfet_03v3 are black boxes.
+Warning: Equate pins:  cell pfet_03v3 is a placeholder, treated as a black box.
+Warning: Equate pins:  cell pfet_03v3 is a placeholder, treated as a black box.
+
+Subcircuit pins:
+Circuit 1: pfet_03v3                       |Circuit 2: pfet_03v3                       
+-------------------------------------------|-------------------------------------------
+1                                          |1                                          
+2                                          |2                                          
+3                                          |3                                          
+4                                          |4                                          
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes pfet_03v3 and pfet_03v3 are equivalent.
+
+Circuit 1 cell nfet_03v3 and Circuit 2 cell nfet_03v3 are black boxes.
+Warning: Equate pins:  cell nfet_03v3 is a placeholder, treated as a black box.
+Warning: Equate pins:  cell nfet_03v3 is a placeholder, treated as a black box.
+
+Subcircuit pins:
+Circuit 1: nfet_03v3                       |Circuit 2: nfet_03v3                       
+-------------------------------------------|-------------------------------------------
+1                                          |1                                          
+2                                          |2                                          
+3                                          |3                                          
+4                                          |4                                          
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes nfet_03v3 and nfet_03v3 are equivalent.
+
+Circuit 1 cell ppolyf_u_1k and Circuit 2 cell ppolyf_u_1k are black boxes.
+Warning: Equate pins:  cell ppolyf_u_1k is a placeholder, treated as a black box.
+Warning: Equate pins:  cell ppolyf_u_1k is a placeholder, treated as a black box.
+
+Subcircuit pins:
+Circuit 1: ppolyf_u_1k                     |Circuit 2: ppolyf_u_1k                     
+-------------------------------------------|-------------------------------------------
+1                                          |1                                          
+2                                          |2                                          
+3                                          |3                                          
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes ppolyf_u_1k and ppolyf_u_1k are equivalent.
+Flattening unmatched subcell ppolyf_u_9H3LNU in circuit io_secondary_5p0 (0)(1 instance)
+Flattening unmatched subcell diode_nd2ps_06v0_MV3SZ3 in circuit io_secondary_5p0 (0)(1 instance)
+Flattening unmatched subcell diode_pd2nw_06v0_5DG9HC in circuit io_secondary_5p0 (0)(1 instance)
+
+Class io_secondary_5p0 (0):  Merged 6 parallel devices.
+Subcircuit summary:
+Circuit 1: io_secondary_5p0                |Circuit 2: io_secondary_5p0                
+-------------------------------------------|-------------------------------------------
+ppolyf_u (1)                               |ppolyf_u (1)                               
+diode_nd2ps_06v0 (4->1)                    |diode_nd2ps_06v0 (4->1)                    
+diode_pd2nw_06v0 (4->1)                    |diode_pd2nw_06v0 (4->1)                    
+Number of devices: 3                       |Number of devices: 3                       
+Number of nets: 4                          |Number of nets: 4                          
+---------------------------------------------------------------------------------------
+Netlists match uniquely with property errors.
+ppolyf_u_9H3LNU_0/ppolyf_u:0 vs. ppolyf_u:R1:
+ r_length circuit1: 1e-05   circuit2: 4e-06   (delta=85.7%, cutoff=1%)
+ r_width circuit1: 4e-05   circuit2: 1.6e-05   (delta=85.7%, cutoff=1%)
+
+Subcircuit pins:
+Circuit 1: io_secondary_5p0                |Circuit 2: io_secondary_5p0                
+-------------------------------------------|-------------------------------------------
+m1_n6440_11450#                            |VDD **Mismatch**                           
+m1_n5943_7732#                             |to_gate **Mismatch**                       
+m1_6880_n1240#                             |ASIG5V **Mismatch**                        
+VSUBS                                      |VSS **Mismatch**                           
+---------------------------------------------------------------------------------------
+Cell pin lists for io_secondary_5p0 and io_secondary_5p0 altered to match.
+Device classes io_secondary_5p0 and io_secondary_5p0 are equivalent.
+Flattening unmatched subcell nfet_03v3_N8FQLR in circuit Output_stage (0)(1 instance)
+
+Cell Output_stage (0) disconnected node: nfet_03v3_N8FQLR_0/m1_n655_n892#
+Subcircuit summary:
+Circuit 1: Output_stage                    |Circuit 2: Output_stage                    
+-------------------------------------------|-------------------------------------------
+nfet_03v3 (6->2)                           |nfet_03v3 (2)                              
+Number of devices: 2                       |Number of devices: 2                       
+Number of nets: 5                          |Number of nets: 5                          
+---------------------------------------------------------------------------------------
+Netlists match uniquely with port errors.
+
+Subcircuit pins:
+Circuit 1: Output_stage                    |Circuit 2: Output_stage                    
+-------------------------------------------|-------------------------------------------
+m2_984_n286#                               |VDD **Mismatch**                           
+m2_451_n2630#                              |I_bias **Mismatch**                        
+m2_n361_338#                               |V_in **Mismatch**                          
+m2_1009_459#                               |V_out_biasing **Mismatch**                 
+(no matching pin)                          |VSS                                        
+nfet_03v3_N8FQLR_0/m1_n655_n892#           |(no matching pin)                          
+---------------------------------------------------------------------------------------
+Cell pin lists for Output_stage and Output_stage altered to match.
+Device classes Output_stage and Output_stage are equivalent.
+  Flattening non-matched subcircuits Output_stage Output_stage
+Flattening unmatched subcell Degeneration_resistor in circuit Gilbert_mixer_layout (0)(1 instance)
+Flattening unmatched subcell Gilbert_mixer_loading_stage in circuit Gilbert_mixer_layout (0)(1 instance)
+Flattening unmatched subcell ppolyf_u_1k_DB8C7L in circuit Gilbert_mixer_layout (0)(1 instance)
+Flattening unmatched subcell x4t-ota in circuit Gilbert_mixer_layout (0)(1 instance)
+Flattening unmatched subcell pfet_03v3_RFU83T$1 in circuit Gilbert_mixer_layout (0)(1 instance)
+Flattening unmatched subcell nfet_03v3_AZGML9$1 in circuit Gilbert_mixer_layout (0)(1 instance)
+Flattening unmatched subcell io_secondary_5p0_array in circuit Gilbert_mixer_layout (0)(1 instance)
+Flattening unmatched subcell io_secondary_5p0_under_hierarchy in circuit Gilbert_mixer_layout (0)(1 instance)
+Flattening unmatched subcell Biasing_Network in circuit Gilbert_mixer_layout (0)(1 instance)
+Flattening unmatched subcell pmos_Cmirror_with_decap$1 in circuit Gilbert_mixer_layout (0)(1 instance)
+Flattening unmatched subcell Unnamed_e3a0da27 in circuit Gilbert_mixer_layout (0)(1 instance)
+Flattening unmatched subcell cmirror_interdigitized in circuit Gilbert_mixer_layout (0)(1 instance)
+Flattening unmatched subcell nmos4_Cmirror_with_decap in circuit Gilbert_mixer_layout (0)(1 instance)
+Flattening unmatched subcell Unnamed_a96b0a34 in circuit Gilbert_mixer_layout (0)(1 instance)
+Flattening unmatched subcell cmirror_interdigitized$4 in circuit Gilbert_mixer_layout (0)(1 instance)
+Flattening unmatched subcell nmos2_Cmirror_with_decap in circuit Gilbert_mixer_layout (0)(1 instance)
+Flattening unmatched subcell Unnamed_ba8f6150 in circuit Gilbert_mixer_layout (0)(1 instance)
+Flattening unmatched subcell cmirror_interdigitized$2 in circuit Gilbert_mixer_layout (0)(1 instance)
+Flattening unmatched subcell nmos3_Cmirror_with_decap in circuit Gilbert_mixer_layout (0)(1 instance)
+Flattening unmatched subcell Unnamed_2e9f948d in circuit Gilbert_mixer_layout (0)(1 instance)
+Flattening unmatched subcell cmirror_interdigitized$3 in circuit Gilbert_mixer_layout (0)(1 instance)
+Flattening unmatched subcell nmos1_Cmirror_with_decap in circuit Gilbert_mixer_layout (0)(1 instance)
+Flattening unmatched subcell Unnamed_40a499cb in circuit Gilbert_mixer_layout (0)(1 instance)
+Flattening unmatched subcell cmirror_interdigitized$1 in circuit Gilbert_mixer_layout (0)(1 instance)
+Flattening unmatched subcell Gilbert_mixer_interdigited in circuit Gilbert_mixer_layout (0)(1 instance)
+Flattening unmatched subcell LO_diff_pairs_interdigitized in circuit Gilbert_mixer_layout (0)(1 instance)
+Flattening unmatched subcell RF_diff_pair$1 in circuit Gilbert_mixer_layout (0)(1 instance)
+Flattening unmatched subcell Gilbert_cell_hierarchal_mixing_stage in circuit Gilbert_mixer_schematic (1)(1 instance)
+Flattening unmatched subcell Gilbert_cell_hierarchal_loading_stage in circuit Gilbert_mixer_schematic (1)(1 instance)
+Flattening unmatched subcell Biasing_network_with_local_mirros in circuit Gilbert_mixer_schematic (1)(1 instance)
+Flattening unmatched subcell Local_mirror_pmos in circuit Gilbert_mixer_schematic (1)(1 instance)
+Flattening unmatched subcell Local_mirror_nmos in circuit Gilbert_mixer_schematic (1)(4 instances)
+Flattening unmatched subcell 5T-OTA-buffer_no_hierarchy in circuit Gilbert_mixer_schematic (1)(1 instance)
+
+Removing zero-valued device vsrc from cell Gilbert_mixer_schematic (1) makes a better match
+Removing zero-valued device vsrc from cell Gilbert_mixer_schematic (1) makes a better match
+Removing zero-valued device vsrc from cell Gilbert_mixer_schematic (1) makes a better match
+Making another compare attempt.
+
+Class Gilbert_mixer_layout (0):  Merged 6 parallel devices.
+Class Gilbert_mixer_layout (0):  Merged 6 series devices.
+Class Gilbert_mixer_schematic (1):  Merged 6 parallel devices.
+Subcircuit summary:
+Circuit 1: Gilbert_mixer_layout            |Circuit 2: Gilbert_mixer_schematic         
+-------------------------------------------|-------------------------------------------
+nfet_03v3 (90->16)                         |nfet_03v3 (18->15) **Mismatch**            
+pplus_u (1)                                |(no matching element)                      
+ppolyf_u_1k (8->2)                         |ppolyf_u_1k (2)                            
+pfet_03v3 (18->4)                          |pfet_03v3 (4)                              
+io_secondary_5p0 (5)                       |io_secondary_5p0 (5)                       
+cap_mim_2f0_m4m5_noshield (5->2)           |cap_mim_2f0fF (5->2)                       
+(no matching element)                      |ppolyf_u (1)                               
+Number of devices: 30 **Mismatch**         |Number of devices: 29 **Mismatch**         
+Number of nets: 27 **Mismatch**            |Number of nets: 23 **Mismatch**            
+---------------------------------------------------------------------------------------
+NET mismatches: Class fragments follow (with fanout counts):
+Circuit 1: Gilbert_mixer_layout            |Circuit 2: Gilbert_mixer_schematic         
+
+---------------------------------------------------------------------------------------
+Net: V_IF_out                              |Net: V_IF_out                              
+  nfet_03v3/(1|3) = 4                      |  nfet_03v3/(1|3) = 3                      
+  nfet_03v3/2 = 5                          |  nfet_03v3/2 = 1                          
+  cap_mim_2f0_m4m5_noshield/2 = 1          |                                           
+  pfet_03v3/(1|3) = 1                      |                                           
+                                           |                                           
+Net: Output_stage_0/m2_451_n2630#          |Net: VSS                                   
+  nfet_03v3/2 = 1                          |  nfet_03v3/4 = 15                         
+  nfet_03v3/(1|3) = 2                      |  nfet_03v3/(1|3) = 5                      
+                                           |  cap_mim_2f0fF/1 = 1                      
+                                           |  io_secondary_5p0/VSS = 5                 
+                                           |                                           
+Net: VDD                                   |Net: VDD                                   
+  ppolyf_u_1k/(1|2) = 2                    |  ppolyf_u_1k/(1|2) = 2                    
+  ppolyf_u_1k/3 = 2                        |  ppolyf_u_1k/3 = 2                        
+  pfet_03v3/(1|3) = 4                      |  pfet_03v3/(1|3) = 4                      
+  pfet_03v3/4 = 4                          |  pfet_03v3/4 = 4                          
+  pplus_u/3 = 1                            |  cap_mim_2f0fF/1 = 1                      
+  nfet_03v3/4 = 14                         |  io_secondary_5p0/VDD = 5                 
+  nfet_03v3/(1|3) = 7                      |  nfet_03v3/(1|3) = 2                      
+  io_secondary_5p0/VSUBS = 5               |  ppolyf_u/3 = 1                           
+  cap_mim_2f0_m4m5_noshield/1 = 2          |                                           
+  io_secondary_5p0/m1_n6440_11450# = 5     |                                           
+  nfet_03v3/2 = 1                          |                                           
+                                           |                                           
+Net: /Output_stage_0/m1_n158_415#          |Net: Biasing_network_with_local_mirros:3/n 
+  nfet_03v3/4 = 2                          |  pfet_03v3/(1|3) = 1                      
+                                           |  nfet_03v3/2 = 5                          
+                                           |  nfet_03v3/(1|3) = 1                      
+                                           |  cap_mim_2f0fF/2 = 1                      
+---------------------------------------------------------------------------------------
+
+---------------------------------------------------------------------------------------
+(no matching net)                          |Net: V_out_p                               
+                                           |  nfet_03v3/(1|3) = 2                      
+                                           |  ppolyf_u_1k/(1|2) = 1                    
+                                           |  nfet_03v3/2 = 1                          
+                                           |                                           
+(no matching net)                          |Net: V_out_n                               
+                                           |  nfet_03v3/(1|3) = 2                      
+                                           |  ppolyf_u_1k/(1|2) = 1                    
+                                           |  nfet_03v3/2 = 1                          
+---------------------------------------------------------------------------------------
+
+---------------------------------------------------------------------------------------
+Net: x4t-ota:4t-ota_0/m1_1452_455#         |Net: 5T-OTA-buffer_no_hierarchy:_Amplifier 
+  pfet_03v3/2 = 2                          |  pfet_03v3/2 = 2                          
+  pfet_03v3/(1|3) = 1                      |  pfet_03v3/(1|3) = 1                      
+  nfet_03v3/(1|3) = 1                      |  nfet_03v3/(1|3) = 1                      
+---------------------------------------------------------------------------------------
+
+---------------------------------------------------------------------------------------
+Net: m3_451768_106738#                     |(no matching net)                          
+  ppolyf_u_1k/(1|2) = 1                    |                                           
+  nfet_03v3/2 = 1                          |                                           
+                                           |                                           
+Net: m3_451768_108051#                     |(no matching net)                          
+  ppolyf_u_1k/(1|2) = 1                    |                                           
+  nfet_03v3/2 = 1                          |                                           
+---------------------------------------------------------------------------------------
+
+---------------------------------------------------------------------------------------
+Net: m3_454799_105309#                     |Net: net9                                  
+  nfet_03v3/(1|3) = 3                      |  nfet_03v3/(1|3) = 3                      
+---------------------------------------------------------------------------------------
+
+---------------------------------------------------------------------------------------
+Net: m3_453280_108358#                     |Net: net12                                 
+  nfet_03v3/2 = 1                          |  nfet_03v3/2 = 1                          
+  pfet_03v3/(1|3) = 1                      |  pfet_03v3/(1|3) = 1                      
+  nfet_03v3/(1|3) = 1                      |  nfet_03v3/(1|3) = 1                      
+---------------------------------------------------------------------------------------
+DEVICE mismatches: Class fragments follow (with node fanout counts):
+Circuit 1: Gilbert_mixer_layout            |Circuit 2: Gilbert_mixer_schematic         
+
+---------------------------------------------------------------------------------------
+Instance: Output_stage_0//nfet_03v3_N8FQLR |Instance: Biasing_network_with_local_mirro 
+  (1,3) = (11,11)                          |  (1,3) = (26,8)                           
+  2 = 3                                    |  2 = 8                                    
+  4 = 2                                    |  4 = 26                                   
+                                           |                                           
+Instance: Biasing_Network_0//nmos4_Cmirror |Instance: Biasing_network_with_local_mirro 
+  (1,3) = (47,11)                          |  (1,3) = (26,4)                           
+  2 = 11                                   |  2 = 8                                    
+  4 = 47                                   |  4 = 26                                   
+                                           |                                           
+Instance: Biasing_Network_0//nmos4_Cmirror |Instance: Output_stage:4/nfet_03v3:M2      
+  (1,3) = (47,3)                           |  (1,3) = (21,4)                           
+  2 = 11                                   |  2 = 4                                    
+  4 = 47                                   |  4 = 26                                   
+                                           |                                           
+Instance: Gilbert_mixer_interdigited_0//RF |Instance: Gilbert_cell_hierarchal_mixing_s 
+  (1,3) = (47,47)                          |  (1,3) = (4,3)                            
+  2 = 47                                   |  2 = 3                                    
+  4 = 47                                   |  4 = 26                                   
+                                           |                                           
+Instance: x4t-ota:4t-ota_0/nfet_03v3_AZGML |Instance: Gilbert_cell_hierarchal_mixing_s 
+  (1,3) = (3,3)                            |  (1,3) = (4,3)                            
+  2 = 2                                    |  2 = 3                                    
+  4 = 47                                   |  4 = 26                                   
+                                           |                                           
+Instance: x4t-ota:4t-ota_0/nfet_03v3_AZGML |Instance: Gilbert_cell_hierarchal_mixing_s 
+  (1,3) = (4,3)                            |  (1,3) = (4,3)                            
+  2 = 2                                    |  2 = 3                                    
+  4 = 47                                   |  4 = 26                                   
+                                           |                                           
+Instance: Gilbert_mixer_interdigited_0//LO |Instance: Gilbert_cell_hierarchal_mixing_s 
+  (1,3) = (3,2)                            |  (1,3) = (4,3)                            
+  2 = 3                                    |  2 = 3                                    
+  4 = 47                                   |  4 = 26                                   
+                                           |                                           
+Instance: Gilbert_mixer_interdigited_0//LO |Instance: 5T-OTA-buffer_no_hierarchy:_Ampl 
+  (1,3) = (3,2)                            |  (1,3) = (4,3)                            
+  2 = 3                                    |  2 = 4                                    
+  4 = 47                                   |  4 = 26                                   
+                                           |                                           
+Instance: Gilbert_mixer_interdigited_0//LO |Instance: 5T-OTA-buffer_no_hierarchy:_Ampl 
+  (1,3) = (3,2)                            |  (1,3) = (3,3)                            
+  2 = 3                                    |  2 = 4                                    
+  4 = 47                                   |  4 = 26                                   
+                                           |                                           
+Instance: Gilbert_mixer_interdigited_0//LO |Instance: ppolyf_u:R1                      
+  (1,3) = (3,2)                            |  (1,2) = (3,3)                            
+  2 = 3                                    |  3 = 21                                   
+  4 = 47                                   |                                           
+                                           |                                           
+Instance: Degeneration_resistor_0/pplus_u: |(no matching instance)                     
+  (1,2) = (1,1)                            |                                           
+  3 = 47                                   |                                           
+                                           |                                           
+---------------------------------------------------------------------------------------
+Netlists do not match.
+
+Subcircuit pins:
+Circuit 1: Gilbert_mixer_layout            |Circuit 2: Gilbert_mixer_schematic         
+-------------------------------------------|-------------------------------------------
+V_IF_out                                   |V_IF_out                                   
+VDD                                        |VSS **Mismatch**                           
+Cell pin lists are equivalent.
+Device classes Gilbert_mixer_layout and Gilbert_mixer_schematic are equivalent.
+
+Final result: Netlists do not match.
+
+The following cells had property errors:
+ io_secondary_5p0
