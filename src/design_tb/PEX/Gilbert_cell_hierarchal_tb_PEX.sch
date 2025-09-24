@@ -240,6 +240,8 @@ N 1790 -1250 1790 -1190 {
 lab=V_out_loaded}
 N 1890 -1250 1890 -1190 {
 lab=V_out_loaded}
+N 1660 -1690 1700 -1690 {
+lab=GND}
 C {code.sym} 50 -190 0 0 {name=MODELS only_toplevel=true
 format="tcleval( @value )"
 value="
@@ -456,3 +458,4 @@ footprint=1206
 device="ceramic capacitor"}
 C {gnd.sym} 2060 -1520 0 0 {name=l10 lab=GND}
 C {ammeter.sym} 1660 -930 0 0 {name=Vmeas3 savecurrent=true spice_ignore=0}
+C {gnd.sym} 1660 -1690 0 0 {name=l14 lab=GND}

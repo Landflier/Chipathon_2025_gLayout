@@ -27,7 +27,7 @@ x_Gilbert_mixer V_out_n V_out_p V_LO V_LO_b V_RF V_RF_b net1 net2 GND Gilbert_ce
 x_Amplifier VDD V_out V_out_p V_out_n net7 GND 5T-OTA-buffer_no_hierarchy
 Vmeas2 net7 net5 0
 .save i(vmeas2)
-x1 VDD V_out V_out_loaded V_out_loaded Output_stage
+x1 VDD V_out V_out_loaded V_out_loaded GND Output_stage
 C1 V_out_loaded GND 10p m=1
 Vmeas3 V_out_loaded net8 0
 .save i(vmeas3)
@@ -221,17 +221,18 @@ XM2 Vout net1 VDD VDD pfet_03v3 L=0.28u W=0.3u nf=1 ad='int((nf+1)/2) * W/nf * 0
 .ends
 
 
-* expanding   symbol:  /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Output_stage.sym # of pins=4
+* expanding   symbol:  /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Output_stage.sym # of pins=5
 ** sym_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Output_stage.sym
 ** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Output_stage.sch
-.subckt Output_stage VDD V_in V_out_biasing I_bias
+.subckt Output_stage VDD V_in V_out_biasing I_bias VSS
 *.iopin VDD
 *.iopin V_in
 *.iopin I_bias
 *.iopin V_out_biasing
-XM1 VDD V_in I_bias GND nfet_03v3 L=0.28u W=4u nf=2 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
+*.iopin VSS
+XM1 VDD V_in I_bias VSS nfet_03v3 L=0.28u W=4u nf=2 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
 + ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
-XM2 VDD I_bias V_out_biasing GND nfet_03v3 L=0.28u W=8u nf=4 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
+XM2 VDD I_bias V_out_biasing VSS nfet_03v3 L=0.28u W=8u nf=4 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
 + ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
 .ends
 

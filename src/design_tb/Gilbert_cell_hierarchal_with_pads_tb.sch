@@ -277,6 +277,10 @@ N 2020 -1200 2390 -1200 {
 lab=V_out}
 N 2290 -1250 2290 -1200 {
 lab=V_out}
+N 2160 -1690 2200 -1690 {
+lab=GND}
+N 2160 -1690 2160 -1670 {
+lab=GND}
 C {code.sym} 50 -190 0 0 {name=MODELS only_toplevel=true
 format="tcleval( @value )"
 value="
@@ -511,3 +515,4 @@ C {gnd.sym} 1850 -1600 0 0 {name=l19 lab=GND}
 C {ammeter.sym} 1920 -1330 0 0 {name=Vmeas2 savecurrent=true spice_ignore=0}
 C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Output_stage.sym} 2330 -1720 0 0 {name=x4}
 C {vdd.sym} 2170 -1800 0 0 {name=l10 lab=VDD}
+C {gnd.sym} 2160 -1680 0 0 {name=l20 lab=GND}

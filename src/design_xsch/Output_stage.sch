@@ -20,9 +20,9 @@ lab=VDD}
 N 290 -60 290 0 {
 lab=V_out_biasing}
 N 290 -90 310 -90 {
-lab=GND}
+lab=#net1}
 N 150 -170 170 -170 {
-lab=GND}
+lab=#net2}
 C {symbols/nfet_03v3.sym} 130 -170 0 0 {name=M1
 L=0.28u
 W=4u
@@ -55,5 +55,6 @@ C {iopin.sym} 50 -230 0 1 {name=p1 lab=VDD}
 C {iopin.sym} 50 -170 0 1 {name=p2 lab=V_in}
 C {iopin.sym} 150 0 3 1 {name=p3 lab=I_bias}
 C {iopin.sym} 290 0 3 1 {name=p4 lab=V_out_biasing}
-C {gnd.sym} 170 -170 0 0 {name=l1 lab=GND}
-C {gnd.sym} 310 -90 0 0 {name=l2 lab=GND}
+C {iopin.sym} 50 90 0 1 {name=p5 lab=VSS}
+C {lab_pin.sym} 170 -170 0 1 {name=p6 sig_type=std_logic lab=VSS}
+C {lab_pin.sym} 310 -90 0 1 {name=p7 sig_type=std_logic lab=VSS}
