@@ -6,7 +6,7 @@
 magic -rcfile $PDK_ROOT/$PDK/libs.tech/magic/$PDK.magicrc -dnull -noconsole << 'EOF'
 gds readonly false
 gds rescale true
-gds read gds/A5_Gilbert_mixer_only_routing.gds
+gds read ../A5_Gilbert_mixer_only_routing.gds
 
 # Check what cells are available and load the flattened one
 cellname list allcells
