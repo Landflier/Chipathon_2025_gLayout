@@ -1,4 +1,5 @@
-v {xschem version=3.4.7 file_version=1.2}
+v {xschem version=3.4.5 file_version=1.2
+}
 G {}
 K {}
 V {}
@@ -18,8 +19,8 @@ r_w=10u
 r_l=10u
 m=4}
 C {symbols/ppolyf_u.sym} 300 0 1 0 {name=R1
-W=16e-6
-L=4e-6
+W=40e-6
+L=10e-6
 model=ppolyf_u
 spiceprefix=X
 m=1}
