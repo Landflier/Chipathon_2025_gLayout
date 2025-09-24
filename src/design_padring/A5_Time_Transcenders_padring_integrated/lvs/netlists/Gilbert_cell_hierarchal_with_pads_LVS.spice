@@ -3,20 +3,14 @@
 *.PININFO V_LO:I V_LO_b:I V_RF:I V_RF_b:I V_IF_out:O I_bias:I VSS:I VDD:I
 x1 V_out_n V_out_p net4 net3 net5 net6 net1 net2 VSS Gilbert_cell_hierarchal_mixing_stage
 x2 V_out_p V_out_n VDD Gilbert_cell_hierarchal_loading_stage
-x3 VDD net7 net8 net9 net10 VSS V_IF_out Biasing_network_with_local_mirros
-Vmeas net1 net7 0
-.save i(vmeas)
-Vmeas1 net2 net8 0
-.save i(vmeas1)
+x3 VDD net1 net2 net7 net8 VSS V_IF_out Biasing_network_with_local_mirros
 XIO1 VDD net4 V_LO VSS io_secondary_5p0
-XIO2 VDD net10 I_bias VSS io_secondary_5p0
+XIO2 VDD net8 I_bias VSS io_secondary_5p0
 XIO3 VDD net3 V_LO_b VSS io_secondary_5p0
 XIO4 VDD net5 V_RF VSS io_secondary_5p0
 XIO5 VDD net6 V_RF_b VSS io_secondary_5p0
-x_Amplifier VDD net12 V_out_p V_out_n net11 VSS 5T-OTA-buffer_no_hierarchy
-Vmeas2 net11 net9 0
-.save i(vmeas2)
-x4 VDD net12 V_IF_out V_IF_out VSS Output_stage
+x_Amplifier VDD net9 V_out_p V_out_n net7 VSS 5T-OTA-buffer_no_hierarchy
+x4 VDD net9 V_IF_out V_IF_out VSS Output_stage
 XR1 net2 net1 VDD ppolyf_u r_width=1e-6 r_length=4e-6 m=1
 .ends
 
@@ -72,7 +66,7 @@ x_NMOS_mirror_4 I_out_4 net1 VSS Local_mirror_nmos l_ref=1u w_ref=1.5u nf_ref=1 
 
 *.PININFO VSS:B VDD:B to_gate:B ASIG5V:B
 D1 to_gate VDD diode_pd2nw_06v0 area='10u * 10u ' pj='2*10u + 2*10u ' m=4
-XR1 to_gate ASIG5V VDD ppolyf_u r_width=16e-6 r_length=4e-6 m=1
+XR1 to_gate ASIG5V VDD ppolyf_u r_width=40e-6 r_length=10e-6 m=1
 D2 VSS to_gate diode_nd2ps_06v0 area='10u * 10u ' pj='2*10u + 2*10u ' m=4
 .ends
 

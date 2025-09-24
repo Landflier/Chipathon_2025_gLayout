@@ -83,10 +83,7 @@ diode_pd2nw_06v0 (4->1)                    |diode_pd2nw_06v0 (4->1)
 Number of devices: 3                       |Number of devices: 3                       
 Number of nets: 4                          |Number of nets: 4                          
 ---------------------------------------------------------------------------------------
-Netlists match uniquely with property errors.
-ppolyf_u_9H3LNU_0/ppolyf_u:0 vs. ppolyf_u:R1:
- r_length circuit1: 1e-05   circuit2: 4e-06   (delta=85.7%, cutoff=1%)
- r_width circuit1: 4e-05   circuit2: 1.6e-05   (delta=85.7%, cutoff=1%)
+Netlists match uniquely.
 
 Subcircuit pins:
 Circuit 1: io_secondary_5p0                |Circuit 2: io_secondary_5p0                
@@ -156,11 +153,6 @@ Flattening unmatched subcell Biasing_network_with_local_mirros in circuit Gilber
 Flattening unmatched subcell Local_mirror_pmos in circuit Gilbert_mixer_schematic (1)(1 instance)
 Flattening unmatched subcell Local_mirror_nmos in circuit Gilbert_mixer_schematic (1)(4 instances)
 Flattening unmatched subcell 5T-OTA-buffer_no_hierarchy in circuit Gilbert_mixer_schematic (1)(1 instance)
-
-Removing zero-valued device vsrc from cell Gilbert_mixer_schematic (1) makes a better match
-Removing zero-valued device vsrc from cell Gilbert_mixer_schematic (1) makes a better match
-Removing zero-valued device vsrc from cell Gilbert_mixer_schematic (1) makes a better match
-Making another compare attempt.
 
 Class Gilbert_mixer_layout (0):  Merged 6 parallel devices.
 Class Gilbert_mixer_layout (0):  Merged 6 series devices.
@@ -244,12 +236,12 @@ Net: m3_451768_108051#                     |(no matching net)
 ---------------------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------------------
-Net: m3_454799_105309#                     |Net: net9                                  
+Net: m3_454799_105309#                     |Net: net7                                  
   nfet_03v3/(1|3) = 3                      |  nfet_03v3/(1|3) = 3                      
 ---------------------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------------------
-Net: m3_453280_108358#                     |Net: net12                                 
+Net: m3_453280_108358#                     |Net: net9                                  
   nfet_03v3/2 = 1                          |  nfet_03v3/2 = 1                          
   pfet_03v3/(1|3) = 1                      |  pfet_03v3/(1|3) = 1                      
   nfet_03v3/(1|3) = 1                      |  nfet_03v3/(1|3) = 1                      
@@ -324,6 +316,3 @@ Cell pin lists are equivalent.
 Device classes Gilbert_mixer_layout and Gilbert_mixer_schematic are equivalent.
 
 Final result: Netlists do not match.
-
-The following cells had property errors:
- io_secondary_5p0

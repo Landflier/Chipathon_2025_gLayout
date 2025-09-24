@@ -50,17 +50,17 @@ lab=#net2}
 N 1440 -1130 1440 -1120 {
 lab=#net2}
 N 1300 -930 1300 -870 {
-lab=#net7}
+lab=#net1}
 N 1300 -930 1380 -930 {
-lab=#net7}
+lab=#net1}
 N 1540 -930 1540 -870 {
-lab=#net8}
+lab=#net2}
 N 1440 -930 1540 -930 {
-lab=#net8}
+lab=#net2}
 N 1780 -920 1780 -870 {
-lab=#net9}
+lab=#net7}
 N 1780 -920 1810 -920 {
-lab=#net9}
+lab=#net7}
 N 850 -830 880 -830 {
 lab=VDD}
 N 850 -570 880 -570 {
@@ -70,11 +70,11 @@ lab=#net1}
 N 1440 -1120 1440 -1020 {
 lab=#net2}
 N 780 -670 880 -670 {
-lab=#net10}
-N 1380 -960 1380 -930 {
-lab=#net7}
-N 1440 -960 1440 -930 {
 lab=#net8}
+N 1380 -960 1380 -930 {
+lab=#net1}
+N 1440 -960 1440 -930 {
+lab=#net2}
 N 700 -600 700 -570 {
 lab=VSS}
 N 700 -610 700 -600 {
@@ -128,7 +128,7 @@ lab=VSS}
 N 2480 -1620 2520 -1620 {
 lab=V_IF_out}
 N 1920 -1660 1920 -1580 {
-lab=#net11}
+lab=#net7}
 N 1520 -1720 1640 -1720 {
 lab=V_out_n}
 N 1520 -1760 1640 -1760 {
@@ -142,9 +142,9 @@ lab=V_out_n}
 N 1640 -1760 1780 -1760 {
 lab=V_out_p}
 N 1920 -1580 1920 -1360 {
-lab=#net11}
+lab=#net7}
 N 1920 -1300 1920 -920 {
-lab=#net9}
+lab=#net7}
 N 1510 -1720 1520 -1720 {
 lab=V_out_n}
 N 1310 -1760 1520 -1760 {
@@ -152,11 +152,11 @@ lab=V_out_p}
 N 1780 -1760 1800 -1760 {
 lab=V_out_p}
 N 1810 -920 1920 -920 {
-lab=#net9}
+lab=#net7}
 N 2160 -1740 2200 -1740 {
-lab=#net12}
+lab=#net9}
 N 2020 -1740 2160 -1740 {
-lab=#net12}
+lab=#net9}
 N 2170 -1800 2170 -1780 {
 lab=VDD}
 N 2170 -1780 2200 -1780 {
@@ -181,6 +181,12 @@ N 1160 -1350 1210 -1350 {
 lab=VSS}
 N 2200 -1690 2200 -1670 {
 lab=VSS}
+N 1380 -1020 1380 -960 {
+lab=#net1}
+N 1440 -1020 1440 -960 {
+lab=#net2}
+N 1920 -1360 1920 -1300 {
+lab=#net7}
 C {title-2.sym} 0 0 0 0 {name=l9 author="Time Transcenders" lock=true rev=1.0 page=1}
 C {ipin.sym} 610 -1680 2 1 {name=p1 lab=V_LO}
 C {ipin.sym} 610 -1510 2 1 {name=p2 lab=V_LO_b
@@ -192,8 +198,6 @@ C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Gilbert_cell_hierarchal_
 C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Gilbert_cell_hierarchal_loading_stage.sym} 1410 -1840 0 0 {name=x2}
 C {lab_pin.sym} 1410 -1140 3 0 {name=p15 sig_type=std_logic lab=VDD}
 C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Biasing_network_with_local_mirros.sym} 1140 -660 0 0 {name=x3}
-C {ammeter.sym} 1380 -990 0 0 {name=Vmeas savecurrent=true spice_ignore=0}
-C {ammeter.sym} 1440 -990 0 0 {name=Vmeas1 savecurrent=true spice_ignore=0}
 C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_padring/Chipathon2025_pads/xschem/symbols/io_secondary_5p0/io_secondary_5p0.sym} 840 -1600 0 1 {name=IO1
 spiceprefix=X
 }
@@ -218,7 +222,6 @@ C {opin.sym} 2520 -1620 0 0 {name=p5 lab=V_IF_out}
 C {lab_pin.sym} 1570 -1760 1 0 {name=p7 sig_type=std_logic lab=V_out_p}
 C {lab_pin.sym} 1570 -1720 3 0 {name=p17 sig_type=std_logic lab=V_out_n}
 C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/5T-OTA-buffer_no_hierarchy.sym} 1920 -1740 0 0 {name=x_Amplifier}
-C {ammeter.sym} 1920 -1330 0 0 {name=Vmeas2 savecurrent=true spice_ignore=0}
 C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Output_stage.sym} 2330 -1720 0 0 {name=x4}
 C {ipin.sym} 550 -670 2 1 {name=p18 lab=I_bias
 }
