@@ -6,9 +6,9 @@ V {}
 S {}
 E {}
 N 150 -140 150 0 {
-lab=I_bias_1}
+lab=I_bias}
 N 150 -90 250 -90 {
-lab=I_bias_1}
+lab=I_bias}
 N 50 -170 110 -170 {
 lab=V_in}
 N 150 -230 150 -200 {
@@ -53,7 +53,7 @@ spiceprefix=X
 }
 C {iopin.sym} 50 -230 0 1 {name=p1 lab=VDD}
 C {iopin.sym} 50 -170 0 1 {name=p2 lab=V_in}
-C {iopin.sym} 150 0 3 1 {name=p3 lab=I_bias_1}
+C {iopin.sym} 150 0 3 1 {name=p3 lab=I_bias}
 C {iopin.sym} 290 0 3 1 {name=p4 lab=V_out_biasing}
 C {gnd.sym} 170 -170 0 0 {name=l1 lab=GND}
 C {gnd.sym} 310 -90 0 0 {name=l2 lab=GND}

@@ -1,0 +1,38 @@
+
+Circuit 1 cell nfet_03v3 and Circuit 2 cell nfet_03v3 are black boxes.
+Equate elements:  no current cell.
+Device classes nfet_03v3 and nfet_03v3 are equivalent.
+Flattening unmatched subcell nfet_03v3_N8FQLR in circuit Output_stage_layout (0)(1 instance)
+
+Subcircuit summary:
+Circuit 1: Output_stage_layout             |Circuit 2: Output_stage-schematic          
+-------------------------------------------|-------------------------------------------
+nfet_03v3 (6->2)                           |nfet_03v3 (2)                              
+Number of devices: 2                       |Number of devices: 2                       
+Number of nets: 5                          |Number of nets: 5                          
+---------------------------------------------------------------------------------------
+NET mismatches: Class fragments follow (with fanout counts):
+Circuit 1: Output_stage_layout             |Circuit 2: Output_stage-schematic          
+
+---------------------------------------------------------------------------------------
+Net: VDD                                   |Net: VDD                                   
+  nfet_03v3/(1|3) = 1                      |  nfet_03v3/(1|3) = 2                      
+                                           |                                           
+Net: I_bias                                |Net: I_bias                                
+  nfet_03v3/(1|3) = 2                      |  nfet_03v3/(1|3) = 1                      
+  nfet_03v3/2 = 1                          |  nfet_03v3/2 = 1                          
+---------------------------------------------------------------------------------------
+Netlists do not match.
+
+Subcircuit pins:
+Circuit 1: Output_stage_layout             |Circuit 2: Output_stage-schematic          
+-------------------------------------------|-------------------------------------------
+VDD                                        |VDD                                        
+I_bias                                     |I_bias                                     
+V_out_biasing                              |V_out_biasing                              
+V_in                                       |V_in                                       
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes Output_stage_layout and Output_stage-schematic are equivalent.
+
+Final result: Netlists do not match.
