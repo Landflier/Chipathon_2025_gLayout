@@ -14,7 +14,7 @@ lab=#net1}
 N 1430 -1320 1430 -1260 {
 lab=#net2}
 N 1310 -1790 1310 -1690 {
-lab=V_out_p}
+lab=#net3}
 N 1510 -1790 1510 -1690 {
 lab=V_out_n}
 N 1140 -1940 1140 -1910 {
@@ -22,13 +22,13 @@ lab=VDD}
 N 1140 -1910 1230 -1910 {
 lab=VDD}
 N 1120 -1490 1210 -1490 {
-lab=#net3}
-N 1120 -1540 1210 -1540 {
 lab=#net4}
-N 1120 -1440 1210 -1440 {
+N 1120 -1540 1210 -1540 {
 lab=#net5}
-N 1120 -1380 1210 -1380 {
+N 1120 -1440 1210 -1440 {
 lab=#net6}
+N 1120 -1380 1210 -1380 {
+lab=#net7}
 N 1390 -1260 1390 -1230 {
 lab=#net1}
 N 1430 -1260 1430 -1230 {
@@ -58,9 +58,9 @@ lab=#net2}
 N 1440 -930 1540 -930 {
 lab=#net2}
 N 1780 -920 1780 -870 {
-lab=#net7}
+lab=#net8}
 N 1780 -920 1810 -920 {
-lab=#net7}
+lab=#net8}
 N 850 -830 880 -830 {
 lab=VDD}
 N 850 -570 880 -570 {
@@ -70,7 +70,7 @@ lab=#net1}
 N 1440 -1120 1440 -1020 {
 lab=#net2}
 N 780 -670 880 -670 {
-lab=#net8}
+lab=#net9}
 N 1380 -960 1380 -930 {
 lab=#net1}
 N 1440 -960 1440 -930 {
@@ -88,25 +88,25 @@ lab=V_RF}
 N 610 -1140 640 -1140 {
 lab=V_RF_b}
 N 1120 -1680 1120 -1540 {
-lab=#net4}
+lab=#net5}
 N 840 -1680 1120 -1680 {
-lab=#net4}
+lab=#net5}
 N 840 -1510 1120 -1510 {
-lab=#net3}
+lab=#net4}
 N 1120 -1510 1120 -1490 {
-lab=#net3}
+lab=#net4}
 N 840 -1320 1080 -1320 {
-lab=#net5}
+lab=#net6}
 N 1080 -1440 1080 -1320 {
-lab=#net5}
+lab=#net6}
 N 1080 -1440 1120 -1440 {
-lab=#net5}
+lab=#net6}
 N 840 -1140 1110 -1140 {
-lab=#net6}
+lab=#net7}
 N 1110 -1380 1110 -1140 {
-lab=#net6}
+lab=#net7}
 N 1110 -1380 1120 -1380 {
-lab=#net6}
+lab=#net7}
 N 700 -740 700 -730 {
 lab=VDD}
 N 760 -1210 760 -1200 {
@@ -128,11 +128,11 @@ lab=VSS}
 N 2480 -1620 2520 -1620 {
 lab=V_IF_out}
 N 1920 -1660 1920 -1580 {
-lab=#net7}
+lab=#net8}
 N 1520 -1720 1640 -1720 {
 lab=V_out_n}
 N 1520 -1760 1640 -1760 {
-lab=V_out_p}
+lab=#net3}
 N 1850 -1870 1850 -1850 {
 lab=VDD}
 N 1850 -1620 1850 -1600 {
@@ -140,23 +140,23 @@ lab=VSS}
 N 1640 -1720 1800 -1720 {
 lab=V_out_n}
 N 1640 -1760 1780 -1760 {
-lab=V_out_p}
+lab=#net3}
 N 1920 -1580 1920 -1360 {
-lab=#net7}
+lab=#net8}
 N 1920 -1300 1920 -920 {
-lab=#net7}
+lab=#net8}
 N 1510 -1720 1520 -1720 {
 lab=V_out_n}
 N 1310 -1760 1520 -1760 {
-lab=V_out_p}
+lab=#net3}
 N 1780 -1760 1800 -1760 {
-lab=V_out_p}
+lab=#net3}
 N 1810 -920 1920 -920 {
-lab=#net7}
+lab=#net8}
 N 2160 -1740 2200 -1740 {
-lab=#net9}
+lab=#net10}
 N 2020 -1740 2160 -1740 {
-lab=#net9}
+lab=#net10}
 N 2170 -1800 2170 -1780 {
 lab=VDD}
 N 2170 -1780 2200 -1780 {
@@ -186,7 +186,7 @@ lab=#net1}
 N 1440 -1020 1440 -960 {
 lab=#net2}
 N 1920 -1360 1920 -1300 {
-lab=#net7}
+lab=#net8}
 C {title-2.sym} 0 0 0 0 {name=l9 author="Time Transcenders" lock=true rev=1.0 page=1}
 C {ipin.sym} 610 -1680 2 1 {name=p1 lab=V_LO}
 C {ipin.sym} 610 -1510 2 1 {name=p2 lab=V_LO_b
@@ -219,8 +219,6 @@ C {lab_pin.sym} 760 -1390 0 0 {name=p13 sig_type=std_logic lab=VDD}
 C {lab_pin.sym} 760 -1580 0 0 {name=p14 sig_type=std_logic lab=VDD}
 C {lab_pin.sym} 760 -1750 0 0 {name=p16 sig_type=std_logic lab=VDD}
 C {opin.sym} 2520 -1620 0 0 {name=p5 lab=V_IF_out}
-C {lab_pin.sym} 1570 -1760 1 0 {name=p7 sig_type=std_logic lab=V_out_p}
-C {lab_pin.sym} 1570 -1720 3 0 {name=p17 sig_type=std_logic lab=V_out_n}
 C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/5T-OTA-buffer_no_hierarchy.sym} 1920 -1740 0 0 {name=x_Amplifier}
 C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Output_stage.sym} 2330 -1720 0 0 {name=x4}
 C {ipin.sym} 550 -670 2 1 {name=p18 lab=I_bias

@@ -1,0 +1,29 @@
+magic
+tech gf180mcuD
+magscale 1 10
+timestamp 1758718241
+<< metal1 >>
+rect 134 333 188 345
+rect 134 159 135 333
+rect 134 147 188 159
+rect 1068 333 1122 345
+rect 1121 159 1122 333
+rect 1068 147 1122 159
+rect -54 -183 1347 15
+<< via1 >>
+rect 135 159 188 333
+rect 1068 159 1121 333
+<< metal2 >>
+rect -147 333 203 342
+rect -147 159 135 333
+rect 188 159 203 333
+rect -147 153 203 159
+rect 1055 333 1397 340
+rect 1055 159 1068 333
+rect 1121 159 1397 333
+rect 1055 151 1397 159
+use ppolyf_u_95K9DY  ppolyf_u_95K9DY_0
+timestamp 1758718241
+transform 0 1 628 -1 0 246
+box -316 -718 316 718
+<< end >>

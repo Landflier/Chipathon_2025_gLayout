@@ -165,24 +165,12 @@ io_secondary_5p0 (5)                       |io_secondary_5p0 (5)
 cap_mim_2f0_m4m5_noshield (5->2)           |cap_mim_2f0fF (5->2)                       
 ppolyf_u (1)                               |ppolyf_u (1)                               
 Number of devices: 29 **Mismatch**         |Number of devices: 28 **Mismatch**         
-Number of nets: 25 **Mismatch**            |Number of nets: 23 **Mismatch**            
+Number of nets: 24 **Mismatch**            |Number of nets: 23 **Mismatch**            
 ---------------------------------------------------------------------------------------
 NET mismatches: Class fragments follow (with fanout counts):
 Circuit 1: Gilbert_mixer_layout            |Circuit 2: Gilbert_mixer_schematic         
 
 ---------------------------------------------------------------------------------------
-Net: V_IF_out                              |Net: V_IF_out                              
-  Output_stage/m2_1009_459# = 1            |  nfet_03v3/(1|3) = 1                      
-                                           |  Output_stage/V_out_biasing = 1           
-                                           |  Output_stage/I_bias = 1                  
-                                           |                                           
-Net: Output_stage_0/m2_451_n2630#          |Net: VSS                                   
-  Output_stage/m2_451_n2630# = 1           |  nfet_03v3/4 = 13                         
-  nfet_03v3/(1|3) = 1                      |  nfet_03v3/(1|3) = 5                      
-                                           |  cap_mim_2f0fF/1 = 1                      
-                                           |  io_secondary_5p0/VSS = 5                 
-                                           |  Output_stage/VSS = 1                     
-                                           |                                           
 Net: VDD                                   |Net: VDD                                   
   ppolyf_u_1k/(1|2) = 2                    |  ppolyf_u_1k/(1|2) = 2                    
   ppolyf_u_1k/3 = 2                        |  ppolyf_u_1k/3 = 2                        
@@ -197,47 +185,23 @@ Net: VDD                                   |Net: VDD
   nfet_03v3/(1|3) = 7                      |                                           
   nfet_03v3/2 = 1                          |                                           
   io_secondary_5p0/m1_n6440_11450# = 5     |                                           
----------------------------------------------------------------------------------------
-
----------------------------------------------------------------------------------------
-(no matching net)                          |Net: V_out_p                               
+                                           |                                           
+Net: m3_451768_108051#                     |Net: net3                                  
+  ppolyf_u_1k/(1|2) = 1                    |  nfet_03v3/(1|3) = 2                      
+  nfet_03v3/2 = 1                          |  ppolyf_u_1k/(1|2) = 1                    
+                                           |  nfet_03v3/2 = 1                          
+                                           |                                           
+Net: m3_451768_106738#                     |Net: VSS                                   
+  ppolyf_u_1k/(1|2) = 1                    |  nfet_03v3/4 = 13                         
+  nfet_03v3/2 = 1                          |  nfet_03v3/(1|3) = 5                      
+                                           |  cap_mim_2f0fF/1 = 1                      
+                                           |  io_secondary_5p0/VSS = 5                 
+                                           |  Output_stage/VSS = 1                     
+                                           |                                           
+(no matching net)                          |Net: net4                                  
                                            |  nfet_03v3/(1|3) = 2                      
                                            |  ppolyf_u_1k/(1|2) = 1                    
                                            |  nfet_03v3/2 = 1                          
-                                           |                                           
-(no matching net)                          |Net: V_out_n                               
-                                           |  nfet_03v3/(1|3) = 2                      
-                                           |  ppolyf_u_1k/(1|2) = 1                    
-                                           |  nfet_03v3/2 = 1                          
----------------------------------------------------------------------------------------
-
----------------------------------------------------------------------------------------
-Net: x4t-ota:4t-ota_0/m1_1452_455#         |Net: 5T-OTA-buffer_no_hierarchy:_Amplifier 
-  pfet_03v3/2 = 2                          |  pfet_03v3/2 = 2                          
-  pfet_03v3/(1|3) = 1                      |  pfet_03v3/(1|3) = 1                      
-  nfet_03v3/(1|3) = 1                      |  nfet_03v3/(1|3) = 1                      
----------------------------------------------------------------------------------------
-
----------------------------------------------------------------------------------------
-Net: m3_451768_106738#                     |(no matching net)                          
-  ppolyf_u_1k/(1|2) = 1                    |                                           
-  nfet_03v3/2 = 1                          |                                           
-                                           |                                           
-Net: m3_451768_108051#                     |(no matching net)                          
-  ppolyf_u_1k/(1|2) = 1                    |                                           
-  nfet_03v3/2 = 1                          |                                           
----------------------------------------------------------------------------------------
-
----------------------------------------------------------------------------------------
-Net: m3_454799_105309#                     |Net: net7                                  
-  nfet_03v3/(1|3) = 3                      |  nfet_03v3/(1|3) = 3                      
----------------------------------------------------------------------------------------
-
----------------------------------------------------------------------------------------
-Net: m3_453280_108358#                     |Net: net9                                  
-  Output_stage/m2_n361_338# = 1            |  Output_stage/V_in = 1                    
-  pfet_03v3/(1|3) = 1                      |  pfet_03v3/(1|3) = 1                      
-  nfet_03v3/(1|3) = 1                      |  nfet_03v3/(1|3) = 1                      
 ---------------------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------------------
@@ -251,41 +215,33 @@ DEVICE mismatches: Class fragments follow (with node fanout counts):
 Circuit 1: Gilbert_mixer_layout            |Circuit 2: Gilbert_mixer_schematic         
 
 ---------------------------------------------------------------------------------------
-Instance: x4t-ota:4t-ota_0/nfet_03v3_AZGML |Instance: Gilbert_cell_hierarchal_mixing_s 
-  (1,3) = (3,3)                            |  (1,3) = (4,3)                            
-  2 = 2                                    |  2 = 3                                    
-  4 = 49                                   |  4 = 25                                   
-                                           |                                           
-Instance: x4t-ota:4t-ota_0/nfet_03v3_AZGML |Instance: Gilbert_cell_hierarchal_mixing_s 
-  (1,3) = (4,3)                            |  (1,3) = (4,3)                            
-  2 = 2                                    |  2 = 3                                    
-  4 = 49                                   |  4 = 25                                   
-                                           |                                           
-Instance: Gilbert_mixer_interdigited_0//LO |Instance: Gilbert_cell_hierarchal_mixing_s 
-  (1,3) = (3,2)                            |  (1,3) = (4,3)                            
-  2 = 3                                    |  2 = 3                                    
-  4 = 49                                   |  4 = 25                                   
-                                           |                                           
-Instance: Gilbert_mixer_interdigited_0//LO |Instance: Gilbert_cell_hierarchal_mixing_s 
-  (1,3) = (3,2)                            |  (1,3) = (4,3)                            
-  2 = 3                                    |  2 = 3                                    
-  4 = 49                                   |  4 = 25                                   
-                                           |                                           
-Instance: Gilbert_mixer_interdigited_0//LO |Instance: 5T-OTA-buffer_no_hierarchy:_Ampl 
-  (1,3) = (3,2)                            |  (1,3) = (4,3)                            
-  2 = 3                                    |  2 = 4                                    
-  4 = 49                                   |  4 = 25                                   
-                                           |                                           
-Instance: Gilbert_mixer_interdigited_0//LO |Instance: 5T-OTA-buffer_no_hierarchy:_Ampl 
-  (1,3) = (3,2)                            |  (1,3) = (3,3)                            
-  2 = 3                                    |  2 = 4                                    
-  4 = 49                                   |  4 = 25                                   
-                                           |                                           
 Instance: Gilbert_mixer_interdigited_0//RF |(no matching instance)                     
   (1,3) = (49,49)                          |                                           
   2 = 49                                   |                                           
   4 = 49                                   |                                           
                                            |                                           
+---------------------------------------------------------------------------------------
+
+---------------------------------------------------------------------------------------
+Instance: Gilbert_mixer_interdigited_0//LO |Instance: Gilbert_cell_hierarchal_mixing_s 
+  (1,3) = (3,2)                            |  (1,3) = (4,3)                            
+  2 = 3                                    |  2 = 3                                    
+  4 = 49                                   |  4 = 25                                   
+                                           |                                           
+Instance: Gilbert_mixer_interdigited_0//LO |Instance: Gilbert_cell_hierarchal_mixing_s 
+  (1,3) = (3,2)                            |  (1,3) = (4,3)                            
+  2 = 3                                    |  2 = 3                                    
+  4 = 49                                   |  4 = 25                                   
+                                           |                                           
+Instance: Gilbert_mixer_interdigited_0//LO |Instance: Gilbert_cell_hierarchal_mixing_s 
+  (1,3) = (3,2)                            |  (1,3) = (4,3)                            
+  2 = 3                                    |  2 = 3                                    
+  4 = 49                                   |  4 = 25                                   
+                                           |                                           
+Instance: Gilbert_mixer_interdigited_0//LO |Instance: Gilbert_cell_hierarchal_mixing_s 
+  (1,3) = (3,2)                            |  (1,3) = (4,3)                            
+  2 = 3                                    |  2 = 3                                    
+  4 = 49                                   |  4 = 25                                   
 ---------------------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------------------
@@ -298,8 +254,7 @@ Netlists do not match.
 Subcircuit pins:
 Circuit 1: Gilbert_mixer_layout            |Circuit 2: Gilbert_mixer_schematic         
 -------------------------------------------|-------------------------------------------
-VDD                                        |V_IF_out **Mismatch**                      
-V_IF_out                                   |VSS **Mismatch**                           
+VDD                                        |(no matching pin)                          
 Cell pin lists are equivalent.
 Device classes Gilbert_mixer_layout and Gilbert_mixer_schematic are equivalent.
 
