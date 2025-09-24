@@ -17,7 +17,6 @@ V_RF_b V_RF_b GND sin( 1 1 1 0 0 180 )
 .save i(v_rf_b)
 I0 net6 GND 10u
 x_Loading_stage V_out_p V_out_n VDD Gilbert_cell_hierarchal_loading_stage
-XR_load_3 net1 net2 VDD pplus_u r_width=0.5e-6 r_length=5e-6 m=1
 x_Biasing_network VDD net3 net4 net5 net6 GND net8 Biasing_network_with_local_mirros
 Vmeas net1 net3 0
 .save i(vmeas)
@@ -31,6 +30,7 @@ x1 VDD V_out V_out_loaded V_out_loaded GND Output_stage
 C1 V_out_loaded GND 10p m=1
 Vmeas3 V_out_loaded net8 0
 .save i(vmeas3)
+XR1 net2 net1 VDD ppolyf_u r_width=1e-6 r_length=4e-6 m=1
 **** begin user architecture code
 
 .include /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/design.ngspice

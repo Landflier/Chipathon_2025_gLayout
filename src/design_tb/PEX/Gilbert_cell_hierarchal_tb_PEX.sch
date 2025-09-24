@@ -428,13 +428,6 @@ C {gnd.sym} 670 -1300 0 0 {name=l11 lab=GND}
 C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Gilbert_cell_hierarchal_loading_stage.sym} 930 -1840 0 0 {name=x_Loading_stage}
 C {vdd.sym} 660 -1940 0 0 {name=l5 lab=VDD}
 C {lab_pin.sym} 930 -1140 3 0 {name=p15 sig_type=std_logic lab=VDD}
-C {symbols/pplus_u.sym} 930 -1180 1 1 {name=R_load_3
-W=0.5e-6
-L=5e-6
-model=pplus_u
-spiceprefix=X
-m=1
-hide_texts=true}
 C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Biasing_network_with_local_mirros.sym} 660 -660 0 0 {name=x_Biasing_network}
 C {vdd.sym} 370 -860 0 0 {name=l12 lab=VDD}
 C {gnd.sym} 370 -540 0 0 {name=l13 lab=GND}
@@ -459,3 +452,10 @@ device="ceramic capacitor"}
 C {gnd.sym} 2060 -1520 0 0 {name=l10 lab=GND}
 C {ammeter.sym} 1660 -930 0 0 {name=Vmeas3 savecurrent=true spice_ignore=0}
 C {gnd.sym} 1660 -1690 0 0 {name=l14 lab=GND}
+C {symbols/ppolyf_u.sym} 930 -1180 3 0 {name=R1
+W=1e-6
+L=4e-6
+model=ppolyf_u
+spiceprefix=X
+m=1
+hide_texts=True}

@@ -469,13 +469,6 @@ C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Gilbert_cell_hierarchal_
 C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Gilbert_cell_hierarchal_loading_stage.sym} 1410 -1840 0 0 {name=x2}
 C {vdd.sym} 1140 -1940 0 0 {name=l5 lab=VDD}
 C {lab_pin.sym} 1410 -1140 3 0 {name=p15 sig_type=std_logic lab=VDD}
-C {symbols/pplus_u.sym} 1410 -1180 1 1 {name=R_load_3
-W=0.5e-6
-L=5e-6
-model=pplus_u
-spiceprefix=X
-m=1
-hide_texts=true}
 C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Biasing_network_with_local_mirros.sym} 1140 -660 0 0 {name=x3}
 C {vdd.sym} 850 -860 0 0 {name=l12 lab=VDD}
 C {gnd.sym} 580 -530 0 0 {name=l13 lab=GND}
@@ -516,3 +509,10 @@ C {ammeter.sym} 1920 -1330 0 0 {name=Vmeas2 savecurrent=true spice_ignore=0}
 C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Output_stage.sym} 2330 -1720 0 0 {name=x4}
 C {vdd.sym} 2170 -1800 0 0 {name=l10 lab=VDD}
 C {gnd.sym} 2160 -1680 0 0 {name=l20 lab=GND}
+C {symbols/ppolyf_u.sym} 1410 -1180 3 0 {name=R1
+W=1e-6
+L=4e-6
+model=ppolyf_u
+spiceprefix=X
+m=1
+hide_texts=True}
