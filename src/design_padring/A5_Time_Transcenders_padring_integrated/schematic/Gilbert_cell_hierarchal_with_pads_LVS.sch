@@ -126,7 +126,7 @@ lab=VSS}
 N 760 -1620 760 -1610 {
 lab=VSS}
 N 2480 -1620 2520 -1620 {
-lab=V_out}
+lab=V_IF_out}
 N 1920 -1660 1920 -1580 {
 lab=#net11}
 N 1520 -1720 1640 -1720 {
@@ -162,19 +162,19 @@ lab=VDD}
 N 2170 -1780 2200 -1780 {
 lab=VDD}
 N 2390 -1660 2390 -1250 {
-lab=V_out}
+lab=V_IF_out}
 N 2290 -1660 2290 -1250 {
-lab=V_out}
+lab=V_IF_out}
 N 2390 -1620 2480 -1620 {
-lab=V_out}
+lab=V_IF_out}
 N 2020 -1200 2020 -870 {
-lab=V_out}
+lab=V_IF_out}
 N 2390 -1250 2390 -1200 {
-lab=V_out}
+lab=V_IF_out}
 N 2020 -1200 2390 -1200 {
-lab=V_out}
+lab=V_IF_out}
 N 2290 -1250 2290 -1200 {
-lab=V_out}
+lab=V_IF_out}
 N 550 -670 580 -670 {
 lab=I_bias}
 N 1160 -1350 1210 -1350 {
@@ -191,13 +191,6 @@ C {ipin.sym} 610 -1140 2 1 {name=p4 lab=V_RF_b
 C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Gilbert_cell_hierarchal_mixing_stage.sym} 1410 -1490 0 0 {name=x1}
 C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Gilbert_cell_hierarchal_loading_stage.sym} 1410 -1840 0 0 {name=x2}
 C {lab_pin.sym} 1410 -1140 3 0 {name=p15 sig_type=std_logic lab=VDD}
-C {symbols/pplus_u.sym} 1410 -1180 1 1 {name=R_load_3
-W=0.5e-6
-L=5e-6
-model=pplus_u
-spiceprefix=X
-m=1
-hide_texts=true}
 C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Biasing_network_with_local_mirros.sym} 1140 -660 0 0 {name=x3}
 C {ammeter.sym} 1380 -990 0 0 {name=Vmeas savecurrent=true spice_ignore=0}
 C {ammeter.sym} 1440 -990 0 0 {name=Vmeas1 savecurrent=true spice_ignore=0}
@@ -221,7 +214,7 @@ C {lab_pin.sym} 760 -1210 0 0 {name=p12 sig_type=std_logic lab=VDD}
 C {lab_pin.sym} 760 -1390 0 0 {name=p13 sig_type=std_logic lab=VDD}
 C {lab_pin.sym} 760 -1580 0 0 {name=p14 sig_type=std_logic lab=VDD}
 C {lab_pin.sym} 760 -1750 0 0 {name=p16 sig_type=std_logic lab=VDD}
-C {opin.sym} 2520 -1620 0 0 {name=p5 lab=V_out}
+C {opin.sym} 2520 -1620 0 0 {name=p5 lab=V_IF_out}
 C {lab_pin.sym} 1570 -1760 1 0 {name=p7 sig_type=std_logic lab=V_out_p}
 C {lab_pin.sym} 1570 -1720 3 0 {name=p17 sig_type=std_logic lab=V_out_n}
 C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/5T-OTA-buffer_no_hierarchy.sym} 1920 -1740 0 0 {name=x_Amplifier}
@@ -246,3 +239,10 @@ C {lab_pin.sym} 1140 -1940 0 0 {name=p26 sig_type=std_logic lab=VDD}
 C {lab_pin.sym} 1850 -1870 1 0 {name=p27 sig_type=std_logic lab=VDD}
 C {lab_pin.sym} 2170 -1800 0 0 {name=p28 sig_type=std_logic lab=VDD}
 C {lab_pin.sym} 850 -830 0 0 {name=p29 sig_type=std_logic lab=VDD}
+C {symbols/ppolyf_u.sym} 1410 -1180 3 0 {name=R1
+W=1e-6
+L=4e-6
+model=ppolyf_u
+spiceprefix=X
+m=1
+hide_texts=True}
