@@ -1,0 +1,56 @@
+* NGSPICE file created from Gilbert_cell_hierarchal_mixing_stage.ext - technology: gf180mcuD
+
+.subckt LO_diff_pairs_interdigitized a_n2222_n400# a_n2878_n1500# a_n2578_n448# a_n2822_n400#
++ a_n3106_n400# a_n2522_n400# a_n3316_n1664#
+X0 a_n2522_n400# a_n2578_n448# a_n2822_n400# a_n3316_n1664# nfet_03v3 ad=2.44p pd=5.22u as=2.44p ps=5.22u w=4u l=0.28u M=5
+X1 a_n3106_n400# a_n2578_n448# a_n2222_n400# a_n3316_n1664# nfet_03v3 ad=2.44p pd=5.22u as=2.44p ps=5.22u w=4u l=0.28u M=5
+X2 a_n2822_n400# a_n2878_n1500# a_n3106_n400# a_n3316_n1664# nfet_03v3 ad=2.44p pd=5.22u as=2.44p ps=5.22u w=4u l=0.28u M=5
+X3 a_n2222_n400# a_n2878_n1500# a_n2522_n400# a_n3316_n1664# nfet_03v3 ad=2.44p pd=5.22u as=2.44p ps=5.22u w=4u l=0.28u M=5
+C0 a_n2822_n400# a_n3106_n400# 2.84107f
+C1 a_n2578_n448# a_n2522_n400# 2.48841f
+C2 a_n2222_n400# a_n2822_n400# 3.52221f
+C3 a_n3106_n400# a_n2522_n400# 3.55206f
+C4 a_n2222_n400# a_n2522_n400# 2.83963f
+C5 a_n2822_n400# a_n2522_n400# 2.58132f
+C6 a_n2222_n400# a_n3106_n400# 3.30692f
+C7 a_n2822_n400# a_n2878_n1500# 2.48841f
+C8 a_n2222_n400# a_n3316_n1664# 1.19605f
+C9 a_n2522_n400# a_n3316_n1664# 1.79261f
+C10 a_n2822_n400# a_n3316_n1664# 1.82217f
+C11 a_n3106_n400# a_n3316_n1664# 2.24444f
+C12 a_n2878_n1500# a_n3316_n1664# 19.4555f
+C13 a_n2578_n448# a_n3316_n1664# 19.4537f
+.ends
+
+.subckt RF_diff_pair$1 a_n1066_n1013# a_2016_n849# a_2072_n321# a_n628_n849# a_n572_n321#
++ a_1578_n1013# a_n856_n321# a_1788_n321#
+X0 a_1788_n321# a_2016_n849# a_2072_n321# a_n1066_n1013# nfet_03v3 ad=1.22p pd=3.22u as=1.22p ps=3.22u w=2u l=0.28u M=5
+X1 a_n856_n321# a_n628_n849# a_n572_n321# a_n1066_n1013# nfet_03v3 ad=1.22p pd=3.22u as=1.22p ps=3.22u w=2u l=0.28u M=5
+C0 a_n572_n321# a_n856_n321# 3.11893f
+C1 a_1788_n321# a_2072_n321# 3.11893f
+C2 a_1788_n321# a_n1066_n1013# 2.19924f
+C3 a_2016_n849# a_n1066_n1013# 4.28f
+C4 a_n572_n321# a_n1066_n1013# 2.19924f
+C5 a_n628_n849# a_n1066_n1013# 4.28f
+.ends
+
+.subckt Gilbert_cell_hierarchal_mixing_stage V_out_n V_out_p V_LO V_LO_b V_RF V_RF_b
++ I_bias_pos I_bias_neg VSS
+XLO_diff_pairs_interdigitized_0 RF_diff_pair$1_0/a_1788_n321# V_LO V_LO_b RF_diff_pair$1_0/a_n572_n321#
++ V_out_p V_out_n VSS LO_diff_pairs_interdigitized
+XRF_diff_pair$1_0 VSS V_RF_b I_bias_neg V_RF RF_diff_pair$1_0/a_n572_n321# VSS I_bias_pos
++ RF_diff_pair$1_0/a_1788_n321# RF_diff_pair$1
+C0 V_LO RF_diff_pair$1_0/a_n572_n321# 1.38571f
+C1 V_out_p V_out_n 1.062219f
+C2 V_out_p VSS 2.814978f
+C3 V_RF_b VSS 5.15073f
+C4 RF_diff_pair$1_0/a_n572_n321# VSS 6.60346f
+C5 I_bias_pos VSS 1.414461f
+C6 RF_diff_pair$1_0/a_1788_n321# VSS 7.069094f
+C7 V_out_n VSS 2.143957f
+C8 V_LO_b VSS 21.207445f
+C9 V_LO VSS 21.112011f
+C10 V_RF VSS 5.148217f
+C11 I_bias_neg VSS 1.306899f
+.ends
+

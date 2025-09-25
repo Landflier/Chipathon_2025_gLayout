@@ -1,0 +1,20 @@
+* NGSPICE file created from 4t-ota_layout.ext - technology: gf180mcuD
+
+.subckt pfet_03v3_RFU83T a_181_n6# a_n125_n6# a_33_n12# w_n435_n238# a_n190_n119#
++ a_n273_n12#
+X0 a_181_n6# a_n190_n119# a_33_n12# w_n435_n238# pfet_03v3 ad=0.1596p pd=1.64u as=0.1596p ps=1.64u w=0.3u l=0.28u
+X1 a_n125_n6# a_n190_n119# a_n273_n12# w_n435_n238# pfet_03v3 ad=0.1596p pd=1.64u as=0.1596p ps=1.64u w=0.3u l=0.28u
+.ends
+
+.subckt nfet_03v3_AZGML9 VSS a_n52_n50# a_n276_70# a_n212_n50# a_n356_n36# a_n116_n142#
+X0 a_n212_n50# a_n116_n142# a_n52_n50# VSS nfet_03v3 ad=0.13p pd=1.02u as=0.13p ps=1.02u w=0.5u l=0.28u
+X1 a_n356_n36# a_n276_70# a_n212_n50# VSS nfet_03v3 ad=0.2109p pd=1.88u as=0.13p ps=1.02u w=0.5u l=0.28u
+X2 a_n52_n50# a_n116_n142# a_n212_n50# VSS nfet_03v3 ad=0.13p pd=1.02u as=0.13p ps=1.02u w=0.5u l=0.28u
+X3 a_n212_n50# a_n276_70# a_n356_n36# VSS nfet_03v3 ad=0.13p pd=1.02u as=0.2109p ps=1.88u w=0.5u l=0.28u
+.ends
+
+.subckt x4t-ota_layout I_bias V_in_minus V_in_plus VDD Vout VSS
+Xpfet_03v3_RFU83T_0 Vout VDD VDD VDD m1_1452_455# m1_1452_455# pfet_03v3_RFU83T
+Xnfet_03v3_AZGML9_0 VSS Vout V_in_plus I_bias m1_1452_455# V_in_minus nfet_03v3_AZGML9
+.ends
+

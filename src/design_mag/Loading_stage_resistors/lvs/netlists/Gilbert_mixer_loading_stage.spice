@@ -1,0 +1,21 @@
+* NGSPICE file created from Gilbert_mixer_loading_stage.ext - technology: gf180mcuD
+
+.subckt ppolyf_u_1k_DB8C7L a_n520_n192# a_n240_1192# a_n732_n1526# a_n240_70# a_n520_1192#
++ a_n240_n1314# a_320_n1314# a_40_n192# a_320_n192# a_n520_70# a_n520_n1314# a_320_70#
++ a_n240_n192# a_40_70# a_40_1192# a_40_n1314# a_320_1192#
+X0 a_n520_1192# a_n520_70# a_n732_n1526# ppolyf_u_1k r_width=1u r_length=5u
+X1 a_n240_1192# a_n240_70# a_n732_n1526# ppolyf_u_1k r_width=1u r_length=5u
+X2 a_40_1192# a_40_70# a_n732_n1526# ppolyf_u_1k r_width=1u r_length=5u
+X3 a_320_n192# a_320_n1314# a_n732_n1526# ppolyf_u_1k r_width=1u r_length=5u
+X4 a_320_1192# a_320_70# a_n732_n1526# ppolyf_u_1k r_width=1u r_length=5u
+X5 a_n240_n192# a_n240_n1314# a_n732_n1526# ppolyf_u_1k r_width=1u r_length=5u
+X6 a_40_n192# a_40_n1314# a_n732_n1526# ppolyf_u_1k r_width=1u r_length=5u
+X7 a_n520_n192# a_n520_n1314# a_n732_n1526# ppolyf_u_1k r_width=1u r_length=5u
+.ends
+
+.subckt Gilbert_mixer_loading_stage I_in_neg I_in_pos VDD
+Xppolyf_u_1k_DB8C7L_0 m1_170_1346# m1_459_2748# VDD m1_170_1346# I_in_neg m1_459_192#
++ VDD m1_741_1366# m1_730_1578# m1_181_1461# I_in_pos m1_741_1366# m1_181_1461# m1_730_1578#
++ m1_459_2748# m1_459_192# VDD ppolyf_u_1k_DB8C7L
+.ends
+

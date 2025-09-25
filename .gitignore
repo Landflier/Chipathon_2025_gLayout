@@ -1,0 +1,12 @@
+.direnv/
+openfasoc/
+gLayout/
+open_pdks/
+sscs-chipathon-2024/
+*.svg
+*.swp
+*.lyrdb
+!schematic.svg
+.ipynb_checkpoints
+*.raw
+src/jupyter_notebooks/gmId/pfet_03v3.mat

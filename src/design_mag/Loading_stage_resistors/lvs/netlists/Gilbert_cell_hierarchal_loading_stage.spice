@@ -1,0 +1,7 @@
+** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Gilbert_cell_hierarchal_loading_stage.sch
+.subckt Gilbert_cell_hierarchal_loading_stage I_in_pos I_in_neg VDD
+*.PININFO I_in_neg:B I_in_pos:B VDD:B
+XR_load_2 I_in_pos VDD VDD ppolyf_u_1k r_width=1e-6 r_length=20e-6 m=1
+XR_load_1 I_in_neg VDD VDD ppolyf_u_1k r_width=1e-6 r_length=20e-6 m=1
+.ends
+.end

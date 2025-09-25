@@ -1,0 +1,16 @@
+* NGSPICE file created from nmos_Cmirror_with_decap_layout.ext - technology: gf180mcuD
+
+.subckt Unnamed_722a089e m4_n620_n620# m4_n500_n500# VSUBS
+X0 m4_n500_n500# m4_n620_n620# cap_mim_2f0_m4m5_noshield c_width=5u c_length=5u
+.ends
+
+.subckt cmirror_interdigitized a_n2116_n809# a_n1906_n75# a_n1852_n495#
+X0 a_n2116_n809# a_n1852_n495# a_n1906_n75# a_n2116_n809# nfet_03v3 ad=0.4575p pd=1.97u as=0.4575p ps=1.97u w=0.75u l=0.28u M=10
+X1 a_n1852_n495# a_n1852_n495# a_n2116_n809# a_n2116_n809# nfet_03v3 ad=0.4575p pd=1.97u as=0.4575p ps=1.97u w=0.75u l=0.28u M=2
+.ends
+
+.subckt nmos_Cmirror_with_decap_layout I_BIAS I_OUT VSS
+XUnnamed_722a089e_0 I_BIAS VSS VSS Unnamed_722a089e
+Xcmirror_interdigitized_0 VSS I_OUT I_BIAS cmirror_interdigitized
+.ends
+

@@ -1,0 +1,79 @@
+** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_tb/5T-OTA_tb.sch
+**.subckt 5T-OTA_tb Vout
+*.opin Vout
+V_PWR VDD GND 3.3
+.save i(v_pwr)
+V_IF V_IF GND sin( 1 1 1 0 )
+.save i(v_if)
+V_IF_b V_IF_b GND sin( 1 1 1 0 )
+.save i(v_if_b)
+I0 I_bias_pos GND 10u
+x1 VDD Vout V_IF V_IF_b I_bias_pos GND 5T-OTA-buffer_no_hierarchy
+**** begin user architecture code
+
+.include /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/design.ngspice
+.lib /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/sm141064.ngspice typical
+.lib /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/sm141064.ngspice mimcap_typical
+.lib /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/sm141064.ngspice cap_mim
+.lib /usr/local/share/pdk/gf180mcuD/libs.tech/ngspice/sm141064.ngspice res_typical
+
+
+
+
+* let sets vectors to a plot, while set sets a variable, globally accessible in .control
+.control
+
+    * Set frequency and amplitude variables to proper values from within the control sequence
+    * sine-wave L
+
+    set freq_if = 10.7Meg
+    set cm_if = 2
+    set amp_if = 0.5
+
+    * set the parameters to the voltage sources
+    alter @V_IF[sin] = [ $cm_if $amp_if $freq_if 0 ]
+    alter @V_IF_b[sin] = [ $cm_if $amp_if $freq_if 0 0 180 ]
+
+    save all
+
+    * operating point
+    op
+    show
+    write 5T-OTA.raw
+
+    set appendwrite
+
+    * Transient analysis to observe mixing operation
+    tran 3p 300n
+    write 5T-OTA.raw
+
+
+.endc
+
+
+**** end user architecture code
+**.ends
+
+* expanding   symbol:  /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/5T-OTA-buffer_no_hierarchy.sym # of pins=6
+** sym_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/5T-OTA-buffer_no_hierarchy.sym
+** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/5T-OTA-buffer_no_hierarchy.sch
+.subckt 5T-OTA-buffer_no_hierarchy VDD Vout Vin_plus Vin_minus I_bias VSS
+*.ipin VDD
+*.ipin Vin_plus
+*.ipin Vin_minus
+*.opin Vout
+*.iopin I_bias
+*.ipin VSS
+XM3 net1 Vin_plus I_bias VSS nfet_03v3 L=0.28u W=0.22u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
++ ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
+XM4 Vout Vin_minus I_bias VSS nfet_03v3 L=0.28u W=0.22u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
++ ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
+XM1 net1 net1 VDD VDD pfet_03v3 L=0.28u W=0.22u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
++ ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
+XM2 Vout net1 VDD VDD pfet_03v3 L=0.28u W=0.22u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
++ ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
+.ends
+
+.GLOBAL VDD
+.GLOBAL GND
+.end

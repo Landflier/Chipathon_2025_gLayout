@@ -1,0 +1,77 @@
+magic
+tech gf180mcuD
+magscale 1 10
+timestamp 1758830887
+<< pwell >>
+rect -476 -2358 476 2358
+<< psubdiff >>
+rect -452 2321 452 2334
+rect -452 2275 -336 2321
+rect 336 2275 452 2321
+rect -452 2262 452 2275
+rect -452 2218 -380 2262
+rect -452 -2218 -439 2218
+rect -393 -2218 -380 2218
+rect 380 2218 452 2262
+rect -452 -2262 -380 -2218
+rect 380 -2218 393 2218
+rect 439 -2218 452 2218
+rect 380 -2262 452 -2218
+rect -452 -2275 452 -2262
+rect -452 -2321 -336 -2275
+rect 336 -2321 452 -2275
+rect -452 -2334 452 -2321
+<< psubdiffcont >>
+rect -336 2275 336 2321
+rect -439 -2218 -393 2218
+rect 393 -2218 439 2218
+rect -336 -2321 336 -2275
+<< polysilicon >>
+rect -240 2109 -40 2122
+rect -240 2063 -227 2109
+rect -53 2063 -40 2109
+rect -240 2000 -40 2063
+rect -240 -2063 -40 -2000
+rect -240 -2109 -227 -2063
+rect -53 -2109 -40 -2063
+rect -240 -2122 -40 -2109
+rect 40 2109 240 2122
+rect 40 2063 53 2109
+rect 227 2063 240 2109
+rect 40 2000 240 2063
+rect 40 -2063 240 -2000
+rect 40 -2109 53 -2063
+rect 227 -2109 240 -2063
+rect 40 -2122 240 -2109
+<< polycontact >>
+rect -227 2063 -53 2109
+rect -227 -2109 -53 -2063
+rect 53 2063 227 2109
+rect 53 -2109 227 -2063
+<< nhighres >>
+rect -240 -2000 -40 2000
+rect 40 -2000 240 2000
+<< metal1 >>
+rect -439 2275 -336 2321
+rect 336 2275 439 2321
+rect -439 2218 -393 2275
+rect 393 2218 439 2275
+rect -238 2063 -227 2109
+rect -53 2063 -42 2109
+rect 42 2063 53 2109
+rect 227 2063 238 2109
+rect -238 -2109 -227 -2063
+rect -53 -2109 -42 -2063
+rect 42 -2109 53 -2063
+rect 227 -2109 238 -2063
+rect -439 -2275 -393 -2218
+rect 393 -2275 439 -2218
+rect -439 -2321 -336 -2275
+rect 336 -2321 439 -2275
+<< properties >>
+string FIXED_BBOX -416 -2298 416 2298
+string gencell ppolyf_u_1k
+string library gf180mcu
+string parameters w 1.000 l 20.000 m 1 nx 2 wmin 1.000 lmin 1.000 class resistor rho 1000 val 20.0k dummy 0 dw 0.0 term 0.0 sterm 0.0 caplen 0.4 snake 0 glc 1 grc 1 gtc 1 gbc 1 roverlap 0 endcov 100 full_metal 1 compatible {ppolyf_u_1k ppolyf_u_1k_6p0}
+string ppolyf_u_1k_MZ7SYA parameters
+<< end >>

@@ -1,0 +1,43 @@
+magic
+tech gf180mcuD
+magscale 1 10
+timestamp 1755250492
+<< checkpaint >>
+rect -2000 -4000 2200 2200
+<< metal1 >>
+rect 0 0 200 200
+rect 0 -400 200 -200
+rect 0 -800 200 -600
+rect 0 -1200 200 -1000
+rect 0 -1600 200 -1400
+rect 0 -2000 200 -1800
+use 5T-OTA-buffer_no_hierarchy  x1
+timestamp 0
+transform 1 0 1 0 1 -2000
+box 0 0 1 1
+use Dummy_devices_all  x3
+timestamp 0
+transform 1 0 2 0 1 -2000
+box 0 0 1 1
+use Biasing_network_no_hierarchy  x4
+timestamp 0
+transform 1 0 3 0 1 -2000
+box 0 0 1 1
+use Gilbert_cell_no_hierarchy  xGilbert_mixer
+timestamp 0
+transform 1 0 0 0 1 -2000
+box 0 0 1 1
+<< labels >>
+flabel metal1 0 0 200 200 0 FreeSans 1280 0 0 0 V_LO
+port 0 nsew
+flabel metal1 0 -400 200 -200 0 FreeSans 1280 0 0 0 V_LO_b
+port 1 nsew
+flabel metal1 0 -800 200 -600 0 FreeSans 1280 0 0 0 V_RF
+port 2 nsew
+flabel metal1 0 -1200 200 -1000 0 FreeSans 1280 0 0 0 V_RF_b
+port 3 nsew
+flabel metal1 0 -1600 200 -1400 0 FreeSans 1280 0 0 0 V_out_p
+port 4 nsew
+flabel metal1 0 -2000 200 -1800 0 FreeSans 1280 0 0 0 V_out_n
+port 5 nsew
+<< end >>

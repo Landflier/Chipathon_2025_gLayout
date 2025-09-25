@@ -1,0 +1,40 @@
+
+Circuit 1 cell ppolyf_u_1k and Circuit 2 cell ppolyf_u_1k are black boxes.
+Warning: Equate pins:  cell ppolyf_u_1k is a placeholder, treated as a black box.
+Warning: Equate pins:  cell ppolyf_u_1k is a placeholder, treated as a black box.
+
+Subcircuit pins:
+Circuit 1: ppolyf_u_1k                     |Circuit 2: ppolyf_u_1k                     
+-------------------------------------------|-------------------------------------------
+1                                          |1                                          
+2                                          |2                                          
+3                                          |3                                          
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes ppolyf_u_1k and ppolyf_u_1k are equivalent.
+Flattening unmatched subcell ppolyf_u_1k_DB8C7L in circuit Gilbert_mixer_loading_stage (0)(1 instance)
+
+Class Gilbert_mixer_loading_stage (0):  Merged 6 series devices.
+Subcircuit summary:
+Circuit 1: Gilbert_mixer_loading_stage     |Circuit 2: Gilbert_cell_hierarchal_loading 
+-------------------------------------------|-------------------------------------------
+ppolyf_u_1k (8->2)                         |ppolyf_u_1k (2)                            
+Number of devices: 2                       |Number of devices: 2                       
+Number of nets: 3                          |Number of nets: 3                          
+---------------------------------------------------------------------------------------
+Resolving symmetries by property value.
+Resolving symmetries by pin name.
+Netlists match uniquely.
+
+Subcircuit pins:
+Circuit 1: Gilbert_mixer_loading_stage     |Circuit 2: Gilbert_cell_hierarchal_loading 
+-------------------------------------------|-------------------------------------------
+I_in_pos                                   |I_in_pos                                   
+I_in_neg                                   |I_in_neg                                   
+VDD                                        |VDD                                        
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes Gilbert_mixer_loading_stage and Gilbert_cell_hierarchal_loading_stage are equivalent.
+
+Final result: Circuits match uniquely.
+.
