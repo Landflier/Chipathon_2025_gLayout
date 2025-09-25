@@ -12,6 +12,8 @@ gds read ../A5_Gilbert_mixer_only_routing.gds
 cellname list allcells
 load Gilbert_mixer_toplevel
 cellname rename Gilbert_mixer_toplevel Gilbert_mixer_layout 
+# readspice /home/vasil/Downloads/SSCS_PICO_2025/src/design_padring/A5_Time_Transcenders_padring_integrated/lvs/netlists/Gilbert_mixer_netlist_ordering.spice
+
 
 # Extract with more detailed options
 extract all

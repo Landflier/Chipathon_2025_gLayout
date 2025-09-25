@@ -162,28 +162,16 @@ Output_stage (1)                           |Output_stage (1)
 ppolyf_u (1)                               |ppolyf_u (1)                               
 ppolyf_u_1k (8->2)                         |ppolyf_u_1k (2)                            
 pfet_03v3 (18->4)                          |pfet_03v3 (4)                              
-nfet_03v3 (88->14)                         |nfet_03v3 (16->13) **Mismatch**            
+nfet_03v3 (88->14)                         |nfet_03v3 (20->14)                         
 io_secondary_5p0 (5)                       |io_secondary_5p0 (5)                       
 cap_mim_2f0_m4m5_noshield (5->2)           |cap_mim_2f0fF (5->2)                       
-Number of devices: 29 **Mismatch**         |Number of devices: 28 **Mismatch**         
-Number of nets: 23                         |Number of nets: 23                         
+Number of devices: 29                      |Number of devices: 29                      
+Number of nets: 22 **Mismatch**            |Number of nets: 23 **Mismatch**            
 ---------------------------------------------------------------------------------------
 NET mismatches: Class fragments follow (with fanout counts):
 Circuit 1: Gilbert_mixer_layout            |Circuit 2: Gilbert_mixer_schematic         
 
 ---------------------------------------------------------------------------------------
-Net: 4t-ota$1_0/Vout                       |Net: net11                                 
-  pfet_03v3/(1|3) = 1                      |  nfet_03v3/(1|3) = 1                      
-  nfet_03v3/(1|3) = 1                      |  pfet_03v3/(1|3) = 1                      
-                                           |  Output_stage/V_in = 1                    
-                                           |                                           
-Net: m3_453280_108358#                     |Net: VSS                                   
-  Output_stage/m2_n361_338# = 1            |  nfet_03v3/4 = 13                         
-                                           |  nfet_03v3/(1|3) = 5                      
-                                           |  cap_mim_2f0fF/1 = 1                      
-                                           |  io_secondary_5p0/VSS = 5                 
-                                           |  Output_stage/VSS = 1                     
-                                           |                                           
 Net: VDD                                   |Net: VDD                                   
   ppolyf_u_1k/(1|2) = 2                    |  ppolyf_u_1k/(1|2) = 2                    
   ppolyf_u_1k/3 = 2                        |  ppolyf_u_1k/3 = 2                        
@@ -198,32 +186,28 @@ Net: VDD                                   |Net: VDD
   cap_mim_2f0_m4m5_noshield/1 = 2          |                                           
   nfet_03v3/(1|3) = 7                      |                                           
   nfet_03v3/2 = 1                          |                                           
----------------------------------------------------------------------------------------
-DEVICE mismatches: Class fragments follow (with node fanout counts):
-Circuit 1: Gilbert_mixer_layout            |Circuit 2: Gilbert_mixer_schematic         
-
----------------------------------------------------------------------------------------
-Instance: Gilbert_mixer_interdigited_0//RF |(no matching instance)                     
-  (1,3) = (49,49)                          |                                           
-  2 = 49                                   |                                           
-  4 = 49                                   |                                           
                                            |                                           
+(no matching net)                          |Net: VSS                                   
+                                           |  nfet_03v3/4 = 14                         
+                                           |  nfet_03v3/(1|3) = 7                      
+                                           |  nfet_03v3/2 = 1                          
+                                           |  cap_mim_2f0fF/1 = 1                      
+                                           |  io_secondary_5p0/VSS = 5                 
+                                           |  Output_stage/VSS = 1                     
 ---------------------------------------------------------------------------------------
 Netlists do not match.
 
 Subcircuit pins:
 Circuit 1: Gilbert_mixer_layout            |Circuit 2: Gilbert_mixer_schematic         
 -------------------------------------------|-------------------------------------------
-VDD                                        |(no matching pin)                          
-V_RF_b                                     |V_LO **Mismatch**                          
+VDD                                        |VSS **Mismatch**                           
 V_LO                                       |V_LO_b **Mismatch**                        
-V_LO_b                                     |V_RF **Mismatch**                          
+V_RF_b                                     |V_LO **Mismatch**                          
 V_RF                                       |V_RF_b **Mismatch**                        
+V_LO_b                                     |V_RF **Mismatch**                          
 V_IF_out                                   |V_IF_out                                   
 (no matching pin)                          |I_bias                                     
-(no matching pin)                          |VSS                                        
 (no matching pin)                          |VDD                                        
-VDD                                        |(no matching pin)                          
 ---------------------------------------------------------------------------------------
 Cell pin lists for Gilbert_mixer_layout and Gilbert_mixer_schematic altered to match.
 Device classes Gilbert_mixer_layout and Gilbert_mixer_schematic are equivalent.
