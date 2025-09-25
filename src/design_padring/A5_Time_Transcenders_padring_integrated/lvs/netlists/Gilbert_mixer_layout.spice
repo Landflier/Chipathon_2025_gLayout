@@ -8,10 +8,9 @@ X0 a_n100_400# a_n100_n502# w_n316_n718# ppolyf_u r_width=1u r_length=4u
 Xppolyf_u_95K9DY_0 m1_134_147# m1_n54_n2403# m1_1068_147# ppolyf_u_95K9DY
 .ends
 
-.subckt ppolyf_u_high_Rs_resistor$1 a_4000_0# a_n128_0# w_n476_n268# a_4000_600# dw_n476_n268#
-+ a_n128_600#
-X0 a_n128_600# a_4000_600# w_n476_n268# ppolyf_u_1k r_width=1u r_length=20u
-X1 a_n128_0# a_4000_0# w_n476_n268# ppolyf_u_1k r_width=1u r_length=20u
+.subckt ppolyf_u_high_Rs_resistor$1 a_4000_0# a_n128_0# a_4000_600# a_n128_600# a_n352_0#
+X0 a_n128_600# a_4000_600# a_n352_0# ppolyf_u_1k r_width=1u r_length=20u
+X1 a_n128_0# a_4000_0# a_n352_0# ppolyf_u_1k r_width=1u r_length=20u
 .ends
 
 .subckt pfet_03v3_RFU83T a_181_n6# a_n125_n6# a_33_n12# w_n435_n238# a_n190_n119#
@@ -295,8 +294,7 @@ XRF_diff_pair$1_0 RF_diff_pair$1_0/a_3384_n849# RF_diff_pair$1_0/a_3440_n321# RF
 
 .subckt Gilbert_mixer_layout VSS VDD I_bias V_LO_b V_RF_b V_IF_out V_LO V_RF
 XDegeneration_resistor_0 VDD m3_447543_97161# m3_436631_97159# Degeneration_resistor
-Xppolyf_u_high_Rs_resistor$1_0 m3_448977_101781# VDD VSS m3_448551_101181# VSS VDD
-+ ppolyf_u_high_Rs_resistor$1
+Xppolyf_u_high_Rs_resistor$1_0 m3_448977_101781# VDD m3_448551_101181# VDD VSS ppolyf_u_high_Rs_resistor$1
 X4t-ota_0 VDD m3_448551_101181# m3_454799_105309# m3_448977_101781# V_IF_out VSS x4t-ota
 Xio_secondary_5p0_array_0 V_LO VDD VDD V_RF m3_481277_78532# VDD m3_459617_77034#
 + m3_502897_84306# V_LO_b VDD m3_402897_80642# V_RF_b VDD I_bias VSS m3_424557_78204#
