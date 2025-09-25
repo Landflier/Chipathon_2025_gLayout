@@ -1,0 +1,77 @@
+magic
+tech gf180mcuD
+magscale 1 10
+timestamp 1758830887
+<< pwell >>
+rect -336 -4550 336 4550
+<< psubdiff >>
+rect -312 4513 312 4526
+rect -312 4467 -196 4513
+rect 196 4467 312 4513
+rect -312 4454 312 4467
+rect -312 4410 -240 4454
+rect -312 -4410 -299 4410
+rect -253 -4410 -240 4410
+rect 240 4410 312 4454
+rect -312 -4454 -240 -4410
+rect 240 -4410 253 4410
+rect 299 -4410 312 4410
+rect 240 -4454 312 -4410
+rect -312 -4467 312 -4454
+rect -312 -4513 -196 -4467
+rect 196 -4513 312 -4467
+rect -312 -4526 312 -4513
+<< psubdiffcont >>
+rect -196 4467 196 4513
+rect -299 -4410 -253 4410
+rect 253 -4410 299 4410
+rect -196 -4513 196 -4467
+<< polysilicon >>
+rect -100 4301 100 4314
+rect -100 4255 -87 4301
+rect 87 4255 100 4301
+rect -100 4192 100 4255
+rect -100 129 100 192
+rect -100 83 -87 129
+rect 87 83 100 129
+rect -100 70 100 83
+rect -100 -83 100 -70
+rect -100 -129 -87 -83
+rect 87 -129 100 -83
+rect -100 -192 100 -129
+rect -100 -4255 100 -4192
+rect -100 -4301 -87 -4255
+rect 87 -4301 100 -4255
+rect -100 -4314 100 -4301
+<< polycontact >>
+rect -87 4255 87 4301
+rect -87 83 87 129
+rect -87 -129 87 -83
+rect -87 -4301 87 -4255
+<< nhighres >>
+rect -100 192 100 4192
+rect -100 -4192 100 -192
+<< metal1 >>
+rect -299 4467 -196 4513
+rect 196 4467 299 4513
+rect -299 4410 -253 4467
+rect 253 4410 299 4467
+rect -98 4255 -87 4301
+rect 87 4255 98 4301
+rect -98 83 -87 129
+rect 87 83 98 129
+rect -98 -129 -87 -83
+rect 87 -129 98 -83
+rect -98 -4301 -87 -4255
+rect 87 -4301 98 -4255
+rect -299 -4467 -253 -4410
+rect 253 -4467 299 -4410
+rect -299 -4513 -196 -4467
+rect 196 -4513 299 -4467
+<< properties >>
+string FIXED_BBOX -276 -4490 276 4490
+string gencell ppolyf_u_1k
+string library gf180mcu
+string parameters w 1.000 l 20.000 m 2 nx 1 wmin 1.000 lmin 1.000 class resistor rho 1000 val 20.0k dummy 0 dw 0.0 term 0.0 sterm 0.0 caplen 0.4 snake 0 glc 1 grc 1 gtc 1 gbc 1 roverlap 0 endcov 100 full_metal 1 compatible {ppolyf_u_1k ppolyf_u_1k_6p0}
+string ppolyf_u_1k_MRPSYA parameters
+<< end >>
