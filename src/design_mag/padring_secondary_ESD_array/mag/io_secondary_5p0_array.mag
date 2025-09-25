@@ -1,7 +1,7 @@
 magic
 tech gf180mcuD
 magscale 1 5
-timestamp 1758212431
+timestamp 1758798135
 << metal2 >>
 rect 47664 8075 57557 8080
 rect 0 7315 57557 8075
@@ -26,4 +26,19 @@ use io_secondary_5p0  io_secondary_5p0_4
 timestamp 1758012324
 transform 0 1 51415 -1 0 3880
 box -4735 -2415 4265 6120
+<< labels >>
+rlabel space 3260 -390 3260 -390 1 V_LO
+port 2 n
+rlabel space 12810 -330 12810 -330 1 V_RF
+port 4 n
+rlabel space 32710 -340 32710 -340 1 V_RF_b
+port 3 n
+rlabel space 42855 -320 42855 -320 1 V_LO_b
+port 1 n
+rlabel space 52630 -340 52630 -340 1 I_BIAS
+port 0 n
+rlabel metal2 23060 875 23060 875 1 VSS
+port 6 n
+rlabel metal2 22600 7775 22600 7775 1 VDD
+port 5 n
 << end >>

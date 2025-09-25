@@ -241,7 +241,7 @@ XRF_diff_pair$1_0 RF_diff_pair$1_0/a_3384_n849# RF_diff_pair$1_0/a_3440_n321# RF
 + RF_diff_pair$1
 .ends
 
-.subckt Gilbert_mixer_layout V_IF_out V_LO V_RF V_LO_b V_RF_b VDD
+.subckt Gilbert_mixer_layout VDD V_IF_out V_LO V_RF V_LO_b V_RF_b
 XOutput_stage_0 VDD VDD V_IF_out m3_453194_108358# V_IF_out Output_stage
 XDegeneration_resistor_0 VDD m3_447543_98113# m3_436631_98228# Degeneration_resistor
 XGilbert_mixer_loading_stage_0 m3_451768_108051# m3_451768_106738# VDD Gilbert_mixer_loading_stage
