@@ -77,44 +77,21 @@ D2 a_n2108_n1000# w_n4500_n1176# diode_pd2nw_06v0 pj=40u area=99.99999p
 D3 a_108_n1000# w_n4500_n1176# diode_pd2nw_06v0 pj=40u area=99.99999p
 .ends
 
-.subckt io_secondary_5p0 m1_6880_n1240# m1_n5943_7732# m1_n6440_11450# VSUBS
-Xppolyf_u_9H3LNU_0 m1_6880_n1240# m1_n5943_7732# m1_n6440_11450# ppolyf_u_9H3LNU
-Xdiode_nd2ps_06v0_MV3SZ3_0 m1_n5943_7732# m1_n5943_7732# m1_n5943_7732# VSUBS m1_n5943_7732#
-+ diode_nd2ps_06v0_MV3SZ3
-Xdiode_pd2nw_06v0_5DG9HC_0 m1_n5943_7732# m1_n5943_7732# m1_n6440_11450# m1_n5943_7732#
-+ m1_n5943_7732# diode_pd2nw_06v0_5DG9HC
+.subckt io_secondary_5p0 VDD ASIG5V to_gate VSS
+Xppolyf_u_9H3LNU_0 ASIG5V to_gate VDD ppolyf_u_9H3LNU
+Xdiode_nd2ps_06v0_MV3SZ3_0 to_gate to_gate to_gate VSS to_gate diode_nd2ps_06v0_MV3SZ3
+Xdiode_pd2nw_06v0_5DG9HC_0 to_gate to_gate VDD to_gate to_gate diode_pd2nw_06v0_5DG9HC
 .ends
 
-.subckt io_secondary_5p0_under_hierarchy io_secondary_5p0_1/m1_6880_n1240# io_secondary_5p0_2/m1_6880_n1240#
-+ io_secondary_5p0_3/m1_n5943_7732# io_secondary_5p0_0/m1_n5943_7732# io_secondary_5p0_4/m1_n5943_7732#
-+ io_secondary_5p0_3/m1_6880_n1240# io_secondary_5p0_0/m1_6880_n1240# io_secondary_5p0_1/m1_n5943_7732#
-+ m2_9867_1130# io_secondary_5p0_4/m1_6880_n1240# VSUBS io_secondary_5p0_2/m1_n5943_7732#
-Xio_secondary_5p0_0 io_secondary_5p0_0/m1_6880_n1240# io_secondary_5p0_0/m1_n5943_7732#
-+ m2_9867_1130# VSUBS io_secondary_5p0
-Xio_secondary_5p0_1 io_secondary_5p0_1/m1_6880_n1240# io_secondary_5p0_1/m1_n5943_7732#
-+ m2_9867_1130# VSUBS io_secondary_5p0
-Xio_secondary_5p0_2 io_secondary_5p0_2/m1_6880_n1240# io_secondary_5p0_2/m1_n5943_7732#
-+ m2_9867_1130# VSUBS io_secondary_5p0
-Xio_secondary_5p0_3 io_secondary_5p0_3/m1_6880_n1240# io_secondary_5p0_3/m1_n5943_7732#
-+ m2_9867_1130# VSUBS io_secondary_5p0
-Xio_secondary_5p0_4 io_secondary_5p0_4/m1_6880_n1240# io_secondary_5p0_4/m1_n5943_7732#
-+ m2_9867_1130# VSUBS io_secondary_5p0
-.ends
-
-.subckt io_secondary_5p0_array io_secondary_5p0_under_hierarchy_0/io_secondary_5p0_2/m1_6880_n1240#
-+ io_secondary_5p0_under_hierarchy_0/io_secondary_5p0_3/m1_n5943_7732# io_secondary_5p0_under_hierarchy_0/io_secondary_5p0_0/m1_n5943_7732#
-+ m2_11910_1130# io_secondary_5p0_under_hierarchy_0/io_secondary_5p0_4/m1_n5943_7732#
-+ io_secondary_5p0_under_hierarchy_0/io_secondary_5p0_3/m1_6880_n1240# io_secondary_5p0_under_hierarchy_0/io_secondary_5p0_0/m1_6880_n1240#
-+ io_secondary_5p0_under_hierarchy_0/io_secondary_5p0_1/m1_n5943_7732# io_secondary_5p0_under_hierarchy_0/io_secondary_5p0_4/m1_6880_n1240#
-+ io_secondary_5p0_under_hierarchy_0/io_secondary_5p0_2/m1_n5943_7732# io_secondary_5p0_under_hierarchy_0/io_secondary_5p0_1/m1_6880_n1240#
-+ VSUBS
-Xio_secondary_5p0_under_hierarchy_0 io_secondary_5p0_under_hierarchy_0/io_secondary_5p0_1/m1_6880_n1240#
-+ io_secondary_5p0_under_hierarchy_0/io_secondary_5p0_2/m1_6880_n1240# io_secondary_5p0_under_hierarchy_0/io_secondary_5p0_3/m1_n5943_7732#
-+ io_secondary_5p0_under_hierarchy_0/io_secondary_5p0_0/m1_n5943_7732# io_secondary_5p0_under_hierarchy_0/io_secondary_5p0_4/m1_n5943_7732#
-+ io_secondary_5p0_under_hierarchy_0/io_secondary_5p0_3/m1_6880_n1240# io_secondary_5p0_under_hierarchy_0/io_secondary_5p0_0/m1_6880_n1240#
-+ io_secondary_5p0_under_hierarchy_0/io_secondary_5p0_1/m1_n5943_7732# m2_11910_1130#
-+ io_secondary_5p0_under_hierarchy_0/io_secondary_5p0_4/m1_6880_n1240# VSUBS io_secondary_5p0_under_hierarchy_0/io_secondary_5p0_2/m1_n5943_7732#
-+ io_secondary_5p0_under_hierarchy
+.subckt io_secondary_5p0_array VDD io_secondary_5p0_0/ASIG5V io_secondary_5p0_2/to_gate
++ io_secondary_5p0_3/to_gate io_secondary_5p0_4/ASIG5V io_secondary_5p0_3/ASIG5V io_secondary_5p0_0/to_gate
++ io_secondary_5p0_4/to_gate io_secondary_5p0_2/ASIG5V io_secondary_5p0_1/to_gate
++ io_secondary_5p0_1/ASIG5V VSS
+Xio_secondary_5p0_0 VDD io_secondary_5p0_0/ASIG5V io_secondary_5p0_0/to_gate VSS io_secondary_5p0
+Xio_secondary_5p0_1 VDD io_secondary_5p0_1/ASIG5V io_secondary_5p0_1/to_gate VSS io_secondary_5p0
+Xio_secondary_5p0_2 VDD io_secondary_5p0_2/ASIG5V io_secondary_5p0_2/to_gate VSS io_secondary_5p0
+Xio_secondary_5p0_3 VDD io_secondary_5p0_3/ASIG5V io_secondary_5p0_3/to_gate VSS io_secondary_5p0
+Xio_secondary_5p0_4 VDD io_secondary_5p0_4/ASIG5V io_secondary_5p0_4/to_gate VSS io_secondary_5p0
 .ends
 
 .subckt Unnamed_e3a0da27 m4_n620_n620# m4_n500_n500#
@@ -230,7 +207,7 @@ X2 a_3440_n321# a_3384_n849# a_3156_n321# a_n1750_n1013# nfet_03v3 ad=1.22p pd=3
 .ends
 
 .subckt Gilbert_mixer_interdigited RF_diff_pair$1_0/a_n856_n321# RF_diff_pair$1_0/a_3384_n849#
-+ RF_diff_pair$1_0/a_n628_n849# via_array_286f19cb$1_0/m2_n420_n210# via_array_6f2c13fe$2$2_0/m2_600_n100#
++ RF_diff_pair$1_0/a_n628_n849# via_array_6f2c13fe$2$2_0/m2_600_n100# via_array_286f19cb$1_0/m2_n420_n210#
 + via_array_286f19cb_0/m2_n420_n210# via_array_6f2c13fe$3$2_0/m2_600_n100# RF_diff_pair$1_0/a_3440_n321#
 + VSUBS
 XLO_diff_pairs_interdigitized_0 RF_diff_pair$1_0/a_3156_n321# via_array_286f19cb_0/m2_n420_n210#
@@ -241,17 +218,22 @@ XRF_diff_pair$1_0 RF_diff_pair$1_0/a_3384_n849# RF_diff_pair$1_0/a_3440_n321# RF
 + RF_diff_pair$1
 .ends
 
-.subckt Gilbert_mixer_layout VDD V_IF_out V_LO V_RF V_LO_b V_RF_b
-XOutput_stage_0 VDD VDD V_IF_out m3_453194_108358# V_IF_out Output_stage
-XDegeneration_resistor_0 VDD m3_447543_98113# m3_436631_98228# Degeneration_resistor
-XGilbert_mixer_loading_stage_0 m3_451768_108051# m3_451768_106738# VDD Gilbert_mixer_loading_stage
-X4t-ota$1_0 VDD m3_454799_105309# m3_451768_106738# m3_451768_108051# m3_453194_108358#
-+ VDD x4t-ota$1
-Xio_secondary_5p0_array_0 V_LO_b m3_481277_87562# m3_402897_87612# VDD m3_504377_87383#
-+ V_RF_b V_LO m3_424557_87585# m2_497668_69901# m3_459617_87585# V_RF VDD io_secondary_5p0_array
-XBiasing_Network_0 V_IF_out m3_447543_98113# m3_454799_105309# VDD m3_470429_92059#
-+ m3_504377_87383# m3_470429_92059# m3_436631_98228# VDD Biasing_Network
-XGilbert_mixer_interdigited_0 m3_436631_98228# m3_459617_87585# m3_424557_87585# m3_481277_87562#
-+ m3_451768_106738# m3_402897_87612# m3_451768_108051# m3_447543_98113# VDD Gilbert_mixer_interdigited
+.subckt Gilbert_mixer_layout VSS V_IF_out V_LO V_RF V_LO_b V_RF_b
+XOutput_stage_0 VSS VSS V_IF_out m3_453194_108358# V_IF_out Output_stage
+XDegeneration_resistor_0 VSS m3_447543_98113# m3_436631_98228# Degeneration_resistor
+XGilbert_mixer_loading_stage_0 m3_451768_108051# m3_451768_106738# VSS Gilbert_mixer_loading_stage
+X4t-ota$1_0 VSS m3_454799_105309# m3_451768_106738# m3_451768_108051# m3_453194_108358#
++ VSS x4t-ota$1
+Xio_secondary_5p0_array_0 VSS V_LO_b io_secondary_5p0_array_0/io_secondary_5p0_2/to_gate
++ io_secondary_5p0_array_0/io_secondary_5p0_3/to_gate io_secondary_5p0_array_0/io_secondary_5p0_4/ASIG5V
++ V_RF_b io_secondary_5p0_array_0/io_secondary_5p0_0/to_gate io_secondary_5p0_array_0/io_secondary_5p0_4/to_gate
++ V_RF io_secondary_5p0_array_0/io_secondary_5p0_1/to_gate V_LO VSS io_secondary_5p0_array
+XBiasing_Network_0 V_IF_out m3_447543_98113# m3_454799_105309# VSS m3_470429_92059#
++ io_secondary_5p0_array_0/io_secondary_5p0_4/to_gate m3_470429_92059# m3_436631_98228#
++ VSS Biasing_Network
+XGilbert_mixer_interdigited_0 m3_436631_98228# io_secondary_5p0_array_0/io_secondary_5p0_0/to_gate
++ io_secondary_5p0_array_0/io_secondary_5p0_2/to_gate m3_451768_106738# io_secondary_5p0_array_0/io_secondary_5p0_3/to_gate
++ io_secondary_5p0_array_0/io_secondary_5p0_1/to_gate m3_451768_108051# m3_447543_98113#
++ VSS Gilbert_mixer_interdigited
 .ends
 
