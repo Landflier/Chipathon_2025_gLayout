@@ -2,8 +2,11 @@
 .subckt Gilbert_mixer_schematic V_LO V_LO_b V_RF V_RF_b V_IF_out I_bias VSS VDD
 *.PININFO V_LO:I V_LO_b:I V_RF:I V_RF_b:I V_IF_out:O I_bias:I VSS:I VDD:I
 x1 V_IF_out V_IF_out V_LO V_LO_b V_RF V_RF_b net1 net1 VSS Gilbert_cell_hierarchal_mixing_stage
-x2 V_IF_out V_IF_out VDD Gilbert_cell_hierarchal_loading_stage
-x3 VDD net1 net1 V_IF_out I_bias VSS V_IF_out Biasing_network_with_local_mirros
+x3 VDD net1 net1 V_IF_out I_bias VSS V_IF_out Biasing_network_with_local_mirros pmos_l_ref=0.4u pmos_w_ref=2u pmos_l_mir=0.4u
++ pmos_w_mir=6u nmos_l_ref_1=1u nmos_w_ref_1=1.5u nmos_nf_ref_1=1 nmos_l_mir_1=1u nmos_w_mir_1=7.5u nmos_nf_mir_1=5 nmos_l_ref_2=1u
++ nmos_w_ref_2=1.5u nmos_nf_ref_2=1 nmos_l_mir_2=1u nmos_w_mir_2=7.5u nmos_nf_mir_2=5 nmos_l_ref_3=1u nmos_w_ref_3=1.5u nmos_nf_ref_3=2
++ nmos_l_mir_3=1u nmos_w_mir_3=1.5u nmos_nf_mir_3=2 nmos_l_ref_4=1u nmos_w_ref_4=1.5u nmos_nf_ref_4=1 nmos_l_mir_4=1u nmos_w_mir_4=15u
++ nmos_nf_mir_4=10
 .ends
 
 * expanding   symbol:  /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Gilbert_cell_hierarchal_mixing_stage.sym # of pins=9
@@ -28,38 +31,36 @@ XM_rf_dummies VSS VSS VSS VSS nfet_03v3 L=0.28u W=2u nf=1 ad='int((nf+1)/2) * W/
 .ends
 
 
-* expanding   symbol:  /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Gilbert_cell_hierarchal_loading_stage.sym # of pins=3
-** sym_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Gilbert_cell_hierarchal_loading_stage.sym
-** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Gilbert_cell_hierarchal_loading_stage.sch
-.subckt Gilbert_cell_hierarchal_loading_stage I_in_pos I_in_neg VDD
-*.PININFO I_in_neg:B I_in_pos:B VDD:B
-XR_load_2 I_in_pos VDD VDD ppolyf_u_1k r_width=1e-6 r_length=20e-6 m=1
-XR_load_1 I_in_neg VDD VDD ppolyf_u_1k r_width=1e-6 r_length=20e-6 m=1
-.ends
-
-
 * expanding   symbol:  /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Biasing_network_with_local_mirros.sym # of pins=7
 ** sym_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Biasing_network_with_local_mirros.sym
 ** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Biasing_network_with_local_mirros.sch
-.subckt Biasing_network_with_local_mirros VDD I_out_1 I_out_2 I_out_3 I_BIAS VSS I_out_4
+.subckt Biasing_network_with_local_mirros VDD I_out_1 I_out_2 I_out_3 I_BIAS VSS I_out_4   pmos_l_ref=0.4u pmos_w_ref=2u
++ pmos_l_mir=0.4u pmos_w_mir=6u  nmos_l_ref_1=1u nmos_w_ref_1=1.5u nmos_nf_ref_1=1 nmos_l_mir_1=1u nmos_w_mir_1=7.5u nmos_nf_mir_1=5
++  nmos_l_ref_2=1u nmos_w_ref_2=1.5u nmos_nf_ref_2=1 nmos_l_mir_2=1u nmos_w_mir_2=7.5u nmos_nf_mir_2=5  nmos_l_ref_3=1u nmos_w_ref_3=1.5u
++ nmos_nf_ref_3=2 nmos_l_mir_3=1u nmos_w_mir_3=1.5u nmos_nf_mir_3=2  nmos_l_ref_4=1u nmos_w_ref_4=1.5u nmos_nf_ref_4=1 nmos_l_mir_4=1u
++ nmos_w_mir_4=15u nmos_nf_mir_4=10
+
 *.PININFO VSS:B I_BIAS:B I_out_1:O I_out_2:O I_out_3:O VDD:B I_out_4:O
-x_PMOS_mirror VDD net1 I_BIAS Local_mirror_pmos w_ref=2u l_ref=0.4u w_mir=8u l_mir=0.4u
-x_NMOS_mirror_1 I_out_1 net1 VSS Local_mirror_nmos l_ref=1u w_ref=1.5u nf_ref=1 l_mir=1u w_mir=7.5u nf_mir=5
-x_NMOS_mirror_2 I_out_2 net1 VSS Local_mirror_nmos l_ref=1u w_ref=1.5u nf_ref=1 l_mir=1u w_mir=7.5u nf_mir=5
-x_NMOS_mirror_3 I_out_3 net1 VSS Local_mirror_nmos l_ref=1u w_ref=1.5u nf_ref=1 l_mir=1u w_mir=6u nf_mir=4
-x_NMOS_mirror_4 I_out_4 net1 VSS Local_mirror_nmos l_ref=1u w_ref=1.5u nf_ref=1 l_mir=1u w_mir=15u nf_mir=10
+x_PMOS_mirror VDD net1 I_BIAS Local_mirror_pmos w_ref=pmos_w_ref l_ref=pmos_l_ref w_mir=pmos_w_mir l_mir=pmos_l_mir
+x_NMOS_mirror_1 I_out_1 net1 VSS Local_mirror_nmos l_ref=nmos_l_ref_1 w_ref=nmos_w_ref_1 nf_ref=nmos_nf_ref_1 l_mir=nmos_l_mir_1
++ w_mir=nmos_w_mir_1 nf_mir=nmos_nf_mir_1
+x_NMOS_mirror_2 I_out_2 net1 VSS Local_mirror_nmos l_ref=nmos_l_ref_2 w_ref=nmos_w_ref_2 nf_ref=nmos_nf_ref_2 l_mir=nmos_l_mir_2
++ w_mir=nmos_w_mir_2 nf_mir=nmos_nf_mir_2
+x_NMOS_mirror_3 I_out_3 net1 VSS Local_mirror_nmos l_ref=nmos_l_ref_3 w_ref=nmos_w_ref_3 nf_ref=nmos_nf_ref_3 l_mir=nmos_l_mir_3
++ w_mir=nmos_w_mir_3 nf_mir=nmos_nf_mir_3
+x_NMOS_mirror_4 I_out_4 net1 VSS Local_mirror_nmos l_ref=nmos_l_ref_4 w_ref=nmos_w_ref_4 nf_ref=nmos_nf_ref_4 l_mir=nmos_l_mir_4
++ w_mir=nmos_w_mir_4 nf_mir=nmos_nf_mir_4
 .ends
 
 
 * expanding   symbol:  /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Local_mirror_pmos.sym # of pins=3
 ** sym_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Local_mirror_pmos.sym
 ** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Local_mirror_pmos.sch
-.subckt Local_mirror_pmos VDD I_out I_BIAS   w_ref=0.22u l_ref=0.28u  w_mir=0.22u l_mir=0.28u
-
+.subckt Local_mirror_pmos VDD I_out I_BIAS
 *.PININFO I_BIAS:B VDD:B I_out:B
 XM_ref I_BIAS I_BIAS VDD VDD pfet_03v3 L=l_ref W=w_ref nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
 + ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
-XM_mir I_out I_BIAS VDD VDD pfet_03v3 L=l_mir W=w_mir nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
+XM_mir I_out I_BIAS VDD VDD pfet_03v3 L=l_mir W=w_mir nf=4 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
 + ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
 XC1 VDD I_BIAS cap_mim_2f0fF c_width=5e-6 c_length=5e-6 m=1
 .ends
@@ -68,7 +69,7 @@ XC1 VDD I_BIAS cap_mim_2f0fF c_width=5e-6 c_length=5e-6 m=1
 * expanding   symbol:  /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Local_mirror_nmos.sym # of pins=3
 ** sym_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Local_mirror_nmos.sym
 ** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Local_mirror_nmos.sch
-.subckt Local_mirror_nmos I_out I_BIAS VSS    l_ref=1u w_ref=1u nf_ref=1 l_mir=1u w_mir=1u nf_mir=1
+.subckt Local_mirror_nmos I_out I_BIAS VSS
 *.PININFO VSS:B I_out:B I_BIAS:B
 XM2 I_out I_BIAS VSS VSS nfet_03v3 L=l_mir W=w_mir nf=nf_mir ad='int((nf_mir+1)/2) * W/nf_mir * 0.18u' as='int((nf_mir+2)/2) * W/nf_mir * 0.18u'
 + pd='2*int((nf_mir+1)/2) * (W/nf_mir + 0.18u)' ps='2*int((nf_mir+2)/2) * (W/nf_mir + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0

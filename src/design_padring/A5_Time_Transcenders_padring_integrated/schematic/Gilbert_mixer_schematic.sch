@@ -17,10 +17,6 @@ N 1310 -1790 1310 -1690 {
 lab=V_IF_out}
 N 1510 -1790 1510 -1690 {
 lab=V_IF_out}
-N 1140 -1940 1140 -1910 {
-lab=VDD}
-N 1140 -1910 1230 -1910 {
-lab=VDD}
 N 1120 -1490 1210 -1490 {
 lab=V_LO_b}
 N 1120 -1540 1210 -1540 {
@@ -181,7 +177,6 @@ C {ipin.sym} 610 -1320 0 0 {name=p3 lab=V_RF}
 C {ipin.sym} 610 -1140 2 1 {name=p4 lab=V_RF_b
 }
 C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Gilbert_cell_hierarchal_mixing_stage.sym} 1410 -1490 0 0 {name=x1}
-C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Gilbert_cell_hierarchal_loading_stage.sym} 1410 -1840 0 0 {name=x2}
 C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Biasing_network_with_local_mirros.sym} 1140 -660 0 0 {name=x3}
 C {opin.sym} 2520 -1620 0 0 {name=p5 lab=V_IF_out}
 C {ipin.sym} 550 -670 2 1 {name=p18 lab=I_bias
@@ -192,5 +187,4 @@ C {ipin.sym} 610 -1940 2 1 {name=p9 lab=VDD
 }
 C {lab_pin.sym} 850 -570 0 0 {name=p11 sig_type=std_logic lab=VSS}
 C {lab_pin.sym} 1160 -1350 0 0 {name=p23 sig_type=std_logic lab=VSS}
-C {lab_pin.sym} 1140 -1940 0 0 {name=p26 sig_type=std_logic lab=VDD}
 C {lab_pin.sym} 850 -830 0 0 {name=p29 sig_type=std_logic lab=VDD}
