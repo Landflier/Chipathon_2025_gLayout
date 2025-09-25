@@ -26,7 +26,8 @@ ext2spice subcircuit top auto
 ext2spice hierarchy on
 ext2spice scale off
 ext2spice blackbox on
-ext2spice merge conservative
+# ext2spice merge conservative
+ext2spice merge none
 ext2spice global off
 ext2spice -o netlists/Gilbert_mixer_layout.spice
 quit

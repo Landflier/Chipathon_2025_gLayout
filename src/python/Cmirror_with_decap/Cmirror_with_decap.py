@@ -434,13 +434,14 @@ class CmirrorWithDecap:
             # ref_case = 0: X=mir, Y=ref (X=M, Y=R)
             
             for finger_couple in range(int((self.fingers_ref + self.fingers_mir)/2)):
-                # Select config based on finger position and case
-                in_middle_region = finger_couple >= self.fingers_ref/4 and finger_couple < self.fingers_ref/4 + self.fingers_mir/2
-                
+
+                divisible_by_4_fingers = self.fingers_ref if ref_case else self.fingers_mir
+                other_fingers = self.fingers_mir if ref_case else self.fingers_ref
+                in_middle_region = finger_couple >= divisible_by_4_fingers/4 and finger_couple < divisible_by_4_fingers/4 + other_fingers/2
                 # ref_case     is : s(Rd Rs)*nf_r/4 (Md Ms)*nf_m/2 (Rd Rs)*nf_r/4 
                 # not ref_case is : s(Md Ms)*nf_m/4 (Rd Rs)*nf_r/2 (Md Ms)*nf_m/4 
                 # thus ref_case an in_middle_region and not ref_case and not in_middle_region just selects M(irror) FET's s/d regions
-                if (ref_case and in_middle_region) or (not ref_case and not in_middle_region):
+                if (ref_case and in_middle_region) or ((not ref_case) and (not in_middle_region)):
                     # (Md Ms) -> route Md
                     port_name = f"row0_col{2*finger_couple}_rightsd_array_row{number_sd_rows}_col0_top_met_N"
                     config_key = 'top_track_1'
@@ -976,9 +977,9 @@ if __name__ == "__main__":
     cmirror_nmos = CmirrorWithDecap(
         pdk=pdk_choice,
         width_ref = 1.5,
-        width_mir = 1.5,
+        width_mir = 3,
         fingers_ref = 1,
-        fingers_mir = 1,
+        fingers_mir = 2,
         # width_ref=7.5,
         # width_mir=1.5,
         # fingers_ref=5,
@@ -992,11 +993,13 @@ if __name__ == "__main__":
     print("Building current mirror...")
     component = cmirror_nmos.build()
 
+    """
     # Run DRC
     print("\n...Running DRC...")
     drc_result = cmirror_nmos.run_drc()
     if drc_result:
         print(f"✓ Magic DRC result: {drc_result}")
+    """
     
     # Write GDS
     print("✓ Writing GDS files...")

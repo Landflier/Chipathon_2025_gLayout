@@ -176,8 +176,8 @@ XR1 net2 net1 VDD ppolyf_u r_width=1e-6 r_length=4e-6 m=1
 *.iopin I_in_neg
 *.iopin I_in_pos
 *.iopin VDD
-XR_load_2 I_in_pos VDD VDD ppolyf_u_1k r_width=1e-6 r_length=20e-6 m=1
-XR_load_1 I_in_neg VDD VDD ppolyf_u_1k r_width=1e-6 r_length=20e-6 m=1
+XR_load_2 I_in_pos VDD VSS ppolyf_u_1k r_width=1e-6 r_length=20e-6 m=1
+XR_load_1 I_in_neg VDD VSS ppolyf_u_1k r_width=1e-6 r_length=20e-6 m=1
 .ends
 
 

@@ -26,16 +26,11 @@ Xdiode_nd2ps_06v0_MV3SZ3_0 to_gate to_gate to_gate VSS to_gate diode_nd2ps_06v0_
 Xdiode_pd2nw_06v0_5DG9HC_0 to_gate to_gate VDD to_gate to_gate diode_pd2nw_06v0_5DG9HC
 .ends
 
-.subckt ESD_array_layout
-Xio_secondary_5p0_0 io_secondary_5p0_0/ASIG5V io_secondary_5p0_0/to_gate io_secondary_5p0_4/VDD
-+ VSUBS io_secondary_5p0
-Xio_secondary_5p0_1 io_secondary_5p0_1/ASIG5V io_secondary_5p0_1/to_gate io_secondary_5p0_4/VDD
-+ VSUBS io_secondary_5p0
-Xio_secondary_5p0_2 io_secondary_5p0_2/ASIG5V io_secondary_5p0_2/to_gate io_secondary_5p0_4/VDD
-+ VSUBS io_secondary_5p0
-Xio_secondary_5p0_3 io_secondary_5p0_3/ASIG5V io_secondary_5p0_3/to_gate io_secondary_5p0_4/VDD
-+ VSUBS io_secondary_5p0
-Xio_secondary_5p0_4 io_secondary_5p0_4/ASIG5V io_secondary_5p0_4/to_gate io_secondary_5p0_4/VDD
-+ VSUBS io_secondary_5p0
+.subckt ESD_array_layout VDD VSS
+Xio_secondary_5p0_0 io_secondary_5p0_0/ASIG5V io_secondary_5p0_0/to_gate VDD VSS io_secondary_5p0
+Xio_secondary_5p0_1 io_secondary_5p0_1/ASIG5V io_secondary_5p0_1/to_gate VDD VSS io_secondary_5p0
+Xio_secondary_5p0_2 io_secondary_5p0_2/ASIG5V io_secondary_5p0_2/to_gate VDD VSS io_secondary_5p0
+Xio_secondary_5p0_3 io_secondary_5p0_3/ASIG5V io_secondary_5p0_3/to_gate VDD VSS io_secondary_5p0
+Xio_secondary_5p0_4 io_secondary_5p0_4/ASIG5V io_secondary_5p0_4/to_gate VDD VSS io_secondary_5p0
 .ends
 

@@ -16,9 +16,9 @@ lab=VDD}
 N 810 -1230 1100 -1230 {
 lab=VDD}
 N 920 -1140 950 -1140 {
-lab=VDD}
+lab=VSS}
 N 1050 -1140 1080 -1140 {
-lab=VDD}
+lab=VSS}
 C {iopin.sym} 1100 -1060 1 0 {name=p1 lab=I_in_neg}
 C {iopin.sym} 900 -1060 1 0 {name=p2 lab=I_in_pos
 }
@@ -34,6 +34,7 @@ L=20e-6
 model=ppolyf_u_1k
 spiceprefix=X
 m=1}
-C {lab_pin.sym} 950 -1140 1 0 {name=p3 sig_type=std_logic lab=VDD}
+C {lab_pin.sym} 950 -1140 1 0 {name=p3 sig_type=std_logic lab=VSS}
 C {iopin.sym} 810 -1230 0 1 {name=p4 lab=VDD}
-C {lab_pin.sym} 1050 -1140 1 0 {name=p5 sig_type=std_logic lab=VDD}
+C {lab_pin.sym} 1050 -1140 1 0 {name=p5 sig_type=std_logic lab=VSS}
+C {iopin.sym} 810 -1050 0 1 {name=p6 lab=VSS}
