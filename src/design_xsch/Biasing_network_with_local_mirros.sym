@@ -4,11 +4,11 @@ G {}
 K {type=subcircuit
 format="@name @pinlist @symname pmos_l_ref=@pmos_l_ref pmos_w_ref=@pmos_w_ref pmos_l_mir=@pmos_l_mir pmos_w_mir=@pmos_w_mir nmos_l_ref_1=@nmos_l_ref_1 nmos_w_ref_1=@nmos_w_ref_1 nmos_nf_ref_1=@nmos_nf_ref_1 nmos_l_mir_1=@nmos_l_mir_1 nmos_w_mir_1=@nmos_w_mir_1 nmos_nf_mir_1=@nmos_nf_mir_1 nmos_l_ref_2=@nmos_l_ref_2 nmos_w_ref_2=@nmos_w_ref_2 nmos_nf_ref_2=@nmos_nf_ref_2 nmos_l_mir_2=@nmos_l_mir_2 nmos_w_mir_2=@nmos_w_mir_2 nmos_nf_mir_2=@nmos_nf_mir_2 nmos_l_ref_3=@nmos_l_ref_3 nmos_w_ref_3=@nmos_w_ref_3 nmos_nf_ref_3=@nmos_nf_ref_3 nmos_l_mir_3=@nmos_l_mir_3 nmos_w_mir_3=@nmos_w_mir_3 nmos_nf_mir_3=@nmos_nf_mir_3 nmos_l_ref_4=@nmos_l_ref_4 nmos_w_ref_4=@nmos_w_ref_4 nmos_nf_ref_4=@nmos_nf_ref_4 nmos_l_mir_4=@nmos_l_mir_4 nmos_w_mir_4=@nmos_w_mir_4 nmos_nf_mir_4=@nmos_nf_mir_4"
 template="name=x1
-+ pmos_l_ref=0.4u pmos_w_ref=2u pmos_l_mir=0.4u pmos_w_mir=6u
-+ nmos_l_ref_1=1u nmos_w_ref_1=1.5u nmos_nf_ref_1=1 nmos_l_mir_1=1u nmos_w_mir_1=7.5u nmos_nf_mir_1=5
-+ nmos_l_ref_2=1u nmos_w_ref_2=1.5u nmos_nf_ref_2=1 nmos_l_mir_2=1u nmos_w_mir_2=7.5u nmos_nf_mir_2=5
-+ nmos_l_ref_3=1u nmos_w_ref_3=1.5u nmos_nf_ref_3=2 nmos_l_mir_3=1u nmos_w_mir_3=1.5u nmos_nf_mir_3=2
-+ nmos_l_ref_4=1u nmos_w_ref_4=1.5u nmos_nf_ref_4=1 nmos_l_mir_4=1u nmos_w_mir_4=15u nmos_nf_mir_4=10
+pmos_l_ref=0.4u pmos_w_ref=2u pmos_l_mir=0.4u pmos_w_mir=8u
+nmos_l_ref_1=1u nmos_w_ref_1=1.5u nmos_nf_ref_1=1 nmos_l_mir_1=1u nmos_w_mir_1=7.5u nmos_nf_mir_1=5
+nmos_l_ref_2=1u nmos_w_ref_2=1.5u nmos_nf_ref_2=1 nmos_l_mir_2=1u nmos_w_mir_2=7.5u nmos_nf_mir_2=5
+nmos_l_ref_3=1u nmos_w_ref_3=1.5u nmos_nf_ref_3=1 nmos_l_mir_3=1u nmos_w_mir_3=6u nmos_nf_mir_3=4
+nmos_l_ref_4=1u nmos_w_ref_4=1.5u nmos_nf_ref_4=1 nmos_l_mir_4=1u nmos_w_mir_4=15u nmos_nf_mir_4=10
 "}
 V {}
 S {}

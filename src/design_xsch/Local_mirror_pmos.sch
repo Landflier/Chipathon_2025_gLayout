@@ -96,7 +96,7 @@ ad="'int((nf+1)/2) * W/nf * 0.18u'"
 pd="'2*int((nf+1)/2) * (W/nf + 0.18u)'"
 as="'int((nf+2)/2) * W/nf * 0.18u'"
 ps="'2*int((nf+2)/2) * (W/nf + 0.18u)'"
-nrd="'0.18u / W'" nrs="'0.18u / W'"
+nrd="'0.18u / w_mir'" nrs="'0.18u / W'"
 sa=0 sb=0 sd=0
 model=pfet_03v3
 spiceprefix=X
