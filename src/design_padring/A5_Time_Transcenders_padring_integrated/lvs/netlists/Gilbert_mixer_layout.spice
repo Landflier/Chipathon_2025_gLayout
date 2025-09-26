@@ -294,8 +294,8 @@ XRF_diff_pair$1_0 RF_diff_pair$1_0/a_3384_n849# RF_diff_pair$1_0/a_3440_n321# RF
 
 .subckt Gilbert_mixer_layout VSS VDD I_bias V_LO_b V_RF_b V_IF_out V_LO V_RF
 XDegeneration_resistor_0 VDD m3_447543_97161# m3_436631_97159# Degeneration_resistor
-Xppolyf_u_high_Rs_resistor$1_0 m3_448977_101781# VDD m3_448551_101181# VDD VSS ppolyf_u_high_Rs_resistor$1
-X4t-ota_0 VDD m3_448551_101181# m3_454799_105309# m3_448977_101781# V_IF_out VSS x4t-ota
+Xppolyf_u_high_Rs_resistor$1_0 m3_448477_101781# VDD m3_448051_101181# VDD VSS ppolyf_u_high_Rs_resistor$1
+X4t-ota_0 VDD m3_448051_101181# m3_454799_105309# m3_448477_101781# V_IF_out VSS x4t-ota
 Xio_secondary_5p0_array_0 V_LO VDD VDD V_RF m3_481277_78532# VDD m3_459617_77034#
 + m3_502897_84306# V_LO_b VDD m3_402897_80642# V_RF_b VDD I_bias VSS m3_424557_78204#
 + io_secondary_5p0_array
@@ -303,6 +303,6 @@ XBiasing_network_with_local_mirror_0 m3_454799_105309# m3_477022_91134# m3_47702
 + VDD m3_447543_97161# m3_477022_91134# m3_477022_91134# m3_436631_97159# V_IF_out
 + m3_477022_91134# m3_502897_84306# VSS Biasing_network_with_local_mirror
 XGilbert_mixer_interdigited_0 m3_459617_77034# m3_424557_78204# m3_481277_78532# m3_436631_97159#
-+ m3_402897_80642# m3_448977_101781# m3_448551_101181# m3_447543_97161# VSS Gilbert_mixer_interdigited
++ m3_402897_80642# m3_448477_101781# m3_448051_101181# m3_447543_97161# VSS Gilbert_mixer_interdigited
 .ends
 
