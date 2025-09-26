@@ -3,7 +3,12 @@ v {xschem version=3.4.5 file_version=1.2
 G {}
 K {type=subcircuit
 format="@name @pinlist @symname w_ref=@w_ref l_ref=@l_ref w_mir=@w_mir l_mir=@l_mir"
-template="name=x1"
+template="name=x1
++ l_ref=0.22u w_ref=0.28u nf_ref=1 l_mir=0.22u w_mir=0.28u nf_mir=1
+"
+
+
+
 }
 V {}
 S {}
