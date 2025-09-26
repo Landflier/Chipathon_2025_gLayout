@@ -5,7 +5,7 @@
 magic -rcfile $PDK_ROOT/$PDK/libs.tech/magic/$PDK.magicrc -dnull -noconsole << 'EOF'
 gds readonly false
 gds rescale true
-gds read secondary_ESD.gds
+gds read ../secondary_ESD.gds
 
 # Check what cells are available and load the flattened one
 cellname list allcells
