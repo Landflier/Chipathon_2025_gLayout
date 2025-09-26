@@ -313,13 +313,13 @@ XDegeneration_resistor_0 VDD m3_447543_97161# m3_436631_97159# Degeneration_resi
 Xppolyf_u_high_Rs_resistor$1_0 m3_448477_101781# VDD m3_448051_101181# VDD VSS ppolyf_u_high_Rs_resistor$1
 X4t-ota_0 VDD m3_448051_101181# m3_452279_105299# m3_448477_101781# via_dev$16_0/m2_0_0#
 + VSS x4t-ota
-Xio_secondary_5p0_array_0 V_LO VDD VDD V_RF m3_481277_78532# VDD m3_459617_77034#
-+ m3_502897_84306# V_LO_b VDD m3_402897_80642# V_RF_b VDD I_bias VSS m3_424557_78204#
+Xio_secondary_5p0_array_0 V_LO VDD VDD V_RF m3_481277_88199# VDD m3_459617_88058#
++ m3_502897_88167# V_LO_b VDD m3_402897_88203# V_RF_b VDD I_bias VSS m3_424557_88069#
 + io_secondary_5p0_array
 XBiasing_network_with_local_mirror_0 m3_452279_105299# m3_477022_91134# m3_477022_91134#
 + VDD m3_447543_97161# m3_452279_105299# m3_477022_91134# m3_477022_91134# m3_436631_97159#
-+ V_IF_out m3_477022_91134# m3_502897_84306# VSS Biasing_network_with_local_mirror
-XGilbert_mixer_interdigited_0 m3_459617_77034# m3_424557_78204# m3_481277_78532# m3_436631_97159#
-+ m3_402897_80642# m3_448477_101781# m3_448051_101181# m3_447543_97161# VSS Gilbert_mixer_interdigited
++ V_IF_out m3_477022_91134# m3_502897_88167# VSS Biasing_network_with_local_mirror
+XGilbert_mixer_interdigited_0 m3_459617_88058# m3_424557_88069# m3_481277_88199# m3_436631_97159#
++ m3_402897_88203# m3_448477_101781# m3_448051_101181# m3_447543_97161# VSS Gilbert_mixer_interdigited
 .ends
 
