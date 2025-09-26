@@ -1,5 +1,19 @@
 * NGSPICE file created from Gilbert_mixer_layout.ext - technology: gf180mcuD
 
+.subckt nfet_03v3_N8FQLR a_n372_n200# a_n436_n292# a_n116_220# a_n516_n163# a_n655_n527#
+X0 a_n372_n200# a_n436_n292# a_n516_n163# a_n655_n527# nfet_03v3 ad=0.52p pd=2.52u as=0.85595p ps=4.88u w=2u l=0.28u
+X1 a_n516_n163# a_n116_220# a_n436_n292# a_n655_n527# nfet_03v3 ad=0.52p pd=2.52u as=0.52p ps=2.52u w=2u l=0.28u
+X2 a_n516_n163# a_n436_n292# a_n372_n200# a_n655_n527# nfet_03v3 ad=0.85595p pd=4.88u as=0.52p ps=2.52u w=2u l=0.28u
+X3 a_n372_n200# a_n436_n292# a_n516_n163# a_n655_n527# nfet_03v3 ad=0.52p pd=2.52u as=0.52p ps=2.52u w=2u l=0.28u
+X4 a_n516_n163# a_n436_n292# a_n372_n200# a_n655_n527# nfet_03v3 ad=0.52p pd=2.52u as=0.52p ps=2.52u w=2u l=0.28u
+X5 a_n436_n292# a_n116_220# a_n516_n163# a_n655_n527# nfet_03v3 ad=0.52p pd=2.52u as=0.52p ps=2.52u w=2u l=0.28u
+.ends
+
+.subckt Output_stage m2_984_n286# m2_451_n496# m1_n158_415# m2_n928_338# m2_1009_459#
+Xnfet_03v3_N8FQLR_0 m2_1009_459# m2_451_n496# m2_n928_338# m2_984_n286# m1_n158_415#
++ nfet_03v3_N8FQLR
+.ends
+
 .subckt ppolyf_u_95K9DY a_n100_n502# w_n316_n718# a_n100_400#
 X0 a_n100_400# a_n100_n502# w_n316_n718# ppolyf_u r_width=1u r_length=4u
 .ends
@@ -211,20 +225,20 @@ X3 a_n1084_n809# a_n824_n495# a_n824_n495# a_n1084_n809# nfet_03v3 ad=0.345p pd=
 X0 m4_n500_n500# m4_n620_n620# cap_mim_2f0_m4m5_noshield c_width=5u c_length=5u
 .ends
 
-.subckt nmos3_Cmirror_with_decap via_array_6f2c13fe$5$1_0/m2_n100_n100# L_route_b498a5d1$1_0/m2_n5562_n435#
-+ VSUBS
-Xcmirror_interdigitized$3$1_0 L_route_b498a5d1$1_0/m2_n5562_n435# VSUBS via_array_6f2c13fe$5$1_0/m2_n100_n100#
+.subckt nmos3_Cmirror_with_decap straight_route_40c7a050$1_0/m2_n824_185# L_route_b498a5d1$1_0/m2_n5562_n435#
++ via_array_6f2c13fe$5$1_0/m2_2420_n100# VSUBS
+Xcmirror_interdigitized$3$1_0 L_route_b498a5d1$1_0/m2_n5562_n435# VSUBS straight_route_40c7a050$1_0/m2_n824_185#
 + cmirror_interdigitized$3$1
 XUnnamed_34e3354a$1$1_0 L_route_b498a5d1$1_0/m2_n5562_n435# VSUBS Unnamed_34e3354a$1$1
 .ends
 
-.subckt Biasing_network_with_local_mirror nmos3_Cmirror_with_decap_0/via_array_6f2c13fe$5$1_0/m2_n100_n100#
+.subckt Biasing_network_with_local_mirror nmos3_Cmirror_with_decap_0/straight_route_40c7a050$1_0/m2_n824_185#
 + nmos4_Cmirror_with_decap$1_0/Unnamed_5b1479df_0/m4_n620_n620# nmos2_Cmirror_with_decap_0/Unnamed_e1f3752b$1$1_0/m4_n620_n620#
 + pmos_Cmirror_with_decap_0/Unnamed_df7b41fc$1$1_0/m4_n500_n500# nmos2_Cmirror_with_decap_0/via_array_6f2c13fe$3$3_0/m2_n100_n100#
-+ nmos1_Cmirror_with_decap_0/L_route_9825ad4f$2_0/m2_n4400_n435# nmos3_Cmirror_with_decap_0/L_route_b498a5d1$1_0/m2_n5562_n435#
-+ nmos1_Cmirror_with_decap_0/via_array_6f2c13fe$1$2$1_0/m2_n100_n100# nmos4_Cmirror_with_decap$1_0/via_array_6f2c13fe$7_0/m2_n100_n100#
-+ pmos_Cmirror_with_decap_0/cmirror_interdigitized$5_0/a_n1412_n50# pmos_Cmirror_with_decap_0/Unnamed_df7b41fc$1$1_0/m4_n620_n620#
-+ VSUBS
++ nmos3_Cmirror_with_decap_0/via_array_6f2c13fe$5$1_0/m2_2420_n100# nmos1_Cmirror_with_decap_0/L_route_9825ad4f$2_0/m2_n4400_n435#
++ nmos3_Cmirror_with_decap_0/L_route_b498a5d1$1_0/m2_n5562_n435# nmos1_Cmirror_with_decap_0/via_array_6f2c13fe$1$2$1_0/m2_n100_n100#
++ nmos4_Cmirror_with_decap$1_0/via_array_6f2c13fe$7_0/m2_n100_n100# pmos_Cmirror_with_decap_0/cmirror_interdigitized$5_0/a_n1412_n50#
++ pmos_Cmirror_with_decap_0/Unnamed_df7b41fc$1$1_0/m4_n620_n620# VSUBS
 Xnmos4_Cmirror_with_decap$1_0 nmos4_Cmirror_with_decap$1_0/via_array_6f2c13fe$7_0/m2_n100_n100#
 + nmos4_Cmirror_with_decap$1_0/Unnamed_5b1479df_0/m4_n620_n620# VSUBS nmos4_Cmirror_with_decap$1
 Xnmos2_Cmirror_with_decap_0 nmos2_Cmirror_with_decap_0/via_array_6f2c13fe$3$3_0/m2_n100_n100#
@@ -234,8 +248,9 @@ Xpmos_Cmirror_with_decap_0 pmos_Cmirror_with_decap_0/Unnamed_df7b41fc$1$1_0/m4_n
 + pmos_Cmirror_with_decap
 Xnmos1_Cmirror_with_decap_0 nmos1_Cmirror_with_decap_0/L_route_9825ad4f$2_0/m2_n4400_n435#
 + nmos1_Cmirror_with_decap_0/via_array_6f2c13fe$1$2$1_0/m2_n100_n100# VSUBS nmos1_Cmirror_with_decap
-Xnmos3_Cmirror_with_decap_0 nmos3_Cmirror_with_decap_0/via_array_6f2c13fe$5$1_0/m2_n100_n100#
-+ nmos3_Cmirror_with_decap_0/L_route_b498a5d1$1_0/m2_n5562_n435# VSUBS nmos3_Cmirror_with_decap
+Xnmos3_Cmirror_with_decap_0 nmos3_Cmirror_with_decap_0/straight_route_40c7a050$1_0/m2_n824_185#
++ nmos3_Cmirror_with_decap_0/L_route_b498a5d1$1_0/m2_n5562_n435# nmos3_Cmirror_with_decap_0/via_array_6f2c13fe$5$1_0/m2_2420_n100#
++ VSUBS nmos3_Cmirror_with_decap
 .ends
 
 .subckt LO_diff_pairs_interdigitized a_n2222_n400# a_n2878_n1500# a_n2578_n448# a_n2822_n400#
@@ -293,15 +308,17 @@ XRF_diff_pair$1_0 RF_diff_pair$1_0/a_3384_n849# RF_diff_pair$1_0/a_3440_n321# RF
 .ends
 
 .subckt Gilbert_mixer_layout VSS VDD I_bias V_LO_b V_RF_b V_IF_out V_LO V_RF
+XOutput_stage_0 VDD V_IF_out VSS via_dev$16_0/m2_0_0# V_IF_out Output_stage
 XDegeneration_resistor_0 VDD m3_447543_97161# m3_436631_97159# Degeneration_resistor
 Xppolyf_u_high_Rs_resistor$1_0 m3_448477_101781# VDD m3_448051_101181# VDD VSS ppolyf_u_high_Rs_resistor$1
-X4t-ota_0 VDD m3_448051_101181# m3_454799_105309# m3_448477_101781# V_IF_out VSS x4t-ota
+X4t-ota_0 VDD m3_448051_101181# m3_452279_105299# m3_448477_101781# via_dev$16_0/m2_0_0#
++ VSS x4t-ota
 Xio_secondary_5p0_array_0 V_LO VDD VDD V_RF m3_481277_78532# VDD m3_459617_77034#
 + m3_502897_84306# V_LO_b VDD m3_402897_80642# V_RF_b VDD I_bias VSS m3_424557_78204#
 + io_secondary_5p0_array
-XBiasing_network_with_local_mirror_0 m3_454799_105309# m3_477022_91134# m3_477022_91134#
-+ VDD m3_447543_97161# m3_477022_91134# m3_477022_91134# m3_436631_97159# V_IF_out
-+ m3_477022_91134# m3_502897_84306# VSS Biasing_network_with_local_mirror
+XBiasing_network_with_local_mirror_0 m3_452279_105299# m3_477022_91134# m3_477022_91134#
++ VDD m3_447543_97161# m3_452279_105299# m3_477022_91134# m3_477022_91134# m3_436631_97159#
++ V_IF_out m3_477022_91134# m3_502897_84306# VSS Biasing_network_with_local_mirror
 XGilbert_mixer_interdigited_0 m3_459617_77034# m3_424557_78204# m3_481277_78532# m3_436631_97159#
 + m3_402897_80642# m3_448477_101781# m3_448051_101181# m3_447543_97161# VSS Gilbert_mixer_interdigited
 .ends

@@ -95,6 +95,29 @@ VSUBS                                      |VSS **Mismatch**
 ---------------------------------------------------------------------------------------
 Cell pin lists for io_secondary_5p0 and io_secondary_5p0 altered to match.
 Device classes io_secondary_5p0 and io_secondary_5p0 are equivalent.
+Flattening unmatched subcell nfet_03v3_N8FQLR in circuit Output_stage (0)(1 instance)
+
+Class Output_stage (0):  Merged 4 parallel devices.
+Subcircuit summary:
+Circuit 1: Output_stage                    |Circuit 2: Output_stage                    
+-------------------------------------------|-------------------------------------------
+nfet_03v3 (6->2)                           |nfet_03v3 (2)                              
+Number of devices: 2                       |Number of devices: 2                       
+Number of nets: 5                          |Number of nets: 5                          
+---------------------------------------------------------------------------------------
+Netlists match uniquely.
+
+Subcircuit pins:
+Circuit 1: Output_stage                    |Circuit 2: Output_stage                    
+-------------------------------------------|-------------------------------------------
+m2_984_n286#                               |VDD **Mismatch**                           
+m2_451_n496#                               |I_bias **Mismatch**                        
+m1_n158_415#                               |VSS **Mismatch**                           
+m2_n928_338#                               |V_in **Mismatch**                          
+m2_1009_459#                               |V_out_biasing **Mismatch**                 
+---------------------------------------------------------------------------------------
+Cell pin lists for Output_stage and Output_stage altered to match.
+Device classes Output_stage and Output_stage are equivalent.
 Flattening unmatched subcell Degeneration_resistor in circuit Gilbert_mixer_layout (0)(1 instance)
 Flattening unmatched subcell ppolyf_u_95K9DY in circuit Gilbert_mixer_layout (0)(1 instance)
 Flattening unmatched subcell ppolyf_u_high_Rs_resistor$1 in circuit Gilbert_mixer_layout (0)(1 instance)
@@ -133,14 +156,15 @@ Class Gilbert_mixer_schematic (1):  Merged 6 parallel devices.
 Subcircuit summary:
 Circuit 1: Gilbert_mixer_layout            |Circuit 2: Gilbert_mixer_schematic         
 -------------------------------------------|-------------------------------------------
+Output_stage (1)                           |Output_stage (1)                           
 ppolyf_u (1)                               |ppolyf_u (1)                               
 ppolyf_u_1k (2)                            |ppolyf_u_1k (2)                            
 pfet_03v3 (18->4)                          |pfet_03v3 (4)                              
 nfet_03v3 (88->14)                         |nfet_03v3 (20->14)                         
 io_secondary_5p0 (5)                       |io_secondary_5p0 (5)                       
 cap_mim_2f0_m4m5_noshield (5->2)           |cap_mim_2f0fF (5->2)                       
-Number of devices: 28                      |Number of devices: 28                      
-Number of nets: 22                         |Number of nets: 22                         
+Number of devices: 29                      |Number of devices: 29                      
+Number of nets: 23                         |Number of nets: 23                         
 ---------------------------------------------------------------------------------------
 Resolving symmetries by property value.
 Resolving symmetries by pin name.

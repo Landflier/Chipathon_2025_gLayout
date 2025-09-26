@@ -13,8 +13,9 @@ XIO3 VDD net5 V_LO_b VSS io_secondary_5p0
 XIO4 VDD net7 V_RF VSS io_secondary_5p0
 XIO5 VDD net8 V_RF_b VSS io_secondary_5p0
 XR1 net2 net1 VDD ppolyf_u r_width=1e-6 r_length=4e-6 m=1
-x_Amplifier VDD V_IF_out net3 net4 net9 VSS 5T-OTA-buffer_no_hierarchy
+x_Amplifier VDD net11 net3 net4 net9 VSS 5T-OTA-buffer_no_hierarchy
 x2 net3 net4 VDD VSS Gilbert_cell_hierarchal_loading_stage
+x4 VDD net11 V_IF_out V_IF_out VSS Output_stage
 .ends
 
 * expanding   symbol:  /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Gilbert_cell_hierarchal_mixing_stage.sym # of pins=9
@@ -98,6 +99,18 @@ XM2 Vout net1 VDD VDD pfet_03v3 L=0.28u W=0.3u nf=1 ad='int((nf+1)/2) * W/nf * 0
 *.PININFO I_in_neg:B I_in_pos:B VDD:B VSS:B
 XR_load_2 I_in_pos VDD VSS ppolyf_u_1k r_width=1e-6 r_length=20e-6 m=1
 XR_load_1 I_in_neg VDD VSS ppolyf_u_1k r_width=1e-6 r_length=20e-6 m=1
+.ends
+
+
+* expanding   symbol:  /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Output_stage.sym # of pins=5
+** sym_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Output_stage.sym
+** sch_path: /home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Output_stage.sch
+.subckt Output_stage VDD V_in V_out_biasing I_bias VSS
+*.PININFO VDD:B V_in:B I_bias:B V_out_biasing:B VSS:B
+XM1 VDD V_in I_bias VSS nfet_03v3 L=0.28u W=4u nf=2 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
++ ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
+XM2 VDD I_bias V_out_biasing VSS nfet_03v3 L=0.28u W=8u nf=4 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
++ ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
 .ends
 
 

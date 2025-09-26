@@ -93,10 +93,6 @@ N 1510 -1720 1520 -1720 {
 lab=#net4}
 N 1310 -1760 1520 -1760 {
 lab=#net3}
-N 2160 -1740 2200 -1740 {
-lab=V_IF_out}
-N 2020 -1740 2160 -1740 {
-lab=V_IF_out}
 N 2390 -1620 2480 -1620 {
 lab=V_IF_out}
 N 2020 -1200 2020 -870 {
@@ -109,15 +105,7 @@ N 1380 -1020 1380 -960 {
 lab=#net1}
 N 1440 -1020 1440 -960 {
 lab=#net2}
-N 2200 -1740 2390 -1740 {
-lab=V_IF_out}
-N 2390 -1740 2390 -1630 {
-lab=V_IF_out}
 N 2020 -1200 2110 -1200 {
-lab=V_IF_out}
-N 2390 -1630 2390 -1620 {
-lab=V_IF_out}
-N 2390 -1630 2390 -1200 {
 lab=V_IF_out}
 N 2110 -1200 2390 -1200 {
 lab=V_IF_out}
@@ -174,7 +162,7 @@ lab=#net9}
 N 1780 -1660 1780 -1640 {
 lab=#net9}
 N 1880 -1740 2020 -1740 {
-lab=V_IF_out}
+lab=#net11}
 N 1640 -1760 1660 -1760 {
 lab=#net3}
 N 1640 -1720 1660 -1720 {
@@ -191,6 +179,20 @@ N 1200 -1820 1230 -1820 {
 lab=VSS}
 N 1200 -1820 1200 -1800 {
 lab=VSS}
+N 2110 -1660 2110 -1200 {
+lab=V_IF_out}
+N 2210 -1660 2390 -1660 {
+lab=V_IF_out}
+N 2390 -1660 2390 -1200 {
+lab=V_IF_out}
+N 2000 -1690 2020 -1690 {
+lab=#net12}
+N 2000 -1690 2000 -1660 {
+lab=#net12}
+N 2000 -1780 2020 -1780 {
+lab=VDD}
+N 2000 -1810 2000 -1780 {
+lab=VDD}
 C {title-2.sym} 0 0 0 0 {name=l9 author="Time Transcenders" lock=true rev=1.0 page=1}
 C {ipin.sym} 610 -1680 2 1 {name=p1 lab=V_LO}
 C {ipin.sym} 610 -1510 2 1 {name=p2 lab=V_LO_b
@@ -254,3 +256,6 @@ C {lab_pin.sym} 1710 -1590 0 0 {name=p22 sig_type=std_logic lab=VSS}
 C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Gilbert_cell_hierarchal_loading_stage.sym} 1410 -1840 0 0 {name=x2}
 C {lab_pin.sym} 1200 -1950 0 0 {name=p24 sig_type=std_logic lab=VDD}
 C {lab_pin.sym} 1200 -1800 0 0 {name=p25 sig_type=std_logic lab=VSS}
+C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Output_stage.sym} 2150 -1720 0 0 {name=x4}
+C {lab_pin.sym} 2000 -1810 0 0 {name=p26 sig_type=std_logic lab=VDD}
+C {lab_pin.sym} 2000 -1660 0 0 {name=p27 sig_type=std_logic lab=VSS}
