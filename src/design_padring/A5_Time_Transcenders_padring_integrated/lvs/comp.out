@@ -69,32 +69,6 @@ Circuit 1: ppolyf_u_1k                     |Circuit 2: ppolyf_u_1k
 ---------------------------------------------------------------------------------------
 Cell pin lists are equivalent.
 Device classes ppolyf_u_1k and ppolyf_u_1k are equivalent.
-Flattening unmatched subcell ppolyf_u_9H3LNU in circuit io_secondary_5p0 (0)(1 instance)
-Flattening unmatched subcell diode_nd2ps_06v0_MV3SZ3 in circuit io_secondary_5p0 (0)(1 instance)
-Flattening unmatched subcell diode_pd2nw_06v0_5DG9HC in circuit io_secondary_5p0 (0)(1 instance)
-
-Class io_secondary_5p0 (0):  Merged 6 parallel devices.
-Subcircuit summary:
-Circuit 1: io_secondary_5p0                |Circuit 2: io_secondary_5p0                
--------------------------------------------|-------------------------------------------
-ppolyf_u (1)                               |ppolyf_u (1)                               
-diode_nd2ps_06v0 (4->1)                    |diode_nd2ps_06v0 (4->1)                    
-diode_pd2nw_06v0 (4->1)                    |diode_pd2nw_06v0 (4->1)                    
-Number of devices: 3                       |Number of devices: 3                       
-Number of nets: 4                          |Number of nets: 4                          
----------------------------------------------------------------------------------------
-Netlists match uniquely.
-
-Subcircuit pins:
-Circuit 1: io_secondary_5p0                |Circuit 2: io_secondary_5p0                
--------------------------------------------|-------------------------------------------
-m1_n6440_11450#                            |VDD **Mismatch**                           
-m1_n5943_7732#                             |to_gate **Mismatch**                       
-m1_6880_n1240#                             |ASIG5V **Mismatch**                        
-VSUBS                                      |VSS **Mismatch**                           
----------------------------------------------------------------------------------------
-Cell pin lists for io_secondary_5p0 and io_secondary_5p0 altered to match.
-Device classes io_secondary_5p0 and io_secondary_5p0 are equivalent.
 Flattening unmatched subcell nfet_03v3_N8FQLR in circuit Output_stage (0)(1 instance)
 
 Class Output_stage (0):  Merged 4 parallel devices.
@@ -125,6 +99,10 @@ Flattening unmatched subcell x4t-ota in circuit Gilbert_mixer_layout (0)(1 insta
 Flattening unmatched subcell pfet_03v3_RFU83T in circuit Gilbert_mixer_layout (0)(1 instance)
 Flattening unmatched subcell nfet_03v3_AZGML9 in circuit Gilbert_mixer_layout (0)(1 instance)
 Flattening unmatched subcell io_secondary_5p0_array in circuit Gilbert_mixer_layout (0)(1 instance)
+Flattening unmatched subcell io_secondary_5p0$1 in circuit Gilbert_mixer_layout (0)(5 instances)
+Flattening unmatched subcell ppolyf_u_9H3LNU$1 in circuit Gilbert_mixer_layout (0)(5 instances)
+Flattening unmatched subcell diode_nd2ps_06v0_MV3SZ3$1 in circuit Gilbert_mixer_layout (0)(5 instances)
+Flattening unmatched subcell diode_pd2nw_06v0_5DG9HC$1 in circuit Gilbert_mixer_layout (0)(5 instances)
 Flattening unmatched subcell Biasing_network_with_local_mirror in circuit Gilbert_mixer_layout (0)(1 instance)
 Flattening unmatched subcell nmos4_Cmirror_with_decap$1 in circuit Gilbert_mixer_layout (0)(1 instance)
 Flattening unmatched subcell Unnamed_5b1479df in circuit Gilbert_mixer_layout (0)(1 instance)
@@ -148,22 +126,24 @@ Flattening unmatched subcell Gilbert_cell_hierarchal_mixing_stage in circuit Gil
 Flattening unmatched subcell Biasing_network_with_local_mirros in circuit Gilbert_mixer_schematic (1)(1 instance)
 Flattening unmatched subcell Local_mirror_pmos in circuit Gilbert_mixer_schematic (1)(1 instance)
 Flattening unmatched subcell Local_mirror_nmos in circuit Gilbert_mixer_schematic (1)(4 instances)
+Flattening unmatched subcell io_secondary_5p0 in circuit Gilbert_mixer_schematic (1)(5 instances)
 Flattening unmatched subcell 5T-OTA-buffer_no_hierarchy in circuit Gilbert_mixer_schematic (1)(1 instance)
 Flattening unmatched subcell Gilbert_cell_hierarchal_loading_stage in circuit Gilbert_mixer_schematic (1)(1 instance)
 
-Class Gilbert_mixer_layout (0):  Merged 91 parallel devices.
+Class Gilbert_mixer_layout (0):  Merged 121 parallel devices.
 Class Gilbert_mixer_schematic (1):  Merged 6 parallel devices.
 Subcircuit summary:
 Circuit 1: Gilbert_mixer_layout            |Circuit 2: Gilbert_mixer_schematic         
 -------------------------------------------|-------------------------------------------
 Output_stage (1)                           |Output_stage (1)                           
-ppolyf_u (1)                               |ppolyf_u (1)                               
+ppolyf_u (6)                               |ppolyf_u (6)                               
 ppolyf_u_1k (2)                            |ppolyf_u_1k (2)                            
 pfet_03v3 (18->4)                          |pfet_03v3 (4)                              
 nfet_03v3 (88->14)                         |nfet_03v3 (20->14)                         
-io_secondary_5p0 (5)                       |io_secondary_5p0 (5)                       
+diode_nd2ps_06v0 (20->5)                   |diode_nd2ps_06v0 (20->5)                   
+diode_pd2nw_06v0 (20->5)                   |diode_pd2nw_06v0 (20->5)                   
 cap_mim_2f0_m4m5_noshield (5->2)           |cap_mim_2f0fF (5->2)                       
-Number of devices: 29                      |Number of devices: 29                      
+Number of devices: 39                      |Number of devices: 39                      
 Number of nets: 23                         |Number of nets: 23                         
 ---------------------------------------------------------------------------------------
 Resolving symmetries by property value.
