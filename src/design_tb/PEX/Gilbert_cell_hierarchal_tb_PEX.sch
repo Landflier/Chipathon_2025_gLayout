@@ -110,14 +110,6 @@ N 660 -1940 660 -1910 {
 lab=VDD}
 N 660 -1910 750 -1910 {
 lab=VDD}
-N 640 -1490 730 -1490 {
-lab=V_LO_b}
-N 640 -1540 730 -1540 {
-lab=V_LO}
-N 640 -1440 730 -1440 {
-lab=V_RF}
-N 640 -1380 730 -1380 {
-lab=V_RF_b}
 N 670 -1350 730 -1350 {
 lab=GND}
 N 910 -1260 910 -1230 {
@@ -154,22 +146,10 @@ N 370 -830 400 -830 {
 lab=VDD}
 N 370 -860 370 -830 {
 lab=VDD}
-N 370 -570 400 -570 {
-lab=GND}
-N 370 -570 370 -540 {
-lab=GND}
 N 900 -1120 900 -1020 {
 lab=#net1}
 N 960 -1120 960 -1020 {
 lab=#net2}
-N 300 -670 300 -650 {
-lab=#net6}
-N 300 -670 400 -670 {
-lab=#net6}
-N 300 -570 370 -570 {
-lab=GND}
-N 300 -590 300 -570 {
-lab=GND}
 N 900 -960 900 -930 {
 lab=#net3}
 N 960 -960 960 -930 {
@@ -181,7 +161,7 @@ lab=V_out_p}
 N 1660 -1740 1700 -1740 {
 lab=V_out}
 N 1420 -1660 1420 -1580 {
-lab=#net7}
+lab=#net6}
 N 1520 -1740 1660 -1740 {
 lab=V_out}
 N 1300 -920 1360 -920 {
@@ -203,13 +183,13 @@ lab=V_out_n}
 N 1160 -1760 1300 -1760 {
 lab=V_out_p}
 N 1420 -1580 1420 -1360 {
-lab=#net7}
+lab=#net6}
 N 1420 -1300 1420 -920 {
 lab=#net5}
 N 1540 -870 1660 -870 {
-lab=#net8}
+lab=#net7}
 N 1660 -900 1660 -870 {
-lab=#net8}
+lab=#net7}
 N 1660 -990 1660 -960 {
 lab=V_out_loaded}
 N 1660 -990 1740 -990 {
@@ -241,6 +221,92 @@ lab=V_out_loaded}
 N 1890 -1250 1890 -1190 {
 lab=V_out_loaded}
 N 1660 -1690 1700 -1690 {
+lab=GND}
+N 130 -1680 160 -1680 {
+lab=V_LO}
+N 130 -1510 160 -1510 {
+lab=V_LO_b}
+N 130 -1140 160 -1140 {
+lab=V_RF_b}
+N 80 -670 110 -670 {
+lab=I_bias}
+N 270 -610 270 -600 {
+lab=GND}
+N 170 -1680 200 -1680 {
+lab=V_LO}
+N 170 -1320 200 -1320 {
+lab=V_RF}
+N 170 -1140 200 -1140 {
+lab=V_RF_b}
+N 270 -740 270 -730 {
+lab=VDD}
+N 320 -1210 320 -1200 {
+lab=VDD}
+N 320 -1390 320 -1380 {
+lab=VDD}
+N 320 -1580 320 -1570 {
+lab=VDD}
+N 320 -1750 320 -1740 {
+lab=VDD}
+N 320 -1080 320 -1070 {
+lab=GND}
+N 320 -1260 320 -1250 {
+lab=GND}
+N 320 -1450 320 -1440 {
+lab=GND}
+N 320 -1620 320 -1610 {
+lab=GND}
+N 160 -1680 170 -1680 {
+lab=V_LO}
+N 160 -1510 200 -1510 {
+lab=V_LO_b}
+N 130 -1320 170 -1320 {
+lab=V_RF}
+N 160 -1140 170 -1140 {
+lab=V_RF_b}
+N 110 -670 150 -670 {
+lab=I_bias}
+N 640 -1490 730 -1490 {
+lab=#net8}
+N 640 -1540 730 -1540 {
+lab=#net9}
+N 640 -1440 730 -1440 {
+lab=#net10}
+N 640 -1380 730 -1380 {
+lab=#net11}
+N 640 -1680 640 -1540 {
+lab=#net9}
+N 640 -1510 640 -1490 {
+lab=#net8}
+N 600 -1440 600 -1320 {
+lab=#net10}
+N 600 -1440 640 -1440 {
+lab=#net10}
+N 630 -1380 630 -1140 {
+lab=#net11}
+N 630 -1380 640 -1380 {
+lab=#net11}
+N 400 -1680 640 -1680 {
+lab=#net9}
+N 400 -1510 640 -1510 {
+lab=#net8}
+N 400 -1320 600 -1320 {
+lab=#net10}
+N 400 -1140 630 -1140 {
+lab=#net11}
+N 350 -670 400 -670 {
+lab=#net12}
+N 370 -570 400 -570 {
+lab=GND}
+N 170 -500 170 -470 {
+lab=I_bias}
+N 170 -410 170 -370 {
+lab=GND}
+N 710 -1820 750 -1820 {
+lab=GND}
+N 710 -1820 710 -1800 {
+lab=GND}
+N 370 -570 370 -550 {
 lab=GND}
 C {code.sym} 50 -190 0 0 {name=MODELS only_toplevel=true
 format="tcleval( @value )"
@@ -417,20 +483,12 @@ C {gnd.sym} 120 -2250 0 0 {name=l1 lab=GND}
 C {gnd.sym} 200 -2250 0 0 {name=l2 lab=GND}
 C {gnd.sym} 270 -2250 0 0 {name=l3 lab=GND}
 C {gnd.sym} 340 -2250 0 0 {name=l4 lab=GND}
-C {ipin.sym} 640 -1540 2 1 {name=p1 lab=V_LO}
-C {ipin.sym} 640 -1490 2 1 {name=p2 lab=V_LO_b
-}
-C {ipin.sym} 640 -1440 0 0 {name=p3 lab=V_RF}
-C {ipin.sym} 640 -1380 2 1 {name=p4 lab=V_RF_b
-}
-C {isource.sym} 300 -620 0 0 {name=I0 value=10u}
+C {isource.sym} 170 -440 0 0 {name=I0 value=10u}
 C {gnd.sym} 670 -1300 0 0 {name=l11 lab=GND}
 C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Gilbert_cell_hierarchal_loading_stage.sym} 930 -1840 0 0 {name=x_Loading_stage}
 C {vdd.sym} 660 -1940 0 0 {name=l5 lab=VDD}
 C {lab_pin.sym} 930 -1140 3 0 {name=p15 sig_type=std_logic lab=VDD}
-C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Biasing_network_with_local_mirros.sym} 660 -660 0 0 {name=x_Biasing_network}
 C {vdd.sym} 370 -860 0 0 {name=l12 lab=VDD}
-C {gnd.sym} 370 -540 0 0 {name=l13 lab=GND}
 C {ammeter.sym} 900 -990 0 0 {name=Vmeas savecurrent=true spice_ignore=0}
 C {ammeter.sym} 960 -990 0 0 {name=Vmeas1 savecurrent=true spice_ignore=0}
 C {opin.sym} 2160 -1620 0 0 {name=p5 lab=V_out_loaded}
@@ -459,3 +517,46 @@ model=ppolyf_u
 spiceprefix=X
 m=1
 hide_texts=True}
+C {ipin.sym} 130 -1680 2 1 {name=p13 lab=V_LO}
+C {ipin.sym} 130 -1510 2 1 {name=p14 lab=V_LO_b
+}
+C {ipin.sym} 130 -1320 0 0 {name=p16 lab=V_RF}
+C {ipin.sym} 130 -1140 2 1 {name=p17 lab=V_RF_b
+}
+C {ipin.sym} 80 -670 2 1 {name=p18 lab=I_bias
+}
+C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_padring/Chipathon2025_pads/xschem/symbols/io_secondary_5p0/io_secondary_5p0.sym} 400 -1600 0 1 {name=IO1
+spiceprefix=X
+}
+C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_padring/Chipathon2025_pads/xschem/symbols/io_secondary_5p0/io_secondary_5p0.sym} 350 -590 0 1 {name=IO2
+spiceprefix=X
+}
+C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_padring/Chipathon2025_pads/xschem/symbols/io_secondary_5p0/io_secondary_5p0.sym} 400 -1430 0 1 {name=IO3
+spiceprefix=X
+}
+C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_padring/Chipathon2025_pads/xschem/symbols/io_secondary_5p0/io_secondary_5p0.sym} 400 -1240 0 1 {name=IO4
+spiceprefix=X
+}
+C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_padring/Chipathon2025_pads/xschem/symbols/io_secondary_5p0/io_secondary_5p0.sym} 400 -1060 0 1 {name=IO5
+spiceprefix=X
+}
+C {lab_pin.sym} 270 -740 0 0 {name=p19 sig_type=std_logic lab=VDD}
+C {lab_pin.sym} 320 -1210 0 0 {name=p20 sig_type=std_logic lab=VDD}
+C {lab_pin.sym} 320 -1390 0 0 {name=p21 sig_type=std_logic lab=VDD}
+C {lab_pin.sym} 320 -1580 0 0 {name=p22 sig_type=std_logic lab=VDD}
+C {lab_pin.sym} 320 -1750 0 0 {name=p23 sig_type=std_logic lab=VDD}
+C {lab_pin.sym} 170 -500 0 0 {name=p2 sig_type=std_logic lab=I_bias}
+C {gnd.sym} 170 -370 0 0 {name=l13 lab=GND}
+C {gnd.sym} 320 -1070 0 0 {name=l15 lab=GND}
+C {gnd.sym} 320 -1250 0 0 {name=l18 lab=GND}
+C {gnd.sym} 320 -1440 0 0 {name=l19 lab=GND}
+C {gnd.sym} 320 -1610 0 0 {name=l20 lab=GND}
+C {gnd.sym} 710 -1800 0 0 {name=l21 lab=GND}
+C {gnd.sym} 370 -550 0 0 {name=l22 lab=GND}
+C {gnd.sym} 270 -600 0 0 {name=l23 lab=GND}
+C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Biasing_network_with_local_mirros.sym} 660 -660 0 0 {name=x3
+pmos_l_ref=0.4u pmos_w_ref=2u pmos_l_mir=0.4u pmos_w_mir=8u
+nmos_l_ref_1=1u nmos_w_ref_1=1.5u nmos_nf_ref_1=1 nmos_l_mir_1=1u nmos_w_mir_1=7.5u nmos_nf_mir_1=5
+nmos_l_ref_2=1u nmos_w_ref_2=1.5u nmos_nf_ref_2=1 nmos_l_mir_2=1u nmos_w_mir_2=7.5u nmos_nf_mir_2=5
+nmos_l_ref_3=1u nmos_w_ref_3=1.5u nmos_nf_ref_3=1 nmos_l_mir_3=1u nmos_w_mir_3=6u nmos_nf_mir_3=4
+nmos_l_ref_4=1u nmos_w_ref_4=1.5u nmos_nf_ref_4=1 nmos_l_mir_4=1u nmos_w_mir_4=15u nmos_nf_mir_4=10}
