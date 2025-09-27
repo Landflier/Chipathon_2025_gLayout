@@ -69,7 +69,7 @@ Circuit 1: ppolyf_u_1k                     |Circuit 2: ppolyf_u_1k
 ---------------------------------------------------------------------------------------
 Cell pin lists are equivalent.
 Device classes ppolyf_u_1k and ppolyf_u_1k are equivalent.
-Flattening unmatched subcell nfet_03v3_N8FQLR in circuit Output_stage (0)(1 instance)
+Flattening unmatched subcell nfet_03v3_N8FQLR$1 in circuit Output_stage (0)(1 instance)
 
 Class Output_stage (0):  Merged 4 parallel devices.
 Subcircuit summary:
@@ -87,7 +87,7 @@ Circuit 1: Output_stage                    |Circuit 2: Output_stage
 m2_984_n286#                               |VDD **Mismatch**                           
 m2_451_n496#                               |I_bias **Mismatch**                        
 m1_n158_415#                               |VSS **Mismatch**                           
-m2_n928_338#                               |V_in **Mismatch**                          
+m2_n249_338#                               |V_in **Mismatch**                          
 m2_1009_459#                               |V_out_biasing **Mismatch**                 
 ---------------------------------------------------------------------------------------
 Cell pin lists for Output_stage and Output_stage altered to match.

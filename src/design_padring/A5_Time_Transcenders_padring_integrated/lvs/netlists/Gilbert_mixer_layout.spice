@@ -1,6 +1,6 @@
 * NGSPICE file created from Gilbert_mixer_layout.ext - technology: gf180mcuD
 
-.subckt nfet_03v3_N8FQLR a_n372_n200# a_n436_n292# a_n116_220# a_n516_n163# a_n655_n527#
+.subckt nfet_03v3_N8FQLR$1 a_n372_n200# a_n436_n292# a_n116_220# a_n516_n163# a_n655_n527#
 X0 a_n372_n200# a_n436_n292# a_n516_n163# a_n655_n527# nfet_03v3 ad=0.52p pd=2.52u as=0.85595p ps=4.88u w=2u l=0.28u
 X1 a_n516_n163# a_n116_220# a_n436_n292# a_n655_n527# nfet_03v3 ad=0.52p pd=2.52u as=0.52p ps=2.52u w=2u l=0.28u
 X2 a_n516_n163# a_n436_n292# a_n372_n200# a_n655_n527# nfet_03v3 ad=0.85595p pd=4.88u as=0.52p ps=2.52u w=2u l=0.28u
@@ -9,9 +9,9 @@ X4 a_n516_n163# a_n436_n292# a_n372_n200# a_n655_n527# nfet_03v3 ad=0.52p pd=2.5
 X5 a_n436_n292# a_n116_220# a_n516_n163# a_n655_n527# nfet_03v3 ad=0.52p pd=2.52u as=0.52p ps=2.52u w=2u l=0.28u
 .ends
 
-.subckt Output_stage m2_984_n286# m2_451_n496# m1_n158_415# m2_n928_338# m2_1009_459#
-Xnfet_03v3_N8FQLR_0 m2_1009_459# m2_451_n496# m2_n928_338# m2_984_n286# m1_n158_415#
-+ nfet_03v3_N8FQLR
+.subckt Output_stage m2_984_n286# m2_451_n496# m2_n249_338# m1_n158_415# m2_1009_459#
+Xnfet_03v3_N8FQLR_0 m2_1009_459# m2_451_n496# m2_n249_338# m2_984_n286# m1_n158_415#
++ nfet_03v3_N8FQLR$1
 .ends
 
 .subckt ppolyf_u_95K9DY a_n100_n502# w_n316_n718# a_n100_400#
@@ -41,11 +41,10 @@ X2 a_n52_n50# a_n116_n142# a_n212_n50# a_n496_n388# nfet_03v3 ad=0.13p pd=1.02u 
 X3 a_n212_n50# a_n276_70# a_n356_n36# a_n496_n388# nfet_03v3 ad=0.13p pd=1.02u as=0.2109p ps=1.88u w=0.5u l=0.28u
 .ends
 
-.subckt x4t-ota w_1372_318# m2_n392_n381# m2_1984_n621# m2_n420_n206# m1_1910_520#
-+ VSUBS
+.subckt x4t-ota w_1372_318# m2_1984_n621# m2_939_n381# m2_939_n206# m1_1910_520# VSUBS
 Xpfet_03v3_RFU83T_0 m1_1910_520# w_1372_318# w_1372_318# w_1372_318# m1_1452_455#
 + m1_1452_455# pfet_03v3_RFU83T
-Xnfet_03v3_AZGML9_0 m1_1910_520# m2_n392_n381# m2_1984_n621# m1_1452_455# m2_n420_n206#
+Xnfet_03v3_AZGML9_0 m1_1910_520# m2_939_n381# m2_1984_n621# m1_1452_455# m2_939_n206#
 + VSUBS nfet_03v3_AZGML9
 .ends
 
@@ -69,30 +68,30 @@ D2 a_n2108_n1000# w_n4500_n1176# diode_pd2nw_06v0 pj=40u area=99.99999p
 D3 a_108_n1000# w_n4500_n1176# diode_pd2nw_06v0 pj=40u area=99.99999p
 .ends
 
-.subckt io_secondary_5p0$1 VDD VSS m1_6880_n1240# m1_n5943_7732#
-Xppolyf_u_9H3LNU_0 m1_6880_n1240# m1_n5943_7732# VDD ppolyf_u_9H3LNU$1
-Xdiode_nd2ps_06v0_MV3SZ3_0 m1_n5943_7732# m1_n5943_7732# m1_n5943_7732# VSS m1_n5943_7732#
+.subckt io_secondary_5p0$1 VSUBS m1_6880_n1240# m1_n5943_7732# m1_n6440_11450#
+Xppolyf_u_9H3LNU_0 m1_6880_n1240# m1_n5943_7732# m1_n6440_11450# ppolyf_u_9H3LNU$1
+Xdiode_nd2ps_06v0_MV3SZ3_0 m1_n5943_7732# m1_n5943_7732# m1_n5943_7732# VSUBS m1_n5943_7732#
 + diode_nd2ps_06v0_MV3SZ3$1
-Xdiode_pd2nw_06v0_5DG9HC_0 m1_n5943_7732# m1_n5943_7732# VDD m1_n5943_7732# m1_n5943_7732#
-+ diode_pd2nw_06v0_5DG9HC$1
+Xdiode_pd2nw_06v0_5DG9HC_0 m1_n5943_7732# m1_n5943_7732# m1_n6440_11450# m1_n5943_7732#
++ m1_n5943_7732# diode_pd2nw_06v0_5DG9HC$1
 .ends
 
-.subckt io_secondary_5p0_array io_secondary_5p0_1/m1_6880_n1240# io_secondary_5p0_4/VDD
-+ io_secondary_5p0_1/VDD io_secondary_5p0_3/m1_n5943_7732# io_secondary_5p0_2/m1_6880_n1240#
-+ io_secondary_5p0_2/VDD io_secondary_5p0_0/m1_n5943_7732# io_secondary_5p0_4/m1_n5943_7732#
-+ io_secondary_5p0_3/m1_6880_n1240# io_secondary_5p0_1/m1_n5943_7732# io_secondary_5p0_0/m1_6880_n1240#
-+ io_secondary_5p0_3/VDD io_secondary_5p0_4/m1_6880_n1240# io_secondary_5p0_0/VDD
+.subckt io_secondary_5p0_array io_secondary_5p0_1/m1_6880_n1240# io_secondary_5p0_4/m1_n6440_11450#
++ io_secondary_5p0_3/m1_n6440_11450# io_secondary_5p0_3/m1_n5943_7732# io_secondary_5p0_2/m1_6880_n1240#
++ io_secondary_5p0_2/m1_n6440_11450# io_secondary_5p0_0/m1_n5943_7732# io_secondary_5p0_4/m1_n5943_7732#
++ io_secondary_5p0_3/m1_6880_n1240# io_secondary_5p0_1/m1_n6440_11450# io_secondary_5p0_1/m1_n5943_7732#
++ io_secondary_5p0_0/m1_6880_n1240# io_secondary_5p0_0/m1_n6440_11450# io_secondary_5p0_4/m1_6880_n1240#
 + VSUBS io_secondary_5p0_2/m1_n5943_7732#
-Xio_secondary_5p0_0 io_secondary_5p0_0/VDD VSUBS io_secondary_5p0_0/m1_6880_n1240#
-+ io_secondary_5p0_0/m1_n5943_7732# io_secondary_5p0$1
-Xio_secondary_5p0_1 io_secondary_5p0_1/VDD VSUBS io_secondary_5p0_1/m1_6880_n1240#
-+ io_secondary_5p0_1/m1_n5943_7732# io_secondary_5p0$1
-Xio_secondary_5p0_2 io_secondary_5p0_2/VDD VSUBS io_secondary_5p0_2/m1_6880_n1240#
-+ io_secondary_5p0_2/m1_n5943_7732# io_secondary_5p0$1
-Xio_secondary_5p0_3 io_secondary_5p0_3/VDD VSUBS io_secondary_5p0_3/m1_6880_n1240#
-+ io_secondary_5p0_3/m1_n5943_7732# io_secondary_5p0$1
-Xio_secondary_5p0_4 io_secondary_5p0_4/VDD VSUBS io_secondary_5p0_4/m1_6880_n1240#
-+ io_secondary_5p0_4/m1_n5943_7732# io_secondary_5p0$1
+Xio_secondary_5p0_0 VSUBS io_secondary_5p0_0/m1_6880_n1240# io_secondary_5p0_0/m1_n5943_7732#
++ io_secondary_5p0_0/m1_n6440_11450# io_secondary_5p0$1
+Xio_secondary_5p0_1 VSUBS io_secondary_5p0_1/m1_6880_n1240# io_secondary_5p0_1/m1_n5943_7732#
++ io_secondary_5p0_1/m1_n6440_11450# io_secondary_5p0$1
+Xio_secondary_5p0_2 VSUBS io_secondary_5p0_2/m1_6880_n1240# io_secondary_5p0_2/m1_n5943_7732#
++ io_secondary_5p0_2/m1_n6440_11450# io_secondary_5p0$1
+Xio_secondary_5p0_3 VSUBS io_secondary_5p0_3/m1_6880_n1240# io_secondary_5p0_3/m1_n5943_7732#
++ io_secondary_5p0_3/m1_n6440_11450# io_secondary_5p0$1
+Xio_secondary_5p0_4 VSUBS io_secondary_5p0_4/m1_6880_n1240# io_secondary_5p0_4/m1_n5943_7732#
++ io_secondary_5p0_4/m1_n6440_11450# io_secondary_5p0$1
 .ends
 
 .subckt Unnamed_5b1479df m4_n620_n620# m4_n500_n500#
@@ -308,18 +307,18 @@ XRF_diff_pair$1_0 RF_diff_pair$1_0/a_3384_n849# RF_diff_pair$1_0/a_3440_n321# RF
 .ends
 
 .subckt Gilbert_mixer_layout VSS VDD I_bias V_LO_b V_RF_b V_IF_out V_LO V_RF
-XOutput_stage_0 VDD V_IF_out VSS via_dev$16_1/m2_0_0# V_IF_out Output_stage
+XOutput_stage_0 VDD V_IF_out m2_452328_108373# VSS V_IF_out Output_stage
 XDegeneration_resistor_0 VDD m3_447543_97161# m3_436631_97159# Degeneration_resistor
 Xppolyf_u_high_Rs_resistor$1_0 m3_448477_101781# VDD m3_448051_101181# VDD VSS ppolyf_u_high_Rs_resistor$1
-X4t-ota_0 VDD m3_448051_101181# m3_452279_105299# m3_448477_101781# via_dev$16_1/m2_0_0#
+X4t-ota_0 VDD m3_452279_105299# m3_448051_101181# m3_448477_101781# m2_452328_108373#
 + VSS x4t-ota
-Xio_secondary_5p0_array_0 V_LO VDD VDD m3_481277_85842# V_RF VDD m3_460417_85824#
-+ m3_502897_85837# V_LO_b m3_402897_85805# V_RF_b VDD I_bias VDD VSS m3_423757_85755#
+Xio_secondary_5p0_array_0 V_LO VDD VDD m3_481277_87890# V_RF VDD m3_460417_87793#
++ m3_501897_87836# V_LO_b VDD m3_402897_87818# V_RF_b VDD I_bias VSS m3_423757_87715#
 + io_secondary_5p0_array
 XBiasing_network_with_local_mirror_0 m3_452279_105299# m3_477022_91134# m3_477022_91134#
 + VDD m3_447543_97161# m3_452279_105299# m3_477022_91134# m3_477022_91134# m3_436631_97159#
-+ V_IF_out m3_477022_91134# m3_502897_85837# VSS Biasing_network_with_local_mirror
-XGilbert_mixer_interdigited_0 m3_460417_85824# m3_423757_85755# m3_481277_85842# m3_436631_97159#
-+ m3_402897_85805# m3_448477_101781# m3_448051_101181# m3_447543_97161# VSS Gilbert_mixer_interdigited
++ V_IF_out m3_477022_91134# m3_501897_87836# VSS Biasing_network_with_local_mirror
+XGilbert_mixer_interdigited_0 m3_460417_87793# m3_423757_87715# m3_481277_87890# m3_436631_97159#
++ m3_402897_87818# m3_448477_101781# m3_448051_101181# m3_447543_97161# VSS Gilbert_mixer_interdigited
 .ends
 
