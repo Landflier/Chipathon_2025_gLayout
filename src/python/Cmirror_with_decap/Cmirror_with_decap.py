@@ -897,15 +897,43 @@ class CmirrorWithDecap:
             self.decap_ref = align_comp_to_port(decap, via_vss_ref.ports["top_met_W"], alignment=('l', 'c'))
             # necesasry for MIMTM.1 DRC
             self.decap_ref.movex(-1.2)
+            self.decap_ref.movey(0.5)
             self.top_level.add(self.decap_ref) 
             
+                        # Add via array from met4 to met5 aligned to decap bottom_met_S port
+            decap_s_port = self.decap_ref.ports["bottom_met_S"]
+            via_array_size = (decap_s_port.width, 0.5)  # width from port, height 0.4u
+            
+            decap_via_array = via_array(
+                self.pdk, "met4", "met5", 
+                size=via_array_size,
+                minus1=False,
+                lay_bottom=True,
+                fullbottom=True
+            )
+            
+            # Align the via array to the decap S port
+            decap_via_array_ref = align_comp_to_port(
+                decap_via_array, 
+                decap_s_port, 
+                alignment=('c', 'b')
+            )
+            self.top_level.add(decap_via_array_ref)
+
             # Route connections
             # Route decap to VSS via (straight route)
             vss_route = straight_route(self.pdk, self.decap_ref.ports["top_met_E"], via_vss_ref.ports["top_met_W"])
             self.top_level << vss_route
         
             # Route decap to VREF via (L-route from S of mimcap to W of via_vref_ref)
-            vref_route = L_route(self.pdk, self.decap_ref.ports["bottom_met_S"], via_vref_ref.ports["bottom_lay_W"])
+            # vref_route = c_route(self.pdk, self.decap_ref.ports["bottom_met_S"], via_vref_ref.ports["bottom_lay_S"], 
+            #       e1glayer = "met4", cglayer="met5",
+            #      width1 = self.decap_ref.ports["bottom_met_W"].width,
+            #      cwidth = self.decap_ref.ports["bottom_met_W"].width,
+            #      width2=via_vref_ref.ports["bottom_lay_W"].width,
+            #      fullbottom=True)
+            # vref_route = L_route(self.pdk, via_vref_ref.ports["bottom_lay_W"], self.decap_ref.ports["bottom_met_S"], glayer1="met5", glayer2="met4")
+            vref_route = L_route(self.pdk, self.decap_ref.ports["bottom_met_S"], via_vref_ref.ports["bottom_lay_W"], vglayer="met5", fullbottom=True)
             self.top_level << vref_route
 
         return self.top_level
