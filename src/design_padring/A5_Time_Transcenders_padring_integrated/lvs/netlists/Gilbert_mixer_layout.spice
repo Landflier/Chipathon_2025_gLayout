@@ -94,68 +94,11 @@ Xio_secondary_5p0_4 VSUBS io_secondary_5p0_4/m1_6880_n1240# io_secondary_5p0_4/m
 + io_secondary_5p0_4/m1_n6440_11450# io_secondary_5p0$1
 .ends
 
-.subckt Unnamed_e27185f7 m4_n620_n620# m4_n500_n500#
+.subckt Unnamed_1cada8a1 m4_n620_n620# m4_n500_n500#
 X0 m4_n500_n500# m4_n620_n620# cap_mim_2f0_m4m5_noshield c_width=5u c_length=5u
 .ends
 
-.subckt cmirror_interdigitized a_n1412_n50# w_n2485_n1240# a_n2168_n570#
-X0 a_n1412_n50# a_n2168_n570# w_n2485_n1240# w_n2485_n1240# pfet_03v3 ad=0.23p pd=1.42u as=0.23p ps=1.42u w=0.5u l=0.4u
-X1 w_n2485_n1240# a_n2168_n570# a_n2168_n570# w_n2485_n1240# pfet_03v3 ad=0.495p pd=2.98u as=0.23p ps=1.42u w=0.5u l=0.4u
-X2 a_n1412_n50# a_n2168_n570# w_n2485_n1240# w_n2485_n1240# pfet_03v3 ad=0.23p pd=1.42u as=0.23p ps=1.42u w=0.5u l=0.4u
-X3 w_n2485_n1240# a_n2168_n570# a_n2168_n570# w_n2485_n1240# pfet_03v3 ad=0.23p pd=1.42u as=0.23p ps=1.42u w=0.5u l=0.4u
-X4 w_n2485_n1240# a_n2168_n570# a_n1412_n50# w_n2485_n1240# pfet_03v3 ad=0.23p pd=1.42u as=0.23p ps=1.42u w=0.5u l=0.4u
-X5 a_n2168_n570# a_n2168_n570# w_n2485_n1240# w_n2485_n1240# pfet_03v3 ad=0.23p pd=1.42u as=0.23p ps=1.42u w=0.5u l=0.4u
-X6 a_n1412_n50# a_n2168_n570# w_n2485_n1240# w_n2485_n1240# pfet_03v3 ad=0.23p pd=1.42u as=0.23p ps=1.42u w=0.5u l=0.4u
-X7 a_n1412_n50# a_n2168_n570# w_n2485_n1240# w_n2485_n1240# pfet_03v3 ad=0.23p pd=1.42u as=0.23p ps=1.42u w=0.5u l=0.4u
-X8 w_n2485_n1240# a_n2168_n570# a_n1412_n50# w_n2485_n1240# pfet_03v3 ad=0.23p pd=1.42u as=0.23p ps=1.42u w=0.5u l=0.4u
-X9 a_n1412_n50# a_n2168_n570# w_n2485_n1240# w_n2485_n1240# pfet_03v3 ad=0.23p pd=1.42u as=0.23p ps=1.42u w=0.5u l=0.4u
-X10 w_n2485_n1240# a_n2168_n570# a_n1412_n50# w_n2485_n1240# pfet_03v3 ad=0.23p pd=1.42u as=0.23p ps=1.42u w=0.5u l=0.4u
-X11 a_n2168_n570# a_n2168_n570# w_n2485_n1240# w_n2485_n1240# pfet_03v3 ad=0.23p pd=1.42u as=0.495p ps=2.98u w=0.5u l=0.4u
-X12 w_n2485_n1240# a_n2168_n570# a_n1412_n50# w_n2485_n1240# pfet_03v3 ad=0.23p pd=1.42u as=0.23p ps=1.42u w=0.5u l=0.4u
-X13 w_n2485_n1240# a_n2168_n570# a_n1412_n50# w_n2485_n1240# pfet_03v3 ad=0.23p pd=1.42u as=0.23p ps=1.42u w=0.5u l=0.4u
-X14 a_n1412_n50# a_n2168_n570# w_n2485_n1240# w_n2485_n1240# pfet_03v3 ad=0.23p pd=1.42u as=0.23p ps=1.42u w=0.5u l=0.4u
-X15 w_n2485_n1240# a_n2168_n570# a_n1412_n50# w_n2485_n1240# pfet_03v3 ad=0.23p pd=1.42u as=0.23p ps=1.42u w=0.5u l=0.4u
-.ends
-
-.subckt pmos_Cmirror_with_decap$1 Unnamed_e27185f7_0/m4_n500_n500# via_array_6db7f9fa$1_0/m2_n200_n200#
-+ Unnamed_e27185f7_0/m4_n620_n620#
-XUnnamed_e27185f7_0 Unnamed_e27185f7_0/m4_n620_n620# Unnamed_e27185f7_0/m4_n500_n500#
-+ Unnamed_e27185f7
-Xcmirror_interdigitized_0 via_array_6db7f9fa$1_0/m2_n200_n200# Unnamed_e27185f7_0/m4_n500_n500#
-+ Unnamed_e27185f7_0/m4_n620_n620# cmirror_interdigitized
-.ends
-
-.subckt Unnamed_a3761703 m4_n620_n620# m4_n500_n500#
-X0 m4_n500_n500# m4_n620_n620# cap_mim_2f0_m4m5_noshield c_width=5u c_length=5u
-.ends
-
-.subckt cmirror_interdigitized$2 a_n2410_n75# a_n2360_n495# a_n2620_n809#
-X0 a_n2620_n809# a_n2360_n495# a_n2410_n75# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
-X1 a_n2620_n809# a_n2360_n495# a_n2410_n75# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.7425p ps=3.48u w=0.75u l=1u
-X2 a_n2410_n75# a_n2360_n495# a_n2620_n809# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
-X3 a_n2410_n75# a_n2360_n495# a_n2620_n809# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
-X4 a_n2620_n809# a_n2360_n495# a_n2410_n75# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
-X5 a_n2620_n809# a_n2360_n495# a_n2410_n75# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
-X6 a_n2410_n75# a_n2360_n495# a_n2620_n809# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
-X7 a_n2410_n75# a_n2360_n495# a_n2620_n809# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
-X8 a_n2360_n495# a_n2360_n495# a_n2620_n809# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
-X9 a_n2620_n809# a_n2360_n495# a_n2410_n75# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
-X10 a_n2620_n809# a_n2360_n495# a_n2360_n495# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
-X11 a_n2410_n75# a_n2360_n495# a_n2620_n809# a_n2620_n809# nfet_03v3 ad=0.7425p pd=3.48u as=0.345p ps=1.67u w=0.75u l=1u
-.ends
-
-.subckt nmos2_Cmirror_with_decap$1 via_array_6f2c13fe$3_0/m2_n100_n100# Unnamed_a3761703_0/m4_n620_n620#
-+ VSUBS
-XUnnamed_a3761703_0 Unnamed_a3761703_0/m4_n620_n620# VSUBS Unnamed_a3761703
-Xcmirror_interdigitized$2_0 via_array_6f2c13fe$3_0/m2_n100_n100# Unnamed_a3761703_0/m4_n620_n620#
-+ VSUBS cmirror_interdigitized$2
-.ends
-
-.subckt Unnamed_f820d3a9 m4_n620_n620# m4_n500_n500#
-X0 m4_n500_n500# m4_n620_n620# cap_mim_2f0_m4m5_noshield c_width=5u c_length=5u
-.ends
-
-.subckt cmirror_interdigitized$4$1 a_n3932_n75# a_n4280_n495# a_n4540_n809#
+.subckt cmirror_interdigitized$4 a_n3932_n75# a_n4280_n495# a_n4540_n809#
 X0 a_n4540_n809# a_n4280_n495# a_n3932_n75# a_n4540_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
 X1 a_n4540_n809# a_n4280_n495# a_n3932_n75# a_n4540_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
 X2 a_n3932_n75# a_n4280_n495# a_n4540_n809# a_n4540_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
@@ -180,36 +123,14 @@ X20 a_n4540_n809# a_n4280_n495# a_n3932_n75# a_n4540_n809# nfet_03v3 ad=0.345p p
 X21 a_n3932_n75# a_n4280_n495# a_n4540_n809# a_n4540_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
 .ends
 
-.subckt nmos4_Cmirror_with_decap via_array_6f2c13fe$7$1_0/m2_n100_n100# Unnamed_f820d3a9_0/m4_n620_n620#
+.subckt nmos4_Cmirror_with_decap$1 via_array_6f2c13fe$7$2_0/m2_n100_n100# Unnamed_1cada8a1_0/m4_n620_n620#
 + VSUBS
-XUnnamed_f820d3a9_0 Unnamed_f820d3a9_0/m4_n620_n620# VSUBS Unnamed_f820d3a9
-Xcmirror_interdigitized$4$1_0 via_array_6f2c13fe$7$1_0/m2_n100_n100# Unnamed_f820d3a9_0/m4_n620_n620#
-+ VSUBS cmirror_interdigitized$4$1
+XUnnamed_1cada8a1_0 Unnamed_1cada8a1_0/m4_n620_n620# VSUBS Unnamed_1cada8a1
+Xcmirror_interdigitized$4_0 via_array_6f2c13fe$7$2_0/m2_n100_n100# Unnamed_1cada8a1_0/m4_n620_n620#
++ VSUBS cmirror_interdigitized$4
 .ends
 
-.subckt Unnamed_34ca3a49 m4_n620_n620# m4_n500_n500#
-X0 m4_n500_n500# m4_n620_n620# cap_mim_2f0_m4m5_noshield c_width=5u c_length=5u
-.ends
-
-.subckt cmirror_interdigitized$3 a_n824_n495# a_n1084_n809# a_n874_n75#
-X0 a_n874_n75# a_n824_n495# a_n1084_n809# a_n1084_n809# nfet_03v3 ad=0.7425p pd=3.48u as=0.345p ps=1.67u w=0.75u l=1u
-X1 a_n824_n495# a_n824_n495# a_n1084_n809# a_n1084_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
-X2 a_n1084_n809# a_n824_n495# a_n874_n75# a_n1084_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.7425p ps=3.48u w=0.75u l=1u
-X3 a_n1084_n809# a_n824_n495# a_n824_n495# a_n1084_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
-.ends
-
-.subckt nmos3_Cmirror_with_decap$1 via_array_6f2c13fe$5_0/m2_n100_n100# Unnamed_34ca3a49_0/m4_n620_n620#
-+ VSUBS
-XUnnamed_34ca3a49_0 Unnamed_34ca3a49_0/m4_n620_n620# VSUBS Unnamed_34ca3a49
-Xcmirror_interdigitized$3_0 Unnamed_34ca3a49_0/m4_n620_n620# VSUBS via_array_6f2c13fe$5_0/m2_n100_n100#
-+ cmirror_interdigitized$3
-.ends
-
-.subckt Unnamed_bfd2beec m4_n620_n620# m4_n500_n500#
-X0 m4_n500_n500# m4_n620_n620# cap_mim_2f0_m4m5_noshield c_width=5u c_length=5u
-.ends
-
-.subckt cmirror_interdigitized$1 a_n2410_n75# a_n2360_n495# a_n2620_n809#
+.subckt cmirror_interdigitized$2$1 a_n2410_n75# a_n2360_n495# a_n2620_n809#
 X0 a_n2620_n809# a_n2360_n495# a_n2410_n75# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
 X1 a_n2620_n809# a_n2360_n495# a_n2410_n75# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.7425p ps=3.48u w=0.75u l=1u
 X2 a_n2410_n75# a_n2360_n495# a_n2620_n809# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
@@ -224,31 +145,107 @@ X10 a_n2620_n809# a_n2360_n495# a_n2360_n495# a_n2620_n809# nfet_03v3 ad=0.345p 
 X11 a_n2410_n75# a_n2360_n495# a_n2620_n809# a_n2620_n809# nfet_03v3 ad=0.7425p pd=3.48u as=0.345p ps=1.67u w=0.75u l=1u
 .ends
 
-.subckt nmos1_Cmirror_with_decap$1 Unnamed_bfd2beec_0/m4_n620_n620# via_array_6f2c13fe$1_0/m2_n100_n100#
-+ VSUBS
-XUnnamed_bfd2beec_0 Unnamed_bfd2beec_0/m4_n620_n620# VSUBS Unnamed_bfd2beec
-Xcmirror_interdigitized$1_0 via_array_6f2c13fe$1_0/m2_n100_n100# Unnamed_bfd2beec_0/m4_n620_n620#
-+ VSUBS cmirror_interdigitized$1
+.subckt Unnamed_f20c6fcb m4_n620_n620# m4_n500_n500#
+X0 m4_n500_n500# m4_n620_n620# cap_mim_2f0_m4m5_noshield c_width=5u c_length=5u
 .ends
 
-.subckt Biasing_network_with_local_mirror nmos1_Cmirror_with_decap$1_0/via_array_6f2c13fe$1_0/m2_n100_n100#
-+ pmos_Cmirror_with_decap$1_0/Unnamed_e27185f7_0/m4_n500_n500# nmos3_Cmirror_with_decap$1_0/via_array_6f2c13fe$5_0/m2_n100_n100#
-+ nmos4_Cmirror_with_decap_0/via_array_6f2c13fe$7$1_0/m2_n100_n100# pmos_Cmirror_with_decap$1_0/Unnamed_e27185f7_0/m4_n620_n620#
-+ nmos4_Cmirror_with_decap_0/Unnamed_f820d3a9_0/m4_n620_n620# nmos3_Cmirror_with_decap$1_0/Unnamed_34ca3a49_0/m4_n620_n620#
-+ nmos2_Cmirror_with_decap$1_0/via_array_6f2c13fe$3_0/m2_n100_n100# pmos_Cmirror_with_decap$1_0/via_array_6db7f9fa$1_0/m2_n200_n200#
-+ nmos1_Cmirror_with_decap$1_0/Unnamed_bfd2beec_0/m4_n620_n620# nmos2_Cmirror_with_decap$1_0/Unnamed_a3761703_0/m4_n620_n620#
+.subckt nmos2_Cmirror_with_decap via_array_6f2c13fe$3$3_0/m2_n100_n100# Unnamed_f20c6fcb_0/m4_n620_n620#
 + VSUBS
-Xpmos_Cmirror_with_decap$1_0 pmos_Cmirror_with_decap$1_0/Unnamed_e27185f7_0/m4_n500_n500#
-+ pmos_Cmirror_with_decap$1_0/via_array_6db7f9fa$1_0/m2_n200_n200# pmos_Cmirror_with_decap$1_0/Unnamed_e27185f7_0/m4_n620_n620#
-+ pmos_Cmirror_with_decap$1
-Xnmos2_Cmirror_with_decap$1_0 nmos2_Cmirror_with_decap$1_0/via_array_6f2c13fe$3_0/m2_n100_n100#
-+ nmos2_Cmirror_with_decap$1_0/Unnamed_a3761703_0/m4_n620_n620# VSUBS nmos2_Cmirror_with_decap$1
-Xnmos4_Cmirror_with_decap_0 nmos4_Cmirror_with_decap_0/via_array_6f2c13fe$7$1_0/m2_n100_n100#
-+ nmos4_Cmirror_with_decap_0/Unnamed_f820d3a9_0/m4_n620_n620# VSUBS nmos4_Cmirror_with_decap
-Xnmos3_Cmirror_with_decap$1_0 nmos3_Cmirror_with_decap$1_0/via_array_6f2c13fe$5_0/m2_n100_n100#
-+ nmos3_Cmirror_with_decap$1_0/Unnamed_34ca3a49_0/m4_n620_n620# VSUBS nmos3_Cmirror_with_decap$1
-Xnmos1_Cmirror_with_decap$1_0 nmos1_Cmirror_with_decap$1_0/Unnamed_bfd2beec_0/m4_n620_n620#
-+ nmos1_Cmirror_with_decap$1_0/via_array_6f2c13fe$1_0/m2_n100_n100# VSUBS nmos1_Cmirror_with_decap$1
+Xcmirror_interdigitized$2$1_0 via_array_6f2c13fe$3$3_0/m2_n100_n100# Unnamed_f20c6fcb_0/m4_n620_n620#
++ VSUBS cmirror_interdigitized$2$1
+XUnnamed_f20c6fcb_0 Unnamed_f20c6fcb_0/m4_n620_n620# VSUBS Unnamed_f20c6fcb
+.ends
+
+.subckt cmirror_interdigitized$5 a_n1412_n50# w_n2485_n1240# a_n2168_n570#
+X0 a_n1412_n50# a_n2168_n570# w_n2485_n1240# w_n2485_n1240# pfet_03v3 ad=0.23p pd=1.42u as=0.23p ps=1.42u w=0.5u l=0.4u
+X1 w_n2485_n1240# a_n2168_n570# a_n2168_n570# w_n2485_n1240# pfet_03v3 ad=0.495p pd=2.98u as=0.23p ps=1.42u w=0.5u l=0.4u
+X2 a_n1412_n50# a_n2168_n570# w_n2485_n1240# w_n2485_n1240# pfet_03v3 ad=0.23p pd=1.42u as=0.23p ps=1.42u w=0.5u l=0.4u
+X3 w_n2485_n1240# a_n2168_n570# a_n2168_n570# w_n2485_n1240# pfet_03v3 ad=0.23p pd=1.42u as=0.23p ps=1.42u w=0.5u l=0.4u
+X4 w_n2485_n1240# a_n2168_n570# a_n1412_n50# w_n2485_n1240# pfet_03v3 ad=0.23p pd=1.42u as=0.23p ps=1.42u w=0.5u l=0.4u
+X5 a_n2168_n570# a_n2168_n570# w_n2485_n1240# w_n2485_n1240# pfet_03v3 ad=0.23p pd=1.42u as=0.23p ps=1.42u w=0.5u l=0.4u
+X6 a_n1412_n50# a_n2168_n570# w_n2485_n1240# w_n2485_n1240# pfet_03v3 ad=0.23p pd=1.42u as=0.23p ps=1.42u w=0.5u l=0.4u
+X7 a_n1412_n50# a_n2168_n570# w_n2485_n1240# w_n2485_n1240# pfet_03v3 ad=0.23p pd=1.42u as=0.23p ps=1.42u w=0.5u l=0.4u
+X8 w_n2485_n1240# a_n2168_n570# a_n1412_n50# w_n2485_n1240# pfet_03v3 ad=0.23p pd=1.42u as=0.23p ps=1.42u w=0.5u l=0.4u
+X9 a_n1412_n50# a_n2168_n570# w_n2485_n1240# w_n2485_n1240# pfet_03v3 ad=0.23p pd=1.42u as=0.23p ps=1.42u w=0.5u l=0.4u
+X10 w_n2485_n1240# a_n2168_n570# a_n1412_n50# w_n2485_n1240# pfet_03v3 ad=0.23p pd=1.42u as=0.23p ps=1.42u w=0.5u l=0.4u
+X11 a_n2168_n570# a_n2168_n570# w_n2485_n1240# w_n2485_n1240# pfet_03v3 ad=0.23p pd=1.42u as=0.495p ps=2.98u w=0.5u l=0.4u
+X12 w_n2485_n1240# a_n2168_n570# a_n1412_n50# w_n2485_n1240# pfet_03v3 ad=0.23p pd=1.42u as=0.23p ps=1.42u w=0.5u l=0.4u
+X13 w_n2485_n1240# a_n2168_n570# a_n1412_n50# w_n2485_n1240# pfet_03v3 ad=0.23p pd=1.42u as=0.23p ps=1.42u w=0.5u l=0.4u
+X14 a_n1412_n50# a_n2168_n570# w_n2485_n1240# w_n2485_n1240# pfet_03v3 ad=0.23p pd=1.42u as=0.23p ps=1.42u w=0.5u l=0.4u
+X15 w_n2485_n1240# a_n2168_n570# a_n1412_n50# w_n2485_n1240# pfet_03v3 ad=0.23p pd=1.42u as=0.23p ps=1.42u w=0.5u l=0.4u
+.ends
+
+.subckt Unnamed_aa4eb252 m4_n620_n620# m4_n500_n500#
+X0 m4_n500_n500# m4_n620_n620# cap_mim_2f0_m4m5_noshield c_width=5u c_length=5u
+.ends
+
+.subckt pmos_Cmirror_with_decap VDD via_array_6db7f9fa$1$1_0/m2_n200_n200# Unnamed_aa4eb252_0/m4_n620_n620#
+Xcmirror_interdigitized$5_0 via_array_6db7f9fa$1$1_0/m2_n200_n200# VDD Unnamed_aa4eb252_0/m4_n620_n620#
++ cmirror_interdigitized$5
+XUnnamed_aa4eb252_0 Unnamed_aa4eb252_0/m4_n620_n620# VDD Unnamed_aa4eb252
+.ends
+
+.subckt cmirror_interdigitized$1$1 a_n2410_n75# a_n2360_n495# a_n2620_n809#
+X0 a_n2620_n809# a_n2360_n495# a_n2410_n75# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
+X1 a_n2620_n809# a_n2360_n495# a_n2410_n75# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.7425p ps=3.48u w=0.75u l=1u
+X2 a_n2410_n75# a_n2360_n495# a_n2620_n809# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
+X3 a_n2410_n75# a_n2360_n495# a_n2620_n809# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
+X4 a_n2620_n809# a_n2360_n495# a_n2410_n75# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
+X5 a_n2620_n809# a_n2360_n495# a_n2410_n75# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
+X6 a_n2410_n75# a_n2360_n495# a_n2620_n809# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
+X7 a_n2410_n75# a_n2360_n495# a_n2620_n809# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
+X8 a_n2360_n495# a_n2360_n495# a_n2620_n809# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
+X9 a_n2620_n809# a_n2360_n495# a_n2410_n75# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
+X10 a_n2620_n809# a_n2360_n495# a_n2360_n495# a_n2620_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
+X11 a_n2410_n75# a_n2360_n495# a_n2620_n809# a_n2620_n809# nfet_03v3 ad=0.7425p pd=3.48u as=0.345p ps=1.67u w=0.75u l=1u
+.ends
+
+.subckt Unnamed_7e5129c3 m4_n620_n620# m4_n500_n500#
+X0 m4_n500_n500# m4_n620_n620# cap_mim_2f0_m4m5_noshield c_width=5u c_length=5u
+.ends
+
+.subckt nmos1_Cmirror_with_decap via_array_6f2c13fe$1$2_0/m2_n100_n100# Unnamed_7e5129c3_0/m4_n620_n620#
++ VSUBS
+Xcmirror_interdigitized$1$1_0 via_array_6f2c13fe$1$2_0/m2_n100_n100# Unnamed_7e5129c3_0/m4_n620_n620#
++ VSUBS cmirror_interdigitized$1$1
+XUnnamed_7e5129c3_0 Unnamed_7e5129c3_0/m4_n620_n620# VSUBS Unnamed_7e5129c3
+.ends
+
+.subckt Unnamed_35e26694 m4_n620_n620# m4_n500_n500#
+X0 m4_n500_n500# m4_n620_n620# cap_mim_2f0_m4m5_noshield c_width=5u c_length=5u
+.ends
+
+.subckt cmirror_interdigitized$3$1 a_n824_n495# a_n1084_n809# a_n874_n75#
+X0 a_n874_n75# a_n824_n495# a_n1084_n809# a_n1084_n809# nfet_03v3 ad=0.7425p pd=3.48u as=0.345p ps=1.67u w=0.75u l=1u
+X1 a_n824_n495# a_n824_n495# a_n1084_n809# a_n1084_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
+X2 a_n1084_n809# a_n824_n495# a_n874_n75# a_n1084_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.7425p ps=3.48u w=0.75u l=1u
+X3 a_n1084_n809# a_n824_n495# a_n824_n495# a_n1084_n809# nfet_03v3 ad=0.345p pd=1.67u as=0.345p ps=1.67u w=0.75u l=1u
+.ends
+
+.subckt nmos3_Cmirror_with_decap via_array_6f2c13fe$5$1_0/m2_n100_n100# Unnamed_35e26694_0/m4_n620_n620#
++ VSUBS
+XUnnamed_35e26694_0 Unnamed_35e26694_0/m4_n620_n620# VSUBS Unnamed_35e26694
+Xcmirror_interdigitized$3$1_0 Unnamed_35e26694_0/m4_n620_n620# VSUBS via_array_6f2c13fe$5$1_0/m2_n100_n100#
++ cmirror_interdigitized$3$1
+.ends
+
+.subckt Biasing_network_with_local_mirror pmos_Cmirror_with_decap_0/Unnamed_aa4eb252_0/m4_n620_n620#
++ nmos3_Cmirror_with_decap_0/via_array_6f2c13fe$5$1_0/m2_n100_n100# pmos_Cmirror_with_decap_0/via_array_6db7f9fa$1$1_0/m2_n200_n200#
++ pmos_Cmirror_with_decap_0/VDD nmos1_Cmirror_with_decap_0/Unnamed_7e5129c3_0/m4_n620_n620#
++ nmos2_Cmirror_with_decap_0/via_array_6f2c13fe$3$3_0/m2_n100_n100# nmos3_Cmirror_with_decap_0/Unnamed_35e26694_0/m4_n620_n620#
++ nmos1_Cmirror_with_decap_0/via_array_6f2c13fe$1$2_0/m2_n100_n100# nmos4_Cmirror_with_decap$1_0/via_array_6f2c13fe$7$2_0/m2_n100_n100#
++ nmos4_Cmirror_with_decap$1_0/Unnamed_1cada8a1_0/m4_n620_n620# nmos2_Cmirror_with_decap_0/Unnamed_f20c6fcb_0/m4_n620_n620#
++ VSUBS
+Xnmos4_Cmirror_with_decap$1_0 nmos4_Cmirror_with_decap$1_0/via_array_6f2c13fe$7$2_0/m2_n100_n100#
++ nmos4_Cmirror_with_decap$1_0/Unnamed_1cada8a1_0/m4_n620_n620# VSUBS nmos4_Cmirror_with_decap$1
+Xnmos2_Cmirror_with_decap_0 nmos2_Cmirror_with_decap_0/via_array_6f2c13fe$3$3_0/m2_n100_n100#
++ nmos2_Cmirror_with_decap_0/Unnamed_f20c6fcb_0/m4_n620_n620# VSUBS nmos2_Cmirror_with_decap
+Xpmos_Cmirror_with_decap_0 pmos_Cmirror_with_decap_0/VDD pmos_Cmirror_with_decap_0/via_array_6db7f9fa$1$1_0/m2_n200_n200#
++ pmos_Cmirror_with_decap_0/Unnamed_aa4eb252_0/m4_n620_n620# pmos_Cmirror_with_decap
+Xnmos1_Cmirror_with_decap_0 nmos1_Cmirror_with_decap_0/via_array_6f2c13fe$1$2_0/m2_n100_n100#
++ nmos1_Cmirror_with_decap_0/Unnamed_7e5129c3_0/m4_n620_n620# VSUBS nmos1_Cmirror_with_decap
+Xnmos3_Cmirror_with_decap_0 nmos3_Cmirror_with_decap_0/via_array_6f2c13fe$5$1_0/m2_n100_n100#
++ nmos3_Cmirror_with_decap_0/Unnamed_35e26694_0/m4_n620_n620# VSUBS nmos3_Cmirror_with_decap
 .ends
 
 .subckt LO_diff_pairs_interdigitized a_n2222_n400# a_n2878_n1500# a_n2578_n448# a_n2822_n400#
@@ -314,8 +311,8 @@ X4t-ota_0 VDD m3_452279_105299# m3_448051_101181# m3_448477_101781# m2_452328_10
 Xio_secondary_5p0_array_0 V_LO VDD VDD m3_481277_87890# V_RF VDD m3_460417_87793#
 + m3_501897_87836# V_LO_b VDD m3_402897_87818# V_RF_b VDD I_bias VSS m3_423757_87715#
 + io_secondary_5p0_array
-XBiasing_network_with_local_mirror_0 m3_436631_97159# VDD m3_452279_105299# V_IF_out
-+ m3_501897_87836# m3_477022_91134# m3_477022_91134# m3_447543_97161# m3_477022_91134#
+XBiasing_network_with_local_mirror_0 m3_501897_87836# m3_452279_105299# m3_477022_91134#
++ VDD m3_477022_91134# m3_447543_97161# m3_477022_91134# m3_436631_97159# V_IF_out
 + m3_477022_91134# m3_477022_91134# VSS Biasing_network_with_local_mirror
 XGilbert_mixer_interdigited_0 m3_460417_87793# m3_423757_87715# m3_481277_87890# m3_436631_97159#
 + m3_402897_87818# m3_448477_101781# m3_448051_101181# m3_447543_97161# VSS Gilbert_mixer_interdigited

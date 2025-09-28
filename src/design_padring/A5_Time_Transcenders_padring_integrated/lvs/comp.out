@@ -26,21 +26,6 @@ Circuit 1: cap_mim_2f0_m4m5_noshield       |Circuit 2: cap_mim_2f0fF
 Cell pin lists are equivalent.
 Device classes cap_mim_2f0_m4m5_noshield and cap_mim_2f0fF are equivalent.
 
-Circuit 1 cell pfet_03v3 and Circuit 2 cell pfet_03v3 are black boxes.
-Warning: Equate pins:  cell pfet_03v3 is a placeholder, treated as a black box.
-Warning: Equate pins:  cell pfet_03v3 is a placeholder, treated as a black box.
-
-Subcircuit pins:
-Circuit 1: pfet_03v3                       |Circuit 2: pfet_03v3                       
--------------------------------------------|-------------------------------------------
-1                                          |1                                          
-2                                          |2                                          
-3                                          |3                                          
-4                                          |4                                          
----------------------------------------------------------------------------------------
-Cell pin lists are equivalent.
-Device classes pfet_03v3 and pfet_03v3 are equivalent.
-
 Circuit 1 cell nfet_03v3 and Circuit 2 cell nfet_03v3 are black boxes.
 Warning: Equate pins:  cell nfet_03v3 is a placeholder, treated as a black box.
 Warning: Equate pins:  cell nfet_03v3 is a placeholder, treated as a black box.
@@ -55,6 +40,21 @@ Circuit 1: nfet_03v3                       |Circuit 2: nfet_03v3
 ---------------------------------------------------------------------------------------
 Cell pin lists are equivalent.
 Device classes nfet_03v3 and nfet_03v3 are equivalent.
+
+Circuit 1 cell pfet_03v3 and Circuit 2 cell pfet_03v3 are black boxes.
+Warning: Equate pins:  cell pfet_03v3 is a placeholder, treated as a black box.
+Warning: Equate pins:  cell pfet_03v3 is a placeholder, treated as a black box.
+
+Subcircuit pins:
+Circuit 1: pfet_03v3                       |Circuit 2: pfet_03v3                       
+-------------------------------------------|-------------------------------------------
+1                                          |1                                          
+2                                          |2                                          
+3                                          |3                                          
+4                                          |4                                          
+---------------------------------------------------------------------------------------
+Cell pin lists are equivalent.
+Device classes pfet_03v3 and pfet_03v3 are equivalent.
 
 Circuit 1 cell ppolyf_u_1k and Circuit 2 cell ppolyf_u_1k are black boxes.
 Warning: Equate pins:  cell ppolyf_u_1k is a placeholder, treated as a black box.
@@ -104,21 +104,21 @@ Flattening unmatched subcell ppolyf_u_9H3LNU$1 in circuit Gilbert_mixer_layout (
 Flattening unmatched subcell diode_nd2ps_06v0_MV3SZ3$1 in circuit Gilbert_mixer_layout (0)(5 instances)
 Flattening unmatched subcell diode_pd2nw_06v0_5DG9HC$1 in circuit Gilbert_mixer_layout (0)(5 instances)
 Flattening unmatched subcell Biasing_network_with_local_mirror in circuit Gilbert_mixer_layout (0)(1 instance)
-Flattening unmatched subcell pmos_Cmirror_with_decap$1 in circuit Gilbert_mixer_layout (0)(1 instance)
-Flattening unmatched subcell Unnamed_e27185f7 in circuit Gilbert_mixer_layout (0)(1 instance)
-Flattening unmatched subcell cmirror_interdigitized in circuit Gilbert_mixer_layout (0)(1 instance)
-Flattening unmatched subcell nmos2_Cmirror_with_decap$1 in circuit Gilbert_mixer_layout (0)(1 instance)
-Flattening unmatched subcell Unnamed_a3761703 in circuit Gilbert_mixer_layout (0)(1 instance)
-Flattening unmatched subcell cmirror_interdigitized$2 in circuit Gilbert_mixer_layout (0)(1 instance)
-Flattening unmatched subcell nmos4_Cmirror_with_decap in circuit Gilbert_mixer_layout (0)(1 instance)
-Flattening unmatched subcell Unnamed_f820d3a9 in circuit Gilbert_mixer_layout (0)(1 instance)
-Flattening unmatched subcell cmirror_interdigitized$4$1 in circuit Gilbert_mixer_layout (0)(1 instance)
-Flattening unmatched subcell nmos3_Cmirror_with_decap$1 in circuit Gilbert_mixer_layout (0)(1 instance)
-Flattening unmatched subcell Unnamed_34ca3a49 in circuit Gilbert_mixer_layout (0)(1 instance)
-Flattening unmatched subcell cmirror_interdigitized$3 in circuit Gilbert_mixer_layout (0)(1 instance)
-Flattening unmatched subcell nmos1_Cmirror_with_decap$1 in circuit Gilbert_mixer_layout (0)(1 instance)
-Flattening unmatched subcell Unnamed_bfd2beec in circuit Gilbert_mixer_layout (0)(1 instance)
-Flattening unmatched subcell cmirror_interdigitized$1 in circuit Gilbert_mixer_layout (0)(1 instance)
+Flattening unmatched subcell nmos4_Cmirror_with_decap$1 in circuit Gilbert_mixer_layout (0)(1 instance)
+Flattening unmatched subcell Unnamed_1cada8a1 in circuit Gilbert_mixer_layout (0)(1 instance)
+Flattening unmatched subcell cmirror_interdigitized$4 in circuit Gilbert_mixer_layout (0)(1 instance)
+Flattening unmatched subcell nmos2_Cmirror_with_decap in circuit Gilbert_mixer_layout (0)(1 instance)
+Flattening unmatched subcell cmirror_interdigitized$2$1 in circuit Gilbert_mixer_layout (0)(1 instance)
+Flattening unmatched subcell Unnamed_f20c6fcb in circuit Gilbert_mixer_layout (0)(1 instance)
+Flattening unmatched subcell pmos_Cmirror_with_decap in circuit Gilbert_mixer_layout (0)(1 instance)
+Flattening unmatched subcell cmirror_interdigitized$5 in circuit Gilbert_mixer_layout (0)(1 instance)
+Flattening unmatched subcell Unnamed_aa4eb252 in circuit Gilbert_mixer_layout (0)(1 instance)
+Flattening unmatched subcell nmos1_Cmirror_with_decap in circuit Gilbert_mixer_layout (0)(1 instance)
+Flattening unmatched subcell cmirror_interdigitized$1$1 in circuit Gilbert_mixer_layout (0)(1 instance)
+Flattening unmatched subcell Unnamed_7e5129c3 in circuit Gilbert_mixer_layout (0)(1 instance)
+Flattening unmatched subcell nmos3_Cmirror_with_decap in circuit Gilbert_mixer_layout (0)(1 instance)
+Flattening unmatched subcell Unnamed_35e26694 in circuit Gilbert_mixer_layout (0)(1 instance)
+Flattening unmatched subcell cmirror_interdigitized$3$1 in circuit Gilbert_mixer_layout (0)(1 instance)
 Flattening unmatched subcell Gilbert_mixer_interdigited in circuit Gilbert_mixer_layout (0)(1 instance)
 Flattening unmatched subcell LO_diff_pairs_interdigitized in circuit Gilbert_mixer_layout (0)(1 instance)
 Flattening unmatched subcell RF_diff_pair$1 in circuit Gilbert_mixer_layout (0)(1 instance)
