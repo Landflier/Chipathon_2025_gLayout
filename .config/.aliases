@@ -1,3 +1,4 @@
 alias magic-gf="magic -rcfile $PDK_ROOT/$PDK/libs.tech/magic/$PDK.magicrc"
 alias xschem-gf="xschem --rcfile $PROJECT_ROOT/.config/xschem/xschemrc"
+alias drc-mabrains="python3 /home/vasil/Downloads/SSCS_PICO_2025/globalfoundries-pdk-libs-gf180mcu_fd_pv/klayout/drc/run_drc.py --path=/home/vasil/Downloads/SSCS_PICO_2025/src/design_padring/A5_Time_Transcenders_padring_integrated/A5_Top_level_for_integration.gds --variant=D --table=mim_b --topcell=Gilbert_mixer_toplevel --run_dir=/home/vasil/Downloads/SSCS_PICO_2025/src/design_padring/A5_Time_Transcenders_padring_integrated/drc/"
 
