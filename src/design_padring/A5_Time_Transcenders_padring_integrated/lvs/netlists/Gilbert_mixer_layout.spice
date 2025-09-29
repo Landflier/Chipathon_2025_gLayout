@@ -179,10 +179,12 @@ X15 w_n2485_n1240# a_n2168_n570# a_n1412_n50# w_n2485_n1240# pfet_03v3 ad=0.23p 
 X0 m4_n500_n500# m4_n620_n620# cap_mim_2f0_m4m5_noshield c_width=5u c_length=5u
 .ends
 
-.subckt pmos_Cmirror_with_decap VDD via_array_6db7f9fa$1$1_0/m2_n200_n200# Unnamed_aa4eb252_0/m4_n620_n620#
-Xcmirror_interdigitized$5_0 via_array_6db7f9fa$1$1_0/m2_n200_n200# VDD Unnamed_aa4eb252_0/m4_n620_n620#
-+ cmirror_interdigitized$5
-XUnnamed_aa4eb252_0 Unnamed_aa4eb252_0/m4_n620_n620# VDD Unnamed_aa4eb252
+.subckt pmos_Cmirror_with_decap via_array_6db7f9fa$1$1_0/m2_n200_n200# Unnamed_aa4eb252_0/m4_n620_n620#
++ Unnamed_aa4eb252_0/m4_n500_n500#
+Xcmirror_interdigitized$5_0 via_array_6db7f9fa$1$1_0/m2_n200_n200# Unnamed_aa4eb252_0/m4_n500_n500#
++ Unnamed_aa4eb252_0/m4_n620_n620# cmirror_interdigitized$5
+XUnnamed_aa4eb252_0 Unnamed_aa4eb252_0/m4_n620_n620# Unnamed_aa4eb252_0/m4_n500_n500#
++ Unnamed_aa4eb252
 .ends
 
 .subckt cmirror_interdigitized$1$1 a_n2410_n75# a_n2360_n495# a_n2620_n809#
@@ -231,7 +233,7 @@ Xcmirror_interdigitized$3$1_0 Unnamed_35e26694_0/m4_n620_n620# VSUBS via_array_6
 
 .subckt Biasing_network_with_local_mirror pmos_Cmirror_with_decap_0/Unnamed_aa4eb252_0/m4_n620_n620#
 + nmos3_Cmirror_with_decap_0/via_array_6f2c13fe$5$1_0/m2_n100_n100# pmos_Cmirror_with_decap_0/via_array_6db7f9fa$1$1_0/m2_n200_n200#
-+ pmos_Cmirror_with_decap_0/VDD nmos1_Cmirror_with_decap_0/Unnamed_7e5129c3_0/m4_n620_n620#
++ pmos_Cmirror_with_decap_0/Unnamed_aa4eb252_0/m4_n500_n500# nmos1_Cmirror_with_decap_0/Unnamed_7e5129c3_0/m4_n620_n620#
 + nmos2_Cmirror_with_decap_0/via_array_6f2c13fe$3$3_0/m2_n100_n100# nmos3_Cmirror_with_decap_0/Unnamed_35e26694_0/m4_n620_n620#
 + nmos1_Cmirror_with_decap_0/via_array_6f2c13fe$1$2_0/m2_n100_n100# nmos4_Cmirror_with_decap$1_0/via_array_6f2c13fe$7$2_0/m2_n100_n100#
 + nmos4_Cmirror_with_decap$1_0/Unnamed_1cada8a1_0/m4_n620_n620# nmos2_Cmirror_with_decap_0/Unnamed_f20c6fcb_0/m4_n620_n620#
@@ -240,8 +242,9 @@ Xnmos4_Cmirror_with_decap$1_0 nmos4_Cmirror_with_decap$1_0/via_array_6f2c13fe$7$
 + nmos4_Cmirror_with_decap$1_0/Unnamed_1cada8a1_0/m4_n620_n620# VSUBS nmos4_Cmirror_with_decap$1
 Xnmos2_Cmirror_with_decap_0 nmos2_Cmirror_with_decap_0/via_array_6f2c13fe$3$3_0/m2_n100_n100#
 + nmos2_Cmirror_with_decap_0/Unnamed_f20c6fcb_0/m4_n620_n620# VSUBS nmos2_Cmirror_with_decap
-Xpmos_Cmirror_with_decap_0 pmos_Cmirror_with_decap_0/VDD pmos_Cmirror_with_decap_0/via_array_6db7f9fa$1$1_0/m2_n200_n200#
-+ pmos_Cmirror_with_decap_0/Unnamed_aa4eb252_0/m4_n620_n620# pmos_Cmirror_with_decap
+Xpmos_Cmirror_with_decap_0 pmos_Cmirror_with_decap_0/via_array_6db7f9fa$1$1_0/m2_n200_n200#
++ pmos_Cmirror_with_decap_0/Unnamed_aa4eb252_0/m4_n620_n620# pmos_Cmirror_with_decap_0/Unnamed_aa4eb252_0/m4_n500_n500#
++ pmos_Cmirror_with_decap
 Xnmos1_Cmirror_with_decap_0 nmos1_Cmirror_with_decap_0/via_array_6f2c13fe$1$2_0/m2_n100_n100#
 + nmos1_Cmirror_with_decap_0/Unnamed_7e5129c3_0/m4_n620_n620# VSUBS nmos1_Cmirror_with_decap
 Xnmos3_Cmirror_with_decap_0 nmos3_Cmirror_with_decap_0/via_array_6f2c13fe$5$1_0/m2_n100_n100#

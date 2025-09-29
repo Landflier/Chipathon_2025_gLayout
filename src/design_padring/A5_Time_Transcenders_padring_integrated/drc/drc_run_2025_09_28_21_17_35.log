@@ -1,7 +1,0 @@
-29-Sep-2025 00:17:35 | INFO    | Your Klayout version is: KLayout 0.29.4
-29-Sep-2025 00:17:35 | INFO    | ## Generating template with for the following rule tables: ['mim_b.drc']
-29-Sep-2025 00:17:35 | INFO    | ## Your run dir located at: /home/vasil/Downloads/SSCS_PICO_2025/src/design_padring/A5_Time_Transcenders_padring_integrated/drc
-29-Sep-2025 00:17:35 | INFO    | Running Global Foundries 180nm MCU /home/vasil/Downloads/SSCS_PICO_2025/src/design_padring/A5_Time_Transcenders_padring_integrated/A5_Top_level_for_integration.gds checks on design mim_b on cell Gilbert_mixer_toplevel:
-29-Sep-2025 00:17:38 | ERROR   | Klayout DRC run is not clean.
-29-Sep-2025 00:17:38 | ERROR   | Violated rules are : {'MIMTM.1', 'MIMTM.2'}
-
