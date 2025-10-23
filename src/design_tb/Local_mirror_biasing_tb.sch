@@ -82,6 +82,12 @@ N 370 -1010 370 -1000 {
 lab=#net7}
 N 370 -940 370 -910 {
 lab=GND}
+N 1570 -1420 1570 -1390 {
+lab=VDD}
+N 1570 -1330 1570 -1300 {
+lab=#net8}
+N 1570 -1240 1570 -1210 {
+lab=#net9}
 C {code.sym} 50 -190 0 0 {name=MODELS only_toplevel=true
 format="tcleval( @value )"
 value="
@@ -152,5 +158,12 @@ m=1}
 C {vdd.sym} 850 -1420 0 0 {name=l3 lab=VDD}
 C {vdd.sym} 1090 -1420 0 0 {name=l4 lab=VDD}
 C {vdd.sym} 1330 -1420 0 0 {name=l6 lab=VDD}
-C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Biasing_network_with_local_mirros.sym} 690 -1000 0 0 {name=x1}
+C {src/design_xsch/Biasing_network_with_local_mirros.sym} 690 -1000 0 0 {name=x1}
 C {vdd.sym} 370 -1180 0 0 {name=l7 lab=VDD}
+C {ammeter.sym} 1570 -1270 0 0 {name=Vmeas4 savecurrent=true spice_ignore=0}
+C {res.sym} 1570 -1360 0 0 {name=R4
+value=1K
+footprint=1206
+device=resistor
+m=1}
+C {vdd.sym} 1570 -1420 0 0 {name=l8 lab=VDD}

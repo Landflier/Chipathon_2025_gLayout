@@ -71,8 +71,8 @@ if __name__ == "__main__":
         pdk=pdk_choice,
         width_ref=2.0,
         width_mir=6.0,
-        fingers_ref=4,
-        fingers_mir=12,
+        fingers_ref=1,
+        fingers_mir=3,
         length=0.4,
         cmirror_config=pmos_config,
         component_name="pmos_Cmirror_with_decap"
