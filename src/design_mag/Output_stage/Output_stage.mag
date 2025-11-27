@@ -1,13 +1,7 @@
 magic
 tech gf180mcuD
 magscale 1 10
-timestamp 1758706576
-<< pwell >>
-rect -186 415 1172 671
-rect -172 402 1172 415
-rect -186 338 1172 402
-rect -172 325 1172 338
-rect -186 -447 1172 325
+timestamp 1758960763
 << psubdiff >>
 rect -158 415 -99 542
 rect -158 338 -99 402
@@ -25,18 +19,18 @@ rect 994 -254 1249 -240
 rect 984 -286 1249 -254
 rect 994 -319 1249 -286
 use nfet_03v3_N8FQLR  nfet_03v3_N8FQLR_0
-timestamp 1758706576
+timestamp 1758960763
 transform 1 0 496 0 1 106
 box -684 -553 681 565
 << labels >>
-rlabel psubdiff -142 -387 -142 -387 1 VSS
-port 4 n
-rlabel metal2 1228 -291 1228 -291 5 VDD
-port 3 n
 rlabel metal2 1275 497 1275 497 1 V_out_biasing
 port 2 n
-rlabel metal2 -238 363 -238 363 1 V_in
-port 1 n
 rlabel metal2 485 -479 485 -479 1 I_bias
 port 0 n
+rlabel metal2 -238 363 -238 363 1 V_in
+port 1 n
+rlabel metal2 1228 -291 1228 -291 5 VDD
+port 3 n
+rlabel psubdiff -142 -387 -142 -387 1 VSS
+port 4 n
 << end >>

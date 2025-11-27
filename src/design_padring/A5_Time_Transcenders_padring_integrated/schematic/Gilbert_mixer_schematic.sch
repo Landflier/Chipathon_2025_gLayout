@@ -83,7 +83,7 @@ N 1110 -1380 1110 -1140 {
 lab=#net8}
 N 1110 -1380 1120 -1380 {
 lab=#net8}
-N 2480 -1620 2520 -1620 {
+N 2300 -1630 2340 -1630 {
 lab=V_IF_out}
 N 1520 -1720 1640 -1720 {
 lab=#net4}
@@ -93,11 +93,7 @@ N 1510 -1720 1520 -1720 {
 lab=#net4}
 N 1310 -1760 1520 -1760 {
 lab=#net3}
-N 2160 -1740 2200 -1740 {
-lab=V_IF_out}
-N 2020 -1740 2160 -1740 {
-lab=V_IF_out}
-N 2390 -1620 2480 -1620 {
+N 2210 -1630 2300 -1630 {
 lab=V_IF_out}
 N 2020 -1200 2020 -870 {
 lab=V_IF_out}
@@ -109,17 +105,9 @@ N 1380 -1020 1380 -960 {
 lab=#net1}
 N 1440 -1020 1440 -960 {
 lab=#net2}
-N 2200 -1740 2390 -1740 {
-lab=V_IF_out}
-N 2390 -1740 2390 -1630 {
-lab=V_IF_out}
 N 2020 -1200 2110 -1200 {
 lab=V_IF_out}
-N 2390 -1630 2390 -1620 {
-lab=V_IF_out}
-N 2390 -1630 2390 -1200 {
-lab=V_IF_out}
-N 2110 -1200 2390 -1200 {
+N 2110 -1200 2210 -1200 {
 lab=V_IF_out}
 N 740 -610 740 -600 {
 lab=VSS}
@@ -174,7 +162,7 @@ lab=#net9}
 N 1780 -1660 1780 -1640 {
 lab=#net9}
 N 1880 -1740 2020 -1740 {
-lab=V_IF_out}
+lab=#net11}
 N 1640 -1760 1660 -1760 {
 lab=#net3}
 N 1640 -1720 1660 -1720 {
@@ -191,6 +179,18 @@ N 1200 -1820 1230 -1820 {
 lab=VSS}
 N 1200 -1820 1200 -1800 {
 lab=VSS}
+N 2110 -1660 2110 -1200 {
+lab=V_IF_out}
+N 2210 -1660 2210 -1200 {
+lab=V_IF_out}
+N 2000 -1690 2020 -1690 {
+lab=VSS}
+N 2000 -1690 2000 -1660 {
+lab=VSS}
+N 2000 -1780 2020 -1780 {
+lab=VDD}
+N 2000 -1810 2000 -1780 {
+lab=VDD}
 C {title-2.sym} 0 0 0 0 {name=l9 author="Time Transcenders" lock=true rev=1.0 page=1}
 C {ipin.sym} 610 -1680 2 1 {name=p1 lab=V_LO}
 C {ipin.sym} 610 -1510 2 1 {name=p2 lab=V_LO_b
@@ -200,12 +200,12 @@ C {ipin.sym} 610 -1140 2 1 {name=p4 lab=V_RF_b
 }
 C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Gilbert_cell_hierarchal_mixing_stage.sym} 1410 -1490 0 0 {name=x1}
 C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Biasing_network_with_local_mirros.sym} 1140 -660 0 0 {name=x3
-pmos_l_ref=0.4u pmos_w_ref=2u pmos_l_mir=0.4u pmos_w_mir=8u
+pmos_l_ref=0.4u pmos_w_ref=2u pmos_l_mir=0.4u pmos_w_mir=6u
 nmos_l_ref_1=1u nmos_w_ref_1=1.5u nmos_nf_ref_1=1 nmos_l_mir_1=1u nmos_w_mir_1=7.5u nmos_nf_mir_1=5
 nmos_l_ref_2=1u nmos_w_ref_2=1.5u nmos_nf_ref_2=1 nmos_l_mir_2=1u nmos_w_mir_2=7.5u nmos_nf_mir_2=5
-nmos_l_ref_3=1u nmos_w_ref_3=1.5u nmos_nf_ref_3=1 nmos_l_mir_3=1u nmos_w_mir_3=6u nmos_nf_mir_3=4
+nmos_l_ref_3=1u nmos_w_ref_3=1.5u nmos_nf_ref_3=1 nmos_l_mir_3=1u nmos_w_mir_3=1.5u nmos_nf_mir_3=4
 nmos_l_ref_4=1u nmos_w_ref_4=1.5u nmos_nf_ref_4=1 nmos_l_mir_4=1u nmos_w_mir_4=15u nmos_nf_mir_4=10}
-C {opin.sym} 2520 -1620 0 0 {name=p5 lab=V_IF_out}
+C {opin.sym} 2340 -1630 0 0 {name=p5 lab=V_IF_out}
 C {ipin.sym} 550 -670 2 1 {name=p18 lab=I_bias
 }
 C {ipin.sym} 620 -450 2 1 {name=p8 lab=VSS
@@ -254,3 +254,6 @@ C {lab_pin.sym} 1710 -1590 0 0 {name=p22 sig_type=std_logic lab=VSS}
 C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Gilbert_cell_hierarchal_loading_stage.sym} 1410 -1840 0 0 {name=x2}
 C {lab_pin.sym} 1200 -1950 0 0 {name=p24 sig_type=std_logic lab=VDD}
 C {lab_pin.sym} 1200 -1800 0 0 {name=p25 sig_type=std_logic lab=VSS}
+C {/home/vasil/Downloads/SSCS_PICO_2025/src/design_xsch/Output_stage.sym} 2150 -1720 0 0 {name=x4}
+C {lab_pin.sym} 2000 -1810 0 0 {name=p26 sig_type=std_logic lab=VDD}
+C {lab_pin.sym} 2000 -1660 0 0 {name=p27 sig_type=std_logic lab=VSS}

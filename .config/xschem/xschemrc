@@ -39,6 +39,16 @@ append XSCHEM_LIBRARY_PATH :$env(PDK_ROOT)/$env(PDK)/libs.tech/xschem
 # Add project directory form the ENV variables in .envrc
 set PROJECT_ROOT $env(PROJECT_ROOT)
 
+append XSCHEM_LIBRARY_PATH :$PROJECT_ROOT
+append XSCHEM_LIBRARY_PATH :$PROJECT_ROOT/src/design_xsch
+
+# Needed to test A5_top_level.sch in the A2_Automos folder
+# append XSCHEM_LIBRARY_PATH {:/home/vasil/Downloads/}
+append XSCHEM_LIBRARY_PATH {:/home/vasil/Downloads/AutoMOS-chipathon2025/designs/libs}
+append XSCHEM_LIBRARY_PATH {:/home/vasil/Downloads/AutoMOS-chipathon2025}
+append XSCHEM_LIBRARY_PATH {:/home/vasil/Downloads/AutoMOS-chipathon2025/designs}
+
+
 ###########################################################################
 #### SET CUSTOM COLORS FOR XSCHEM LIBRARIES MATCHING CERTAIN PATTERNS
 ###########################################################################
